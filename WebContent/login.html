@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title> Università di Magenta</title>
+		<link rel="stylesheet" href="css/bootstrap.css">
+	</head>
+	
+	<body>
+		<h1>
+			<span >LogIn </span>
+			<span th:text="${userType.type}">Unknown</span>
+		</h1>
+		<!--  in questo modo non serve il context path, capire meglio perchè prima dell'orale -->
+		<form th:action="@{/__${urlPath.path}__}" method="POST">
+			<input type="email" name="email" placeholder="Inserisci la tua email"><br>
+			<input type="password" name="password" placeholder="Inserisci la tua password"><br>
+			<input type="submit" value="LOGIN">
+		</form>
+		<h3>
+			<span style="color: red;" th:text="${errorMessage.error}"> Message </span>
+		</h3>
+				
+	</body>
+
+</html>
