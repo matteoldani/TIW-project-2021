@@ -20,11 +20,14 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import org.thymeleaf.context.WebContext;
 
+import it.polimi.tiw.beans.Docente;
 import it.polimi.tiw.beans.ErrorMessage;
 import it.polimi.tiw.beans.UrlPath;
 import it.polimi.tiw.beans.UserType;
 
 import it.polimi.tiw.dao.DocentiDAO;
+import it.polimi.tiw.common.ConnectionHandler;
+import it.polimi.tiw.common.ThymeleafInstance;
 
 /**
  * Servlet implementation class login
@@ -44,34 +47,12 @@ public class LoginDocente extends HttpServlet {
     }
     
     public void init() throws ServletException {
-    	ServletContext servletContext = getServletContext();
     	
-    	 
-    	final String DB_URL = "jdbc:mysql://localhost:3306/verbalizzazione_voti";
- 		final String USER = "root";
- 		final String PASS = "password";
-    	
-    	/*settings and data are stored into web.xml as contex param
-    	String driver = servletContext.getInitParameter("dbDriver");
-		String url = servletContext.getInitParameter("dbUrl");
-		String user = servletContext.getInitParameter("dbUser");
-		String password = servletContext.getInitParameter("dbPassword");
-		*/
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver"); 
- 			connection = DriverManager.getConnection(DB_URL, USER, PASS);
-		} catch (ClassNotFoundException e) {
-			throw new UnavailableException("Can't load database driver");
-		} catch (SQLException e) {
-			throw new UnavailableException("Couldn't get db connection");
-			
-		}
-    	
-		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
+    	//Credo la connessione con il database
+    	connection = ConnectionHandler.getConnection(getServletContext());
+    	//Istanzio il mio template engine per questa pagina
+    	templateEngine = new ThymeleafInstance(getServletContext()).getTemplateEngine();
+
     }
 
 	/**
@@ -102,7 +83,7 @@ public class LoginDocente extends HttpServlet {
 			}
 			
 			//path del template
-			String path = "login.html";
+			String path = "WEB-INF/login.html";
 			
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
@@ -120,27 +101,29 @@ public class LoginDocente extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		/*create the dao and check the credential, if true is returned:
+		/*create the dao and check the credential, if credentials are accepted the corresponded bean is returned:
 		 * -create a session
 		 * -add info about the user
 		 * -go to the course page 
 		 * 
-		 * if false is returned 
+		 * if null is returned 
 		 * -set the error message
 		 * -reload the login page with the error message (with the redirect to the get)
 		 */
 		
 		String username = null;
 		String password = null;
-		DocentiDAO docente = new DocentiDAO(this.connection);
+		DocentiDAO docenteDAO = new DocentiDAO(this.connection);
 		ErrorMessage error = new ErrorMessage();
+		Docente docente = null;
 		
 		//get the param from the request
-		username = request.getParameter("email");
+		username = request.getParameter("username");
 		password = request.getParameter("password");
-		
-		if(docente.checkCredential(username, password)) {
+		docente = docenteDAO.checkCredential(username, password);
+		if(docente != null) {
 			//login succeed
+			request.getSession(true).setAttribute("docente", docente);
 		}else {
 			//login failed
 			error.setError("Username e/o password errati");
