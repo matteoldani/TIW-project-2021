@@ -48,7 +48,7 @@ public class DocentiDAO {
 		return docente;
 	}
 	
-	public ArrayList<Corso> getCourseList(int id_docente, String orderType){
+	public ArrayList<Corso> getCourseList(int id_docente){
 		
 		String query = "SELECT * FROM corsi WHERE id_docente = ? ORDER BY nome DESC";
 		Corso c = null;

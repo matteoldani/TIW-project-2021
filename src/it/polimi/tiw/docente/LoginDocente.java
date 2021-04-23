@@ -92,7 +92,7 @@ public class LoginDocente extends HttpServlet {
 			ctx.setVariable("errorMessage", errorMessage);
 			templateEngine.process(path, ctx, response.getWriter());
 		}else {
-			//redirect alla pagine dei corsi appena sarà pronta
+			response.sendRedirect(request.getContextPath() + "/CourseList");
 		}
 	}
 
@@ -124,6 +124,8 @@ public class LoginDocente extends HttpServlet {
 		if(docente != null) {
 			//login succeed
 			request.getSession(true).setAttribute("docente", docente);
+			response.sendRedirect(request.getContextPath() + "/CourseList");
+			
 		}else {
 			//login failed
 			error.setError("Username e/o password errati");
