@@ -69,6 +69,39 @@ public class GoToIscrittiAppello extends HttpServlet {
 		CorsiDAO corsiDao = new CorsiDAO(connection);
 		String nomeCorso = null;
 		Date dataAppello = null;
+		String orderAttribute = null;
+		String order;
+		
+		//cerco di prendere come oridinare, se null ordino per matricola
+		if(request.getParameter("tag") != null) {
+			//controllo che non sia qualcosa di sbagliato 
+			String tag = request.getParameter("tag");
+			switch(tag) {
+				case "matricola": orderAttribute = tag; break;
+				case "cognome" : orderAttribute = tag; break;
+				case "nome" : orderAttribute = tag; break;
+				case "email" : orderAttribute = tag; break; // need to add this field to databse 
+				case "corso_laurea" : orderAttribute = tag; break;
+				case "voto" : orderAttribute = tag; break; 
+				case "stato" : orderAttribute = tag; break; 
+				default: orderAttribute = "matricola"; break;
+			}
+		}else {
+			orderAttribute = "matricola";
+		}
+		
+		//cerco di prendere l'ordine di ordinameto, se null ordino in modo crescente
+		if(request.getParameter("order") != null) {
+			//controllo che il valore sia accettabile 
+			String o = request.getParameter("order");
+			switch(o) {
+				case "DESC" : order = o; break;
+				case "ASC" : order = o; break; 
+				default : order = "ASC"; break;
+			}
+		}else {
+			order = "ASC";
+		}
 		
 		//sono arrivato a questa pagina senza avere un id
 		if(id==null || id.equals("")) {
@@ -101,7 +134,7 @@ public class GoToIscrittiAppello extends HttpServlet {
 			
 			
 			if(controllo) {
-				iscrittoAppello = appelliDao.getIscrittiAppello(id_appello);
+				iscrittoAppello = appelliDao.getIscrittiAppello(id_appello, orderAttribute, order);
 			}else {
 				errorMessage.setError("Non puoi accedere ai dati di questo appello");
 			}
@@ -118,13 +151,23 @@ public class GoToIscrittiAppello extends HttpServlet {
 		ctx.setVariable("iscritti", iscrittoAppello);
 		//nome del corso
 		ctx.setVariable("nomeCorso", nomeCorso);
+		//id appello (per l'ordinamento) 
+		ctx.setVariable("id_appello", id_appello);
+		//data appello
 		if(dataAppello != null) {
 			ctx.setVariable("dataAppello", dataAppello.toString());
 		}
-		
-		
 		//se c'è un errore lo stampo a inizio pagina
 		ctx.setVariable("errorMessage", errorMessage);
+		//elemento per cui ho ordinato 
+		ctx.setVariable("orderAttribute", orderAttribute);
+		//come devo ordianre 
+		if(order.equals("ASC")) {
+			ctx.setVariable("order", "DESC");
+		}else {
+			ctx.setVariable("order", "ASC");
+		}
+		
 
 		templateEngine.process(path, ctx, response.getWriter());
 		

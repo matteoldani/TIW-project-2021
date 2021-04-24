@@ -6,13 +6,15 @@ public class Studente {
 	private String nome;
 	private String cognome;
 	private String corso_laurea;
+	private String email;
 	
-	public Studente(int matricola, String nome, String cognome, String corso_laurea) {
+	public Studente(int matricola, String nome, String cognome, String corso_laurea, String email) {
 		
 		this.matricola = matricola;
 		this.nome = nome;
 		this.cognome = cognome;
 		this.corso_laurea = corso_laurea;
+		this.email = email;
 	}
 
 	public int getMatricola() {
@@ -31,6 +33,9 @@ public class Studente {
 		return corso_laurea;
 	}
 	
+	public String getUsername() {
+		return email;
+	}
 	
 	
 	

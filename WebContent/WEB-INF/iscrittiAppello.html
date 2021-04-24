@@ -13,10 +13,10 @@
 		</h3>
 		
 		<h3>
-			Corso: <span style="color: red;" th:text="${nomeCorso}"> NomeCorso </span>
+			Corso: <span style="color: blue;" th:text="${nomeCorso}"> NomeCorso </span>
 		</h3>
 		<h3>
-			Data: <span style="color: red;" th:text="${dataAppello}">DataAppello</span>
+			Data: <span style="color: blue;" th:text="${dataAppello}">DataAppello</span>
 		</h3>
 		
 		
@@ -24,13 +24,62 @@
 		<table border="1">
 			<thead>
 				<tr>
-					<th>Matricola</th>
-					<th>Cognome</th>
-					<th>Nome</th>
-					<th>E-Mail</th>
-					<th>Corso di Laurea</th>
-					<th>Voto</th>
-					<th>Stato Valutazione</th>
+					<th>
+						<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
+							<input type="hidden" name="id" th:value="${id_appello}">
+							<input type="hidden" name="tag" value="matricola">
+							<input type="hidden" name="order" th:value="${orderAttribute == 'matricola'} ? (${order == 'DESC'} ? 'ASC' : 'DESC') ">
+							<input type="submit" value="Matricola">		
+						</form>				
+					</th>
+					<th>
+						<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
+							<input type="hidden" name="id" th:value="${id_appello}">
+							<input type="hidden" name="tag" value="cognome">
+							<input type="hidden" name="order" th:value="${orderAttribute == 'cognome'} ? (${order == 'DESC'} ? 'ASC' : 'DESC') ">
+							<input type="submit" value="Cognome">		
+						</form>
+					</th>
+					<th>
+						<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
+							<input type="hidden" name="id" th:value="${id_appello}">
+							<input type="hidden" name="tag" value="nome">
+							<input type="hidden" name="order" th:value="${orderAttribute == 'nome'} ? (${order == 'DESC'} ? 'ASC' : 'DESC')">
+							<input type="submit" value="Nome">		
+						</form>
+					</th>
+					<th>
+						<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
+							<input type="hidden" name="id" th:value="${id_appello}">
+							<input type="hidden" name="tag" value="email">
+							<input type="hidden" th:value="${orderAttribute == 'email'} ? (${order == 'DESC'} ? 'ASC' : 'DESC')">
+							<input type="submit" value="E-Mail">		
+						</form>
+					</th>
+					<th>
+						<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
+							<input type="hidden" name="id" th:value="${id_appello}">
+							<input type="hidden" name="tag" value="corso_laurea">
+							<input type="hidden" name="order" th:value="${orderAttribute == 'corso_laurea'} ? (${order == 'DESC'} ? 'ASC' : 'DESC')">
+							<input type="submit" value="Corso di Laurea">		
+						</form>
+					</th>
+					<th>
+						<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
+							<input type="hidden" name="id" th:value="${id_appello}">
+							<input type="hidden" name="tag" value="voto">
+							<input type="hidden" name="order" th:value="${orderAttribute == 'voto'} ? (${order == 'DESC'} ? 'ASC' : 'DESC') ">
+							<input type="submit" value="Voto">		
+						</form>
+					</th>
+					<th>
+						<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
+							<input type="hidden" name="id" th:value="${id_appello}">
+							<input type="hidden" name="tag" value="stato">
+							<input type="hidden" name="order" th:value="${orderAttribute == 'stato'} ? (${order == 'DESC'} ? 'ASC' : 'DESC') ">
+							<input type="submit" value="Stato Valutazione">		
+						</form>
+					</th>
 					
 				</tr>
 			</thead>
@@ -45,7 +94,7 @@
 					<td th:text="${iscritti.studente.nome}"> 
 						Matteo
 					</td>
-					<td th:text="${iscritti.studente.nome}"> 
+					<td th:text="${iscritti.studente.username}"> 
 						matteo.oldani@mail.polimi.it
 					</td>
 					<td th:text="${iscritti.studente.corso_laurea}"> 

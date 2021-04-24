@@ -20,11 +20,11 @@ private Connection connection;
 	}
 	
 	//return the list of exams scheduled for a course
-	public ArrayList<IscrittiAppello> getIscrittiAppello(int id_appello){
+	public ArrayList<IscrittiAppello> getIscrittiAppello(int id_appello, String tag, String order){
 		
 		Appello app = null;
 		ArrayList<IscrittiAppello> list = new ArrayList<>();
-		String query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ";
+		String query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY ? ?";
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		
@@ -37,6 +37,8 @@ private Connection connection;
 			
 			pstatement = connection.prepareStatement(query);
 			pstatement.setString(1, String.valueOf(id_appello));
+			pstatement.setString(2, String.valueOf(tag));
+			pstatement.setString(3, String.valueOf(order));
 	
 			result = pstatement.executeQuery();
 			Studente studente;
@@ -45,7 +47,8 @@ private Connection connection;
 				studente = new Studente(result.getInt("matricola"),
 										result.getString("nome"),
 										result.getString("cognome"),
-										result.getString("corso_laurea"));
+										result.getString("corso_laurea"),
+										result.getString("email"));
 				iscrittiAppello = new IscrittiAppello(studente, 
 													result.getInt("voto"),
 													result.getString("stato"),
