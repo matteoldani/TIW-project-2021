@@ -162,11 +162,15 @@ public class GoToIscrittiAppello extends HttpServlet {
 		//elemento per cui ho ordinato 
 		ctx.setVariable("orderAttribute", orderAttribute);
 		//come devo ordianre 
-		if(order.equals("ASC")) {
-			ctx.setVariable("order", "DESC");
+		/*
+		 * if(order.equals("ASC")) {	
+		 * ctx.setVariable("order", "DESC");
 		}else {
 			ctx.setVariable("order", "ASC");
 		}
+		 */
+		ctx.setVariable("order", order);
+		
 		
 
 		templateEngine.process(path, ctx, response.getWriter());

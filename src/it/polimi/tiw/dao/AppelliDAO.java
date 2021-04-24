@@ -24,9 +24,10 @@ private Connection connection;
 		
 		Appello app = null;
 		ArrayList<IscrittiAppello> list = new ArrayList<>();
-		String query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY ? ?";
+		String query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.matricola ASC";
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
+		
 		
 		//eseguo query per prendere l'appello giusto
 		app = getAppelloFromID(id_appello);
@@ -34,13 +35,64 @@ private Connection connection;
 		
 		//eseguo query che costruisce la lista di iscritti all'appello
 		try {
+			switch(tag) {
+			case "matricola" : 
+				if(order.equals("ASC")) {
+					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.matricola ASC";
+				}else {
+					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.matricola DESC";
+				}
+				break;
+			case "cognome" : 
+				if(order.equals("ASC")) {
+					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.cognome ASC";
+				}else {
+					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.cognome DESC";
+				}
+				break;
+			case "nome" : 
+				if(order.equals("ASC")) {
+					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.nome ASC";
+				}else {
+					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.nome DESC";
+				}
+				break;
+			case "email" : 
+				if(order.equals("ASC")) {
+					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.email ASC";
+				}else {
+					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.email DESC";
+				}
+				break;
+			case "corso_laurea" : 
+				if(order.equals("ASC")) {
+					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.corso_laurea ASC";
+				}else {
+					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.corso_laurea DESC";
+				}
+				break;
+			case "voto" : 
+				if(order.equals("ASC")) {
+					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY iscritti_appello.voto ASC";
+				}else {
+					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY iscritti_appello.voto DESC";
+				}
+				break;
+			case "stato" : 
+				if(order.equals("ASC")) {
+					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY iscritti_appello.stato ASC";
+				}else {
+					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY iscritti_appello.stato DESC";
+				}
+				break;
+				
 			
+			}
 			pstatement = connection.prepareStatement(query);
 			pstatement.setString(1, String.valueOf(id_appello));
-			pstatement.setString(2, String.valueOf(tag));
-			pstatement.setString(3, String.valueOf(order));
-	
+			
 			result = pstatement.executeQuery();
+			System.out.println(result);
 			Studente studente;
 			IscrittiAppello iscrittiAppello;
 			while(result.next()) {

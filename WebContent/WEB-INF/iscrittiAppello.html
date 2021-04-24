@@ -52,7 +52,7 @@
 						<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
 							<input type="hidden" name="id" th:value="${id_appello}">
 							<input type="hidden" name="tag" value="email">
-							<input type="hidden" th:value="${orderAttribute == 'email'} ? (${order == 'DESC'} ? 'ASC' : 'DESC')">
+							<input type="hidden" name="order" th:value="${orderAttribute == 'email'} ? (${order == 'DESC'} ? 'ASC' : 'DESC')">
 							<input type="submit" value="E-Mail">		
 						</form>
 					</th>
