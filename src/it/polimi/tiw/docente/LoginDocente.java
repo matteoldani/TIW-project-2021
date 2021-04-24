@@ -32,7 +32,7 @@ import it.polimi.tiw.common.ThymeleafInstance;
 /**
  * Servlet implementation class login
  */
-@WebServlet(name = "login_docente", urlPatterns = { "/login_docente" })
+//@WebServlet(name = "login_docente", urlPatterns = { "/login_docente" })  < --- may causes problems
 public class LoginDocente extends HttpServlet {
 	private static final long serialVersionUID = 2L;
 	private TemplateEngine templateEngine; //required thymeleaf
@@ -60,40 +60,40 @@ public class LoginDocente extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		
+		//se mi arriva una richiesta get devo creare la pagine di login con thymelef 
+		
 		HttpSession session = request.getSession(false); // if session does not exist, returns null
 		ErrorMessage errorMessage;
-		if(session == null) {
-			//no session available --> login is needed
-			
-			//Info per il titolo
-			UserType userType = new UserType();
-			userType.setType("docente");
-			
-			//url per la action del post per login
-			UrlPath url = new UrlPath();
-			url.setPath("LoginDocente");
-			
-			//try to get the errorMessage, if set
-			errorMessage = (ErrorMessage) request.getAttribute("errorMessage");
-			
-			if(errorMessage == null) {	
-				//if no attribute were retrieved 
-				errorMessage = new ErrorMessage();
-				errorMessage.setError("");		
-			}
-			
-			//path del template
-			String path = "WEB-INF/login.html";
-			
-			ServletContext servletContext = getServletContext();
-			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-			ctx.setVariable("userType", userType);
-			ctx.setVariable("urlPath", url);
-			ctx.setVariable("errorMessage", errorMessage);
-			templateEngine.process(path, ctx, response.getWriter());
-		}else {
-			response.sendRedirect(request.getContextPath() + "/CourseList");
+		
+		//possible improvement --> check if docente exists 
+		//Set the user type that is going to log in 
+		UserType userType = new UserType();
+		userType.setType("docente");
+		
+		//Set the url path to be inserted in to the login.html
+		UrlPath url = new UrlPath();
+		url.setPath("LoginDocente");
+		
+		//get the possible error message
+		errorMessage = (ErrorMessage) request.getAttribute("errorMessage");
+		if(errorMessage == null) {	
+			//if no attribute were retrieved 
+			errorMessage = new ErrorMessage();
+			errorMessage.setError("");		
 		}
+		
+		//path del template
+		String path = "WEB-INF/login.html";
+		
+		ServletContext servletContext = getServletContext();
+		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+		ctx.setVariable("userType", userType);
+		ctx.setVariable("urlPath", url);
+		ctx.setVariable("errorMessage", errorMessage);
+		templateEngine.process(path, ctx, response.getWriter());
+		
+		
 	}
 
 	/**
@@ -102,9 +102,8 @@ public class LoginDocente extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		/*create the dao and check the credential, if credentials are accepted the corresponded bean is returned:
-		 * -create a session
 		 * -add info about the user
-		 * -go to the course page 
+		 * -go to the home page 
 		 * 
 		 * if null is returned 
 		 * -set the error message
@@ -123,8 +122,8 @@ public class LoginDocente extends HttpServlet {
 		docente = docenteDAO.checkCredential(username, password);
 		if(docente != null) {
 			//login succeed
-			request.getSession(true).setAttribute("docente", docente);
-			response.sendRedirect(request.getContextPath() + "/CourseList");
+			request.getSession().setAttribute("docente", docente);
+			response.sendRedirect(request.getContextPath() + "/HomeDocente");
 			
 		}else {
 			//login failed

@@ -11,7 +11,7 @@
   </context-param>
   <context-param>
     <param-name>dbPassword</param-name>
-    <param-value>)UDEh^A?p=j@B8ev</param-value>
+    <param-value>password</param-value>
   </context-param>
   <context-param>
     <param-name>dbDriver</param-name>
@@ -21,6 +21,28 @@
     <param-name>webappC</param-name>
     <param-value>10</param-value>
   </context-param>
+  
+
+ <filter> 
+  <filter-name>DocenteChecker</filter-name> 
+      <filter-class>it.polimi.tiw.filters.DocenteChecker</filter-class> 
+ </filter> 
+ <filter> 
+  <filter-name>StudenteChecker</filter-name> 
+      <filter-class>it.polimi.tiw.filters.StudenteChecker</filter-class> 
+ </filter> 
+
+ <filter-mapping> 
+    <filter-name>DocenteChecker</filter-name> 
+    <url-pattern>/HomeDocente</url-pattern> 
+    <url-pattern>/IscrittiAppello</url-pattern> 
+
+ </filter-mapping> 
+ <filter-mapping> 
+    <filter-name>StudenteChecker</filter-name> 
+    <url-pattern>/HomeStudente</url-pattern> 
+ </filter-mapping> 
+ 
   <servlet>
     <servlet-name>LoginDocente</servlet-name>
     <servlet-class>it.polimi.tiw.docente.LoginDocente</servlet-class>

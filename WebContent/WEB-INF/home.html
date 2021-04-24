@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title> Università di Magenta</title>
+		<link rel="stylesheet" href="css/bootstrap.css">
+	</head>
+	
+	<body>
+		
+		<h3>
+			<span style="color: red;" th:text="${errorMessage.error}"> Message </span>
+		</h3>
+		
+		<table border="1">
+			<thead>
+				<tr>
+					<th>Corsi</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="corsi : ${corsi}" >
+					<td> 
+						<a th:href="@{/HomeDocente(id=${corsi.id_corso})}" th:text="${corsi.nome}">Nome del corso</a>
+						<ul th:if="${corsoSelezionato != null && corsi.id_corso == corsoSelezionato}" th:each ="appelli : ${appelli}">
+							<li> <a th:href="@{/IscrittiAppello(id=${appelli.id_appello})}" th:text="${appelli.data}"> Data</span>
+						</ul> 
+					</td>
+					
+			</tbody>
+		</table>
+
+				
+	</body>
+
+</html>
