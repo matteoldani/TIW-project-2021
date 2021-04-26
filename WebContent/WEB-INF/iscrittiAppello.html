@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 	<head>
 		<meta charset="UTF-8">
-		<title> Università di Magenta</title>
+		<title> Universit&aacute; di Magenta</title>
 		<link rel="stylesheet" href="css/bootstrap.css">
 	</head>
 	
@@ -80,6 +80,12 @@
 							<input type="submit" value="Stato Valutazione">		
 						</form>
 					</th>
+					<th>
+						<form action="/verbalizzazione_voti/Verbalizza" method="GET">
+							<input type="hidden" name="id" th:value="${id_appello}">
+							<input type="submit" value="Verbalizza">		
+						</form>
+					</th>
 					
 				</tr>
 			</thead>
@@ -94,7 +100,7 @@
 					<td th:text="${iscritti.studente.nome}"> 
 						Matteo
 					</td>
-					<td th:text="${iscritti.studente.username}"> 
+					<td th:text="${iscritti.studente.email}"> 
 						matteo.oldani@mail.polimi.it
 					</td>
 					<td th:text="${iscritti.studente.corso_laurea}"> 
@@ -105,6 +111,9 @@
 					</td>
 					<td th:text="${iscritti.stato}"> 
 						y
+					</td>
+					<td> 
+						<a th:href="@{/ModificaVoto(id_appello=${id_appello}, matricola=${iscritti.studente.matricola})}" th:text="Modifica"> Modifica</a>
 					</td>
 					
 					

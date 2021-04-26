@@ -33,7 +33,7 @@ public class Studente {
 		return corso_laurea;
 	}
 	
-	public String getUsername() {
+	public String getEmail() {
 		return email;
 	}
 	

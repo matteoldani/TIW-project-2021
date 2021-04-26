@@ -11,7 +11,7 @@
   </context-param>
   <context-param>
     <param-name>dbPassword</param-name>
-    <param-value>password</param-value>
+    <param-value>)UDEh^A?p=j@B8ev</param-value>
   </context-param>
   <context-param>
     <param-name>dbDriver</param-name>
@@ -36,6 +36,7 @@
     <filter-name>DocenteChecker</filter-name> 
     <url-pattern>/HomeDocente</url-pattern> 
     <url-pattern>/IscrittiAppello</url-pattern> 
+    <url-pattern>/ModificaVoto</url-pattern> 
 
  </filter-mapping> 
  <filter-mapping> 

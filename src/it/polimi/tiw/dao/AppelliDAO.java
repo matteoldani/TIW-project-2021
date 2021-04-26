@@ -1,7 +1,6 @@
 package it.polimi.tiw.dao;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -93,16 +92,36 @@ private Connection connection;
 			
 			result = pstatement.executeQuery();
 			System.out.println(result);
+			
 			Studente studente;
 			IscrittiAppello iscrittiAppello;
+			String votoDefinitivo;
+			int votoLetto;
+			
 			while(result.next()) {
 				studente = new Studente(result.getInt("matricola"),
 										result.getString("nome"),
 										result.getString("cognome"),
 										result.getString("corso_laurea"),
 										result.getString("email"));
+				
+				votoLetto = result.getInt("voto");
+				switch(votoLetto) { //vuoto = -15, assente = -10, riprovato = -5, rimandato = 0, normali, lode = 33
+					case -15: votoDefinitivo = "-"; break;
+					case -10: votoDefinitivo = "Assente"; break;
+					case -5: votoDefinitivo = "Riprovato"; break;
+					case 0: votoDefinitivo = "Rimandato"; break;
+					case 33: votoDefinitivo = "30 e Lode"; break;
+					default: 
+						if(votoLetto >= 18 && votoLetto<= 30) {
+							votoDefinitivo = String.valueOf(votoLetto);
+						}else {
+							votoDefinitivo = "Errore voto";
+						}
+						break;
+				}
 				iscrittiAppello = new IscrittiAppello(studente, 
-													result.getInt("voto"),
+													votoDefinitivo,
 													result.getString("stato"),
 													app);
 				
@@ -142,5 +161,33 @@ private Connection connection;
 		
 		
 		return appello;
+	}
+
+	public void updateVoto(Integer matricola, Integer id_appello, String voto) {
+		// TODO Auto-generated method stub
+		
+		String query = "UPDATE iscritti_appello SET voto = ?, stato = 'inserito' WHERE matricola = ? AND id_appello = ? ";
+		ResultSet result = null;
+		PreparedStatement pstatement = null;
+		
+		try {
+			pstatement = connection.prepareStatement(query);
+			switch(voto) {
+				case "assente": pstatement.setInt(1, -10); break;
+				case "rimandato": pstatement.setInt(1, 0); break;
+				case "riprovato": pstatement.setInt(1, -5); break;
+				case "lode": pstatement.setInt(1, 33); break;
+				default: 
+					pstatement.setInt(1, Integer.parseInt(voto)); break;
+
+			}
+			pstatement.setInt(2, matricola);
+			pstatement.setInt(3, id_appello);
+			System.out.println(pstatement);
+			pstatement.executeUpdate();
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
 	}
 }

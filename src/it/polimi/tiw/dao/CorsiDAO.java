@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import it.polimi.tiw.beans.Appello;
-import it.polimi.tiw.beans.Docente;
+import it.polimi.tiw.beans.Corso;
 
 public class CorsiDAO {
 	
@@ -50,6 +50,34 @@ public class CorsiDAO {
 		
 		
 		return list;
+	}
+	
+	public Corso getCorsoFromId(int id_corso) {
+		
+		Corso corso = null;
+		
+		String queryCorso = "SELECT * FROM corsi WHERE id_corso = ?";
+		ResultSet result = null;
+		PreparedStatement pstatement = null;
+		
+		//eseguo query per prendere l'appello giusto
+		try {
+			pstatement = connection.prepareStatement(queryCorso);
+			pstatement.setString(1, String.valueOf(id_corso));
+	
+			result = pstatement.executeQuery();
+			while(result.next()) {
+				corso = new Corso(id_corso, result.getString("nome"), result.getString("descrizione"),  result.getInt("id_docente"));
+			}
+			
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		return corso;
+		
+		
 	}
 
 }

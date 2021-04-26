@@ -12,15 +12,11 @@
 			<span th:text="${userType.type}">Unknown</span>
 		</h1>
 		<!--  in questo modo non serve il context path, capire meglio perchè prima dell'orale -->
-		<form th:action="@{/__${urlPath.path}__}" method="POST">
-			<input type="text" name="username" placeholder="Username ..."><br>
-			<input type="password" name="password" placeholder="Password ..."><br>
-			<input type="submit" value="LOGIN">
-		</form>
+		
 		<h3>
 			<span style="color: red;" th:text="${errorMessage.error}"> Message </span>
 		</h3>
+		
+		<h1><a hfer="/verbalizzazione_voti/HomeDocente"> Torna alla Home Docente</a></h1>
 				
 	</body>
-
-</html>

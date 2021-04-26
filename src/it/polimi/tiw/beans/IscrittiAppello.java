@@ -3,11 +3,11 @@ package it.polimi.tiw.beans;
 public class IscrittiAppello {
 	
 	private Studente studente;
-	private int voto;
+	private String voto;
 	private String stato;
 	private Appello appello;
 	
-	public IscrittiAppello(Studente studente, int voto, String stato, Appello appello) {
+	public IscrittiAppello(Studente studente, String voto, String stato, Appello appello) {
 		
 		this.studente = studente;
 		this.voto = voto;
@@ -19,7 +19,7 @@ public class IscrittiAppello {
 		return studente;
 	}
 
-	public int getVoto() {
+	public String getVoto() {
 		return voto;
 	}
 
