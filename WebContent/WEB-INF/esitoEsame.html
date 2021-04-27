@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title> Universit&aacute; di Magenta</title>
+		<link rel="stylesheet" href="css/bootstrap.css">
+	</head>
+	
+	<body>
+		<h3 th:if="${errorMessage != null}">
+			<span style="color: red;" th:text="${errorMessage.message}"> Error Message </span>
+		</h3>
+		<h3 th:if="${successMessage != null}">
+			<span style="color: green;" th:text="${successMessage.message}"> Success Message </span>
+		</h3>
+		
+		<h3>
+			Corso: <span style="color: blue;" th:text="${nomeCorso}"> NomeCorso </span>
+		</h3>
+		<h3>
+			Data: <span style="color: blue;" th:text="${dataAppello}">DataAppello</span>
+		</h3>
+		
+		<div th:if="${voto != null)">
+			<h3> Dati studente </h3>
+			<span> Matrciola: </span> <span th:text="${session.studente.matricola}"> </span><br>
+			<span> Cognome: </span> <span th:text="${session.studente.cognome}"> </span> <br>
+			<span> Nome: </span> <span th:text="${session.studente.nome}"> </span><br>
+			<span> E-Mail: </span> <span th:text="${session.studente.email}"> </span><br>
+			<span> Corso di Laurea: <span th:text="${session.studente.corso_laurea}"> </span></span> <br>
+			<span> Voto: <span th:text="${voto}"> 30</span></span><br>
+			<a th:if="${voto.rifiutabile == true}" th:href="/rifiutavoto"> Rifiuta</a>
+			<span th:if="${voto.rifiutato == true}"> Il voto e' gia stato rifiuatato</span> 
+		
+		</div>
+		
+		<div th:if="${voto == null}">
+			<h3> Il docente non ha ancora pubblicato il voto </h3>
+			<h3> <a href="/verbalizzazione_voti/HomeStudente"> Torna alla home</a></h3>
+		</div>
+		
+				
+	</body>
+
+</html>

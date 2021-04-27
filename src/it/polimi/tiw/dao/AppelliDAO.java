@@ -162,8 +162,67 @@ private Connection connection;
 		
 		return appello;
 	}
+	
+	public IscrittiAppello getIscrittoAppello(int id_appello, int matricola) {
+		IscrittiAppello ia = null;
+		Appello app = null;
+		
+		String query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? AND iscritti_appello.matricola = ? ";
+		ResultSet result = null;
+		PreparedStatement pstatement = null;
+		
+		//eseguo query per prendere l'appello giusto
+		app = getAppelloFromID(id_appello);
+		
 
-	public void updateVoto(Integer matricola, Integer id_appello, String voto) {
+		try {
+			pstatement = connection.prepareStatement(query);
+			pstatement.setInt(1, id_appello);
+			pstatement.setInt(2, matricola);
+			result = pstatement.executeQuery();
+			
+			Studente studente;
+			IscrittiAppello iscrittiAppello;
+			String votoDefinitivo;
+			int votoLetto;
+			
+			while(result.next()) {
+				studente = new Studente(result.getInt("matricola"),
+										result.getString("nome"),
+										result.getString("cognome"),
+										result.getString("corso_laurea"),
+										result.getString("email"));
+				
+				votoLetto = result.getInt("voto");
+				switch(votoLetto) { //vuoto = -15, assente = -10, riprovato = -5, rimandato = 0, normali, lode = 33
+					case -15: votoDefinitivo = "-"; break;
+					case -10: votoDefinitivo = "Assente"; break;
+					case -5: votoDefinitivo = "Riprovato"; break;
+					case 0: votoDefinitivo = "Rimandato"; break;
+					case 33: votoDefinitivo = "30 e Lode"; break;
+					default: 
+						if(votoLetto >= 18 && votoLetto<= 30) {
+							votoDefinitivo = String.valueOf(votoLetto);
+						}else {
+							votoDefinitivo = "Errore voto";
+						}
+						break;
+				}
+				ia = new IscrittiAppello(studente, 
+													votoDefinitivo,
+													result.getString("stato"),
+													app);
+				
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return ia;
+	}
+
+	public boolean updateVoto(Integer matricola, Integer id_appello, String voto) {
 		// TODO Auto-generated method stub
 		
 		String query = "UPDATE iscritti_appello SET voto = ?, stato = 'inserito' WHERE matricola = ? AND id_appello = ? ";
@@ -185,9 +244,29 @@ private Connection connection;
 			pstatement.setInt(3, id_appello);
 			System.out.println(pstatement);
 			pstatement.executeUpdate();
+			return true;
 		}catch(SQLException e) {
 			e.printStackTrace();
+			return false;
 		}
 		
+	}
+	
+	public boolean pubblicaVoti(Integer id_appello) {
+		
+		String query = "UPDATE iscritti_appello SET stato = 'pubblicato' WHERE stato = 'inserito' AND id_appello = ? ";
+		ResultSet result = null;
+		PreparedStatement pstatement = null;
+		
+		try {
+			pstatement = connection.prepareStatement(query);
+			pstatement.setInt(1, id_appello);
+			System.out.println(pstatement);
+			pstatement.executeUpdate();
+			return true;
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 }

@@ -37,11 +37,13 @@
     <url-pattern>/HomeDocente</url-pattern> 
     <url-pattern>/IscrittiAppello</url-pattern> 
     <url-pattern>/ModificaVoto</url-pattern> 
+    <url-pattern>/Pubblicazione</url-pattern> 
 
  </filter-mapping> 
  <filter-mapping> 
     <filter-name>StudenteChecker</filter-name> 
     <url-pattern>/HomeStudente</url-pattern> 
+    <url-pattern>/EsitoEsame</url-pattern>
  </filter-mapping> 
  
   <servlet>

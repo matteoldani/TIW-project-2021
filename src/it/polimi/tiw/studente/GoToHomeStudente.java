@@ -1,4 +1,4 @@
-package it.polimi.tiw.docente;
+package it.polimi.tiw.studente;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -16,18 +16,18 @@ import org.thymeleaf.context.WebContext;
 
 import it.polimi.tiw.beans.Appello;
 import it.polimi.tiw.beans.Corso;
-import it.polimi.tiw.beans.Docente;
 import it.polimi.tiw.beans.Message;
+import it.polimi.tiw.beans.Studente;
 import it.polimi.tiw.common.ConnectionHandler;
 import it.polimi.tiw.common.ThymeleafInstance;
 import it.polimi.tiw.dao.CorsiDAO;
-import it.polimi.tiw.dao.DocentiDAO;
+import it.polimi.tiw.dao.StudentiDAO;
 
 /**
- * Servlet implementation class CourseList
+ * Servlet implementation class GoToHomeStudente
  */
-@WebServlet("/HomeDocente")
-public class GoToHomeDocente extends HttpServlet {
+@WebServlet("/HomeStudente")
+public class GoToHomeStudente extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private TemplateEngine templateEngine; //required thymeleaf
 	private Connection connection = null; //required connection to db
@@ -36,7 +36,7 @@ public class GoToHomeDocente extends HttpServlet {
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GoToHomeDocente() {
+    public GoToHomeStudente() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -54,11 +54,11 @@ public class GoToHomeDocente extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		Docente docente = (Docente) request.getSession(false).getAttribute("docente");
-		DocentiDAO docentiDao = new DocentiDAO(connection);
+		// TODO Auto-generated method stub
+		Studente studente = (Studente) request.getSession(false).getAttribute("studente");
+		StudentiDAO studentiDao = new StudentiDAO(connection);
 		CorsiDAO corsiDao = new CorsiDAO(connection);
-		ArrayList<Corso> corsiDocente = docentiDao.getCourseList(docente.getId_docente());
+		ArrayList<Corso> corsiStudente = studentiDao.getCourseList(studente.getMatricola());
 		ArrayList<Appello> appelliCorso = null;
 		Corso c = null;
 		//if the request has an id i have to get also the date of the exams for that course 
@@ -93,7 +93,7 @@ public class GoToHomeDocente extends HttpServlet {
 		if(selectedCourse != null) {
 			System.out.println("letto l'id in mdo corretto");
 			//i need to get the dates 
-			for(Corso corso : corsiDocente) {
+			for(Corso corso : corsiStudente) {
 				if(corso.getId_corso() == selectedCourse) {
 					c = corso;
 				}
@@ -113,7 +113,7 @@ public class GoToHomeDocente extends HttpServlet {
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		
 		//elenco corsi
-		ctx.setVariable("corsi", corsiDocente);
+		ctx.setVariable("corsi", corsiStudente);
 		//elenco appelli se corso selezionato
 		ctx.setVariable("appelli", appelliCorso);
 		//corso selezionto per gli appelli
@@ -125,7 +125,6 @@ public class GoToHomeDocente extends HttpServlet {
 		ctx.setVariable("errorMessage", errorMessage);
 
 		templateEngine.process(path, ctx, response.getWriter());
-		
 	}
 
 	/**

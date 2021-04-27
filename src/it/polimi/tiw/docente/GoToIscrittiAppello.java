@@ -18,8 +18,8 @@ import org.thymeleaf.context.WebContext;
 import it.polimi.tiw.beans.Appello;
 import it.polimi.tiw.beans.Corso;
 import it.polimi.tiw.beans.Docente;
-import it.polimi.tiw.beans.ErrorMessage;
 import it.polimi.tiw.beans.IscrittiAppello;
+import it.polimi.tiw.beans.Message;
 import it.polimi.tiw.common.ConnectionHandler;
 import it.polimi.tiw.common.ThymeleafInstance;
 import it.polimi.tiw.dao.AppelliDAO;
@@ -61,7 +61,8 @@ public class GoToIscrittiAppello extends HttpServlet {
 		
 		String id = request.getParameter("id");
 		Integer id_appello = null;
-		ErrorMessage errorMessage = new ErrorMessage();
+		Message errorMessage = new Message();
+		Message successMessage = new Message();
 		AppelliDAO appelliDao = new AppelliDAO(connection);
 		ArrayList<IscrittiAppello> iscrittoAppello = null;
 		Docente docente;
@@ -71,6 +72,12 @@ public class GoToIscrittiAppello extends HttpServlet {
 		Date dataAppello = null;
 		String orderAttribute = null;
 		String order;
+		
+		successMessage = (Message) request.getAttribute("successMessage");
+		if(successMessage != null) {
+			System.out.println(successMessage.getMessage());
+		}
+		request.removeAttribute("successMessage");
 		
 		//cerco di prendere come oridinare, se null ordino per matricola
 		if(request.getParameter("tag") != null) {
@@ -105,7 +112,7 @@ public class GoToIscrittiAppello extends HttpServlet {
 		
 		//sono arrivato a questa pagina senza avere un id
 		if(id==null || id.equals("")) {
-			errorMessage.setError("Non è stato selezioanto nessun appello");
+			errorMessage.setMessage("Non è stato selezioanto nessun appello");
 		}
 		
 		//l'id non è un numero
@@ -113,7 +120,7 @@ public class GoToIscrittiAppello extends HttpServlet {
 			id_appello = Integer.parseInt(id);
 		}catch(NumberFormatException e) {
 			id_appello = null;
-			errorMessage.setError("L'appello selezionato non è presente");
+			errorMessage.setMessage("L'appello selezionato non è presente");
 		}
 		
 		if(id_appello != null) {
@@ -136,7 +143,7 @@ public class GoToIscrittiAppello extends HttpServlet {
 			if(controllo) {
 				iscrittoAppello = appelliDao.getIscrittiAppello(id_appello, orderAttribute, order);
 			}else {
-				errorMessage.setError("Non puoi accedere ai dati di questo appello");
+				errorMessage.setMessage("Non puoi accedere ai dati di questo appello");
 			}
 
 		}
@@ -159,20 +166,14 @@ public class GoToIscrittiAppello extends HttpServlet {
 		}
 		//se c'è un errore lo stampo a inizio pagina
 		ctx.setVariable("errorMessage", errorMessage);
+		//se c'è un successo lo stampo a inizio pagina
+		ctx.setVariable("successMessage", successMessage);
 		//elemento per cui ho ordinato 
 		ctx.setVariable("orderAttribute", orderAttribute);
 		//come devo ordianre 
-		/*
-		 * if(order.equals("ASC")) {	
-		 * ctx.setVariable("order", "DESC");
-		}else {
-			ctx.setVariable("order", "ASC");
-		}
-		 */
 		ctx.setVariable("order", order);
 		
 		
-
 		templateEngine.process(path, ctx, response.getWriter());
 		
 		

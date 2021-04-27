@@ -8,8 +8,11 @@
 	
 	<body>
 		
-		<h3>
-			<span style="color: red;" th:text="${errorMessage.error}"> Message </span>
+		<h3 th:if="${errorMessage != null}">
+			<span style="color: red;" th:text="${errorMessage.message}"> Error Message </span>
+		</h3>
+		<h3 th:if="${successMessage != null}">
+			<span style="color: green;" th:text="${successMessage.message}"> Success Message </span>
 		</h3>
 		
 		<h3>
@@ -81,9 +84,9 @@
 						</form>
 					</th>
 					<th>
-						<form action="/verbalizzazione_voti/Verbalizza" method="GET">
+						<form action="/verbalizzazione_voti/Pubblicazione" method="POST">
 							<input type="hidden" name="id" th:value="${id_appello}">
-							<input type="submit" value="Verbalizza">		
+							<input type="submit" value="Pubblica">		
 						</form>
 					</th>
 					
@@ -113,7 +116,7 @@
 						y
 					</td>
 					<td> 
-						<a th:href="@{/ModificaVoto(id_appello=${id_appello}, matricola=${iscritti.studente.matricola})}" th:text="Modifica"> Modifica</a>
+						<a th:href="@{/ModificaVoto(id_appello=${id_appello}, matricola=${iscritti.studente.matricola})}" th:text="${iscritti.stato == 'pubblicato'} ? Visualizza : Modifica"> Modifica</a>
 					</td>
 					
 					

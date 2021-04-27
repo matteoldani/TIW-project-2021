@@ -8,15 +8,14 @@
 	
 	<body>
 		<h1>
-			<span >LogIn </span>
-			<span th:text="${userType.type}">Unknown</span>
+			<span >Pagina di errore </span>
 		</h1>
 		<!--  in questo modo non serve il context path, capire meglio perchè prima dell'orale -->
 		
 		<h3>
-			<span style="color: red;" th:text="${errorMessage.error}"> Message </span>
+			<span style="color: red;" th:text="${errorMessage.message}"> Message </span>
 		</h3>
 		
-		<h1><a hfer="/verbalizzazione_voti/HomeDocente"> Torna alla Home Docente</a></h1>
+		<h3><a href="/verbalizzazione_voti/HomeDocente"> Torna alla Home Docente</a></h3>
 				
 	</body>

@@ -13,7 +13,7 @@
 		</h1>
 		
 		<h3>
-			<span style="color: red;" th:text="${errorMessage.error}"> Message </span>
+			<span style="color: red;" th:text="${errorMessage.message}"> Message </span>
 		</h3>
 		
 		<div th:if="${studente != null}">
@@ -24,31 +24,39 @@
 			<span> E-Mail: </span> <span th:text="${studente.email}"> </span><br>
 			<span> Corso di Laurea: <span th:text="${studente.corso_laurea}"> </span></span> <br>
 			
-			<form action="/verbalizzazione_voti/ModificaVoto" method="POST">
-				<input type="text" th:value="${id_appello}" name="id_appello" hidden>
-				<input type="text" th:value="${studente.matricola}" name="matricola" hidden>
-				<label>Voto: </label>
-				<select name="voto" id="voto">
-				  <option value="assente" th:selected="${voto} == 'assente'">Assente</option>
-				  <option value="riprovato" th:selected="${voto} == 'assente'">Riprovato</option>
-				  <option value="rimandato" th:selected="${voto} == 'assente'">Rimandato</option>
-				  <option value="18" th:selected="${voto} == '18'">18</option>
-				  <option value="19" th:selected="${voto} == '19'">19</option>
-				  <option value="20" th:selected="${voto} == '20'">20</option>
-				  <option value="21" th:selected="${voto} == '21'">21</option>
-				  <option value="22" th:selected="${voto} == '22'">22</option>
-				  <option value="23" th:selected="${voto} == '23'">23</option>
-				  <option value="24" th:selected="${voto} == '24'">24</option>
-				  <option value="25" th:selected="${voto} == '25'">25</option>
-				  <option value="26" th:selected="${voto} == '26'">26</option>
-				  <option value="27" th:selected="${voto} == '27'">27</option>
-				  <option value="28" th:selected="${voto} == '28'">28</option>
-				  <option value="29" th:selected="${voto} == '29'">29</option>
-				  <option value="30" th:selected="${voto} == '30'">30</option>
-				  <option value="lode" th:selected="${voto} == '30 e Lode'">30 e Lode</option>
-				</select>
-				<input type="submit" value="MODIFICA">
-			</form>
+			<div th:if="${stato != 'pubblicato'}">
+				<form action="/verbalizzazione_voti/ModificaVoto" method="POST">
+					<input type="text" th:value="${id_appello}" name="id_appello" hidden>
+					<input type="text" th:value="${studente.matricola}" name="matricola" hidden>
+					<label>Voto: </label>
+					<select name="voto" id="voto">
+					  <option value="assente" th:selected="${voto} == 'assente'">Assente</option>
+					  <option value="riprovato" th:selected="${voto} == 'assente'">Riprovato</option>
+					  <option value="rimandato" th:selected="${voto} == 'assente'">Rimandato</option>
+					  <option value="18" th:selected="${voto} == '18'">18</option>
+					  <option value="19" th:selected="${voto} == '19'">19</option>
+					  <option value="20" th:selected="${voto} == '20'">20</option>
+					  <option value="21" th:selected="${voto} == '21'">21</option>
+					  <option value="22" th:selected="${voto} == '22'">22</option>
+					  <option value="23" th:selected="${voto} == '23'">23</option>
+					  <option value="24" th:selected="${voto} == '24'">24</option>
+					  <option value="25" th:selected="${voto} == '25'">25</option>
+					  <option value="26" th:selected="${voto} == '26'">26</option>
+					  <option value="27" th:selected="${voto} == '27'">27</option>
+					  <option value="28" th:selected="${voto} == '28'">28</option>
+					  <option value="29" th:selected="${voto} == '29'">29</option>
+					  <option value="30" th:selected="${voto} == '30'">30</option>
+					  <option value="lode" th:selected="${voto} == '30 e Lode'">30 e Lode</option>
+					</select>
+					<input type="submit" value="MODIFICA">
+				</form>
+			</div>
+			
+			<div th:if="${stato == 'pubblicato'}">
+				Voto: <span th:text="${voto}"> voto</span>
+				<br>
+				<a th:href="@{/IscrittiAppello(id=${id_appello})}"> Torna alla pagina precedente</a>
+			</div>
 		</div>
 		
 	

@@ -1,33 +1,25 @@
 package it.polimi.tiw.docente;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import org.thymeleaf.context.WebContext;
 
 import it.polimi.tiw.beans.Docente;
-import it.polimi.tiw.beans.ErrorMessage;
+import it.polimi.tiw.beans.Message;
 import it.polimi.tiw.beans.UrlPath;
 import it.polimi.tiw.beans.UserType;
-
-import it.polimi.tiw.dao.DocentiDAO;
 import it.polimi.tiw.common.ConnectionHandler;
 import it.polimi.tiw.common.ThymeleafInstance;
+import it.polimi.tiw.dao.DocentiDAO;
 
 /**
  * Servlet implementation class login
@@ -64,7 +56,7 @@ public class LoginDocente extends HttpServlet {
 		//se mi arriva una richiesta get devo creare la pagine di login con thymelef 
 		
 		HttpSession session = request.getSession(false); // if session does not exist, returns null
-		ErrorMessage errorMessage;
+		Message errorMessage;
 		
 		//possible improvement --> check if docente exists 
 		//Set the user type that is going to log in 
@@ -76,11 +68,11 @@ public class LoginDocente extends HttpServlet {
 		url.setPath("LoginDocente");
 		
 		//get the possible error message
-		errorMessage = (ErrorMessage) request.getAttribute("errorMessage");
+		errorMessage = (Message) request.getAttribute("errorMessage");
 		if(errorMessage == null) {	
 			//if no attribute were retrieved 
-			errorMessage = new ErrorMessage();
-			errorMessage.setError("");		
+			errorMessage = new Message();
+			errorMessage.setMessage("");		
 		}
 		
 		//path del template
@@ -113,7 +105,7 @@ public class LoginDocente extends HttpServlet {
 		String username = null;
 		String password = null;
 		DocentiDAO docenteDAO = new DocentiDAO(this.connection);
-		ErrorMessage error = new ErrorMessage();
+		Message error = new Message();
 		Docente docente = null;
 		
 		//get the param from the request
@@ -122,12 +114,16 @@ public class LoginDocente extends HttpServlet {
 		docente = docenteDAO.checkCredential(username, password);
 		if(docente != null) {
 			//login succeed
+			if(request.getSession().getAttribute("studente") != null) {
+				//se c'è un docente lo rimuovo forzando il logout
+				request.getSession().removeAttribute("studente");
+			}
 			request.getSession().setAttribute("docente", docente);
 			response.sendRedirect(request.getContextPath() + "/HomeDocente");
 			
 		}else {
 			//login failed
-			error.setError("Username e/o password errati");
+			error.setMessage("Username e/o password errati");
 			request.setAttribute("errorMessage", error);
 			doGet(request, response);
 		}
