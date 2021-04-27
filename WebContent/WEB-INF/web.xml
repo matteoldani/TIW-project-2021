@@ -11,7 +11,7 @@
   </context-param>
   <context-param>
     <param-name>dbPassword</param-name>
-    <param-value>)UDEh^A?p=j@B8ev</param-value>
+    <param-value>password</param-value> <!--  )UDEh^A?p=j@B8ev -->
   </context-param>
   <context-param>
     <param-name>dbDriver</param-name>
