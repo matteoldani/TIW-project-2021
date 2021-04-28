@@ -1,0 +1,6 @@
+Cose da fare 
+
+- inserire in gotoiscrtittiesame il controllo che possa o meno abilitare il verbalizza ovvero che controlla che effettivamento ci sia qualcosa da verbalizzare
+- fare questo controllo anche prima di effettuare la verbalizzazione vera e propria 
+- stampare e creare la pagina capace di leggere il verbale e farlo vedere
+- le cose dette sopra riguardo il check le farei in un metodo di appelliDao che restituisce il numero di voti verbalizzabili oppure che restituisce true o false

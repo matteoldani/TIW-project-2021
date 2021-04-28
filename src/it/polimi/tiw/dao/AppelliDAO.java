@@ -4,11 +4,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 import it.polimi.tiw.beans.Appello;
 import it.polimi.tiw.beans.IscrittiAppello;
 import it.polimi.tiw.beans.Studente;
+import it.polimi.tiw.beans.Verbale;
 
 public class AppelliDAO {
 	
@@ -290,4 +294,107 @@ private Connection connection;
 		}
 
 	}
+
+	public Verbale verbalizzaAppello(Integer id_appello) {
+		
+		Verbale verbale = null;
+		String query;
+		ResultSet result = null;
+		PreparedStatement pstatement = null;
+		
+		//prendere tutti quelli che hanno "pubblicato" o "rifiutato" come stato 
+		//cambiare lo stato in verbalizzato e fare il cambio di voto per quelli che hanno rifiutato in "rimadnato"
+		//creare il verbale 
+		//inserire il verbale in verbali e aggiungere tutti i verbalizati in iscrtitti_verbalizzati
+		
+		//aggiornoi voti dei rimadnati dell'appello 
+		query = "UPDATE iscritti_appello SET voto = 'rimandato' WHERE  id_appello = ? AND stato = 'rifiutato'";
+		
+		try {
+			pstatement = connection.prepareStatement(query);	
+			pstatement.setInt(1, id_appello);
+			System.out.println(pstatement);
+			pstatement.executeUpdate();
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		//prendo solo i pubblicati e rifiutati
+		//lo faccio priima di cambiare lo stato in verbalizzato per non dover prenere anche quelli che potenzialemente sono gia stati vervalizzati in verbali precedenti
+		ArrayList<IscrittiAppello> iscrittiAppello = getIscrittiAppello(id_appello, "", "");
+		for(IscrittiAppello ia : iscrittiAppello) {
+			if(!ia.getStato().equals("pubblicato") && !ia.getStato().equals("rifiutato")) {
+				iscrittiAppello.remove(ia);
+			}else {
+				//per ogni elemento che tengo imposto già che il voto viene verbalizzato 
+				ia.setStato("verbalizzato");
+			}
+		}
+		
+		//aggiorno lo stato di tutti quelli che erano pubblicati e rifiutati in "verbalizzato"
+		query = "UPDATE iscritti_appello SET stato = 'verbalizzatto' WHERE  id_appello = ? AND (stato ='rifiutato' OR stato = 'pubblicato')";
+		
+		try {
+			pstatement = connection.prepareStatement(query);	
+			pstatement.setInt(1, id_appello);
+			System.out.println(pstatement);
+			pstatement.executeUpdate();
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		//inserisco il verbale 
+		//per inserirlo devo scoprire quale sarà il prissimo id utilizzabile
+		query = "SELECT MAX(id_verbale) AS max FROM verbali";
+		Integer maxIdVerbale = null;
+		try {
+			Statement stmt = connection.createStatement();
+			result = stmt.executeQuery(query);
+			while(result.next()) {
+				maxIdVerbale = result.getInt("max");
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		//il nuovo id verbale sarà di uno più grande
+		maxIdVerbale++;
+		
+		//creo il verbale che poi verrà ritornato
+		LocalDate data = java.time.LocalDate.now();
+		LocalTime ora = LocalTime.now();
+		verbale = new Verbale(maxIdVerbale, data, ora, id_appello, iscrittiAppello);
+			
+		//aaggiungo il verbale nel database 
+		query = "INSERT INTO verbali (id_verbale, data, ora, id_appello) VALUES (?, ?, ?, ?)";
+		try {
+			pstatement = connection.prepareStatement(query);	
+			pstatement.setInt(1, maxIdVerbale);
+			pstatement.setDate(2, java.sql.Date.valueOf(data));
+			pstatement.setTime(3, java.sql.Time.valueOf(ora));
+			pstatement.setInt(4, id_appello);
+			System.out.println(pstatement);
+			pstatement.executeUpdate();
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		//aggiungo tutti quelli che sono stati verbalizzati in questo verbale alla tabella degli iscritti verbalizzati
+		query = "INSERT INTO iscritti_verbalizzati (id_verbale, matricola) VALUES (?, ?)";
+		for(IscrittiAppello ia: iscrittiAppello) {
+			try {
+				pstatement = connection.prepareStatement(query);	
+				pstatement.setInt(1, maxIdVerbale);
+				pstatement.setInt(2, ia.getStudente().getMatricola());
+				System.out.println(pstatement);
+				pstatement.executeUpdate();
+			}catch(SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+		return verbale;
+	}
+	
 }

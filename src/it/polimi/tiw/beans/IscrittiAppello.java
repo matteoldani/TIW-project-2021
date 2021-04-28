@@ -31,6 +31,10 @@ public class IscrittiAppello {
 		return appello;
 	}
 	
+	public void setStato(String stato) {
+		this.stato = stato;
+	}
+	
 	
 	
 	
