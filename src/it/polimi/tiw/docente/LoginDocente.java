@@ -119,7 +119,7 @@ public class LoginDocente extends HttpServlet {
 				request.getSession().removeAttribute("studente");
 			}
 			request.getSession().setAttribute("docente", docente);
-			response.sendRedirect(request.getContextPath() + "/HomeDocente");
+			response.sendRedirect(getServletContext().getContextPath() + "/HomeDocente");
 			
 		}else {
 			//login failed

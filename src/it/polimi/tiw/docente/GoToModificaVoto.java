@@ -255,7 +255,7 @@ public class GoToModificaVoto extends HttpServlet {
 			boolean ris;
 			ris = appelliDao.updateVoto(matricola, id_appello, voto);
 			if(ris) {
-				response.sendRedirect(request.getContextPath() + "/IscrittiAppello?id="+id_appello.toString());
+				response.sendRedirect(getServletContext().getContextPath() + "/IscrittiAppello?id="+id_appello.toString());
 			}else {
 				String path = "WEB-INF/errorPage.html";
 				

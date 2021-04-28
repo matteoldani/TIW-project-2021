@@ -118,7 +118,7 @@ public void init() throws ServletException {
 			if(ris) {
 				successMessage.setMessage("Pubblicazione effettuata con successo");
 				request.setAttribute("successMessage", successMessage);
-				String path = "/verbalizzazione_voti/IscrittiAppello?id=" + id_appello;
+				String path = getServletContext().getContextPath() + "/IscrittiAppello?id=" + id_appello;
 				response.sendRedirect(path);
 			}else {
 	
