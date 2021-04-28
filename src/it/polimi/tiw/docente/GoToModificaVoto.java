@@ -243,8 +243,8 @@ public class GoToModificaVoto extends HttpServlet {
 		if(errorMessage.getMessage().equals("")){
 			ia = appelliDao.getIscrittoAppello(id_appello, matricola);
 			
-			if(ia.getStato().equals("pubblicato")) {
-				errorMessage.setMessage("Non è possibile modificare un voto gia pubblicato");
+			if(ia.getStato().equals("pubblicato") || ia.getStato().equals("rifiutato") || ia.getStato().equals("verbalizzato")) {
+				errorMessage.setMessage("Non è possibile modificare un voto gia pubblicato o rifiutato");
 			}
 		}
 		
