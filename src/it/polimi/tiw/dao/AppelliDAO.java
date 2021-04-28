@@ -269,4 +269,25 @@ private Connection connection;
 			return false;
 		}
 	}
+	
+	public boolean rifiutaVoto(Integer id_appello, Integer matricola) {
+		
+		String query = "UPDATE iscritti_appello SET stato = 'rifiutato' WHERE matricola = ? AND id_appello = ? ";
+		ResultSet result = null;
+		PreparedStatement pstatement = null;
+		
+
+		try {
+			pstatement = connection.prepareStatement(query);
+			pstatement.setInt(1, matricola);
+			pstatement.setInt(2, id_appello);
+			System.out.println(pstatement);
+			pstatement.executeUpdate();
+			return true;
+		}catch(SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+
+	}
 }

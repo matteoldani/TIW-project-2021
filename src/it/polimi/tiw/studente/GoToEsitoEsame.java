@@ -69,6 +69,7 @@ public class GoToEsitoEsame extends HttpServlet {
 		
 		errorMessage.setMessage("");
 		
+		
 		//controllo che l'id sia un numero
 		if(id_appello_string != null && !id_appello_string.equals("")) {
 			try {
@@ -124,15 +125,20 @@ public class GoToEsitoEsame extends HttpServlet {
 						votoRifiutabile = false;
 					}else {
 						//se posso rifiutre
-						try {
-							voto_numerico = Integer.parseInt(voto);
+						if(voto.equals("30 e Lode")) {
 							votoRifiutabile = true;
-						}catch(NumberFormatException e) {
-							//se c'è iun prolema a livello di consistenza del database 
-							voto_numerico = null;
-							votoRifiutabile = false;
-							errorMessage.setMessage("Errore nel database, riprova più tardi");
+						}else {
+							try {
+								voto_numerico = Integer.parseInt(voto);
+								votoRifiutabile = true;
+							}catch(NumberFormatException e) {
+								//se c'è iun prolema a livello di consistenza del database 
+								voto_numerico = null;
+								votoRifiutabile = false;
+								errorMessage.setMessage("Errore nel database, riprova più tardi");
+							}
 						}
+						
 					}
 				}else {
 					//il voto non è pubblicato quindi non è visibile 
@@ -150,9 +156,9 @@ public class GoToEsitoEsame extends HttpServlet {
 			//se il voto è stato pubblicato 
 			ctx.setVariable("votoPubblicato", votoPubblicato);
 			//se il voto è rifiutabile
-			ctx.setVariable("nomeCorso", votoRifiutabile);
+			ctx.setVariable("votoRifiutabile", votoRifiutabile);
 			//se il voto è stato rifiutato
-			ctx.setVariable("id_appello", votoRifiutato);
+			ctx.setVariable("votoRifiutato", votoRifiutato);
 			//il voto
 			ctx.setVariable("voto", voto);
 			//id appello

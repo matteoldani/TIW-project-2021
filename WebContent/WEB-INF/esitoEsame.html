@@ -15,13 +15,13 @@
 		</h3>
 		
 		<h3>
-			Corso: <span style="color: blue;" th:text="${nomeCorso}"> NomeCorso </span>
+			Corso: <span style="color: blue;" th:text="${corso.nome}"> NomeCorso </span>
 		</h3>
 		<h3>
-			Data: <span style="color: blue;" th:text="${dataAppello}">DataAppello</span>
+			Data: <span style="color: blue;" th:text="${data}">DataAppello</span>
 		</h3>
 		
-		<div th:if="${votoPubblicato == true}">
+		<div th:if="${votoPubblicato}">
 			<h3> Dati studente </h3>
 			<span> Matrciola: </span> <span th:text="${session.studente.matricola}"> </span><br>
 			<span> Cognome: </span> <span th:text="${session.studente.cognome}"> </span> <br>
@@ -29,12 +29,12 @@
 			<span> E-Mail: </span> <span th:text="${session.studente.email}"> </span><br>
 			<span> Corso di Laurea: <span th:text="${session.studente.corso_laurea}"> </span></span> <br>
 			<span> Voto: <span th:text="${voto}"> 30</span></span><br>
-			<a th:if="${votoRifiutabile == true}" th:href="/rifiutavoto"> Rifiuta</a>
-			<span th:if="${votoRifiutato == true}"> Il voto e' gia stato rifiuatato</span> 
+			<a th:if="${votoRifiutabile}" th:href="@{/RifiutaVoto(id=${id_appello})}"> Rifiuta</a>
+			<span th:if="${votoRifiutato}"> Il voto e' gia stato rifiuatato</span> 
 		
 		</div>
 		
-		<div th:if="${votoPubblicato == false}">
+		<div th:if="${!votoPubblicato}">
 			<h3> Il docente non ha ancora pubblicato il voto </h3>
 			<h3> <a href="/verbalizzazione_voti/HomeStudente"> Torna alla home</a></h3>
 		</div>

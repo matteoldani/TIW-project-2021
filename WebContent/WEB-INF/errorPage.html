@@ -16,6 +16,7 @@
 			<span style="color: red;" th:text="${errorMessage.message}"> Message </span>
 		</h3>
 		
-		<h3><a href="/verbalizzazione_voti/HomeDocente"> Torna alla Home Docente</a></h3>
-				
+		<h3 th:if="${session.docente != null}"><a href="/verbalizzazione_voti/HomeDocente"> Torna alla Home Docente</a></h3>
+		<h3 th:if="${session.studente != null}"><a href="/verbalizzazione_voti/HomeStudente"> Torna alla Home Docente</a></h3>
+			
 	</body>
