@@ -8,7 +8,7 @@
 	
 	<body>
 		<h1>
-			<span >Modifica esito </span>
+			<span th:text="${stato != 'pubblicato' && stato != 'rifiutato' && stato != 'verbalizzato'} ? 'Modifica esito' : 'Visualizza esito'">Modifica esito </span>
 
 		</h1>
 		
@@ -24,7 +24,7 @@
 			<span> E-Mail: </span> <span th:text="${studente.email}"> </span><br>
 			<span> Corso di Laurea: <span th:text="${studente.corso_laurea}"> </span></span> <br>
 			
-			<div th:if="${stato != 'pubblicato'}">
+			<div th:if="${stato != 'pubblicato' && stato != 'rifiutato' && stato != 'verbalizzato'}">
 				<form action="/verbalizzazione_voti/ModificaVoto" method="POST">
 					<input type="text" th:value="${id_appello}" name="id_appello" hidden>
 					<input type="text" th:value="${studente.matricola}" name="matricola" hidden>
@@ -52,7 +52,7 @@
 				</form>
 			</div>
 			
-			<div th:if="${stato == 'pubblicato'}">
+			<div th:if="${stato == 'pubblicato' || stato == 'rifiutato' || stato == 'verbalizzato'}">
 				Voto: <span th:text="${voto}"> voto</span>
 				<br>
 				<a th:href="@{/IscrittiAppello(id=${id_appello})}"> Torna alla pagina precedente</a>
