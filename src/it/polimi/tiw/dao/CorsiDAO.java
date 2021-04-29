@@ -19,7 +19,7 @@ public class CorsiDAO {
 	}
 	
 	//return the list of exams scheduled for a course
-	public ArrayList<Appello> getAppelliCorso(int id_corso){
+	public ArrayList<Appello> getAppelliCorso(int id_corso) throws SQLException{
 		
 		ArrayList<Appello> list = new ArrayList<>();
 		String query = "SELECT * FROM appelli JOIN corsi ON appelli.id_corso = corsi.id_corso WHERE corsi.id_corso = ?  ORDER BY data DESC";
@@ -30,29 +30,26 @@ public class CorsiDAO {
 		Date data; 
 		
 		
-		try {
+		
 			
-			pstatement = connection.prepareStatement(query);
-			pstatement.setString(1, String.valueOf(id_corso));
-	
-			result = pstatement.executeQuery();
-			
-			while(result.next()) {
-				id_appello = result.getInt("id_appello");
-				data = result.getDate("data");
-				Appello app = new Appello(id_appello, data, id_corso);
-				list.add(app);
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		pstatement = connection.prepareStatement(query);
+		pstatement.setString(1, String.valueOf(id_corso));
+
+		result = pstatement.executeQuery();
+		
+		while(result.next()) {
+			id_appello = result.getInt("id_appello");
+			data = result.getDate("data");
+			Appello app = new Appello(id_appello, data, id_corso);
+			list.add(app);
 		}
+		
 		
 		
 		return list;
 	}
 	
-	public Corso getCorsoFromId(int id_corso) {
+	public Corso getCorsoFromId(int id_corso) throws SQLException {
 		
 		Corso corso = null;
 		
@@ -61,18 +58,15 @@ public class CorsiDAO {
 		PreparedStatement pstatement = null;
 		
 		//eseguo query per prendere l'appello giusto
-		try {
-			pstatement = connection.prepareStatement(queryCorso);
-			pstatement.setString(1, String.valueOf(id_corso));
-	
-			result = pstatement.executeQuery();
-			while(result.next()) {
-				corso = new Corso(id_corso, result.getString("nome"), result.getString("descrizione"),  result.getInt("id_docente"));
-			}
-			
-		}catch(SQLException e) {
-			e.printStackTrace();
+		
+		pstatement = connection.prepareStatement(queryCorso);
+		pstatement.setString(1, String.valueOf(id_corso));
+
+		result = pstatement.executeQuery();
+		while(result.next()) {
+			corso = new Corso(id_corso, result.getString("nome"), result.getString("descrizione"),  result.getInt("id_docente"));
 		}
+	
 		
 		
 		return corso;

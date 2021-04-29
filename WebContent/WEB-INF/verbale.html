@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title> Universit&aacute; di Magenta</title>
+		<link rel="stylesheet" href="css/bootstrap.css">
+	</head>
+	
+	<body>
+		<h1>
+			Verbale
+		</h1>
+		
+		<h3>
+			<span style="color: red;" th:text="${errorMessage.message}"> Message </span>
+		</h3>
+		
+		<div th:if="${verbale != null}">
+			Verbale: <span th:text="${verbale.id_verbale}">id_verbale</span> <br>
+			Data: <span th:text="${verbale.data}">data</span> <br>
+			Ora: <span th:text="${verbale.ora}"> ora</span> <br>
+			Corso <span th:text="${nomeCorso}"> nomeCorso</span><br>
+			Data appello: <span th:text="${dataAppello}"> dataAppello</span><br>
+		</div>
+		
+		<div th:if="${verbale != null}">
+			
+			<table>
+				<thead>
+					<tr> Matricola </tr>
+					<tr> Voto </tr>
+				</thead>
+				<tbody>
+					<tr th:each="iscritti : ${verbale.iscrittiVerbalizzati}" >
+					<td th:text="${iscritti.studente.matricola}"> 
+						910756
+					</td>
+					<td th:text="${iscritti.voto}"> 
+						30
+					</td>
+				</tbody>
+			</table>
+			
+			<a th:href="@{/IscrittiAppello(id=${verbale.id_appello})}"> Torna alla pagina precedente</a>
+			
+		</div>
+		
+	
+	</body>
+
+</html>

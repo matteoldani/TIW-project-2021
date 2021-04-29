@@ -11,14 +11,14 @@ public class Verbale {
 	private LocalDate data;
 	private LocalTime ora;
 	private int id_appello;
-	private ArrayList<IscrittiAppello> iscrittiVerbalizati;
+	private ArrayList<IscrittiAppello> iscrittiVerbalizzati;
 	
 	public Verbale(int id, LocalDate data, LocalTime ora, int id_appello, ArrayList<IscrittiAppello> iscrittiVerbalizzati) {
 		this.id_verbale = id;
 		this.data = data;
 		this.ora = ora;
 		this.id_appello = id_appello;
-		this.iscrittiVerbalizati = iscrittiVerbalizzati;
+		this.iscrittiVerbalizzati = iscrittiVerbalizzati;
 	}
 
 	public int getId_verbale() {
@@ -37,8 +37,8 @@ public class Verbale {
 		return id_appello;
 	}
 
-	public ArrayList<IscrittiAppello> getIscrittiVerbalizati() {
-		return iscrittiVerbalizati;
+	public ArrayList<IscrittiAppello> getIscrittiVerbalizzati() {
+		return iscrittiVerbalizzati;
 	}
 	
 	

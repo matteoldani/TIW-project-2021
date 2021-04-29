@@ -2,8 +2,10 @@ package it.polimi.tiw.docente;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -11,10 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
 
 import it.polimi.tiw.beans.Appello;
 import it.polimi.tiw.beans.Corso;
 import it.polimi.tiw.beans.Docente;
+import it.polimi.tiw.beans.IscrittiAppello;
 import it.polimi.tiw.beans.Message;
 import it.polimi.tiw.beans.Verbale;
 import it.polimi.tiw.common.ConnectionHandler;
@@ -82,8 +86,32 @@ public class GoToVerbalizzazione extends HttpServlet {
 			
 			//devo controlalre che effettivamente l'id appartenga a un corso che è tenuto dal professore 
 
-			Appello appello = appelliDao.getAppelloFromID(id_appello);
-			ArrayList<Corso> corsiDocente = docentiDao.getCourseList(docente.getId_docente());
+			Appello appello;
+			try {
+				appello = appelliDao.getAppelloFromID(id_appello);
+			} catch (SQLException e) {
+				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+				//in una pagine di errore generica (scleta migliore esteticamente) 
+				e.printStackTrace();
+				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+				request.setAttribute("errorMessage", errorMessage);
+				String path = getServletContext().getContextPath() + "/ErrorPage";
+				response.sendRedirect(path);
+				return;
+			}
+			ArrayList<Corso> corsiDocente;
+			try {
+				corsiDocente = docentiDao.getCourseList(docente.getId_docente());
+			} catch (SQLException e) {
+				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+				//in una pagine di errore generica (scleta migliore esteticamente) 
+				e.printStackTrace();
+				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+				request.setAttribute("errorMessage", errorMessage);
+				String path = getServletContext().getContextPath() + "/ErrorPage";
+				response.sendRedirect(path);
+				return;
+			}
 			boolean controllo = false;
 			for(Corso c : corsiDocente) {
 				if(c.getId_corso() == appello.getId_corso()) {
@@ -93,13 +121,65 @@ public class GoToVerbalizzazione extends HttpServlet {
 			
 			
 			if(controllo) {
-				verbale = appelliDao.verbalizzaAppello(id_appello);
+				
+				//devo controllare che esista qualcosa di verbalizzabile 
+				boolean verbalizzabili = false;
+				ArrayList<IscrittiAppello> iscrittiAppello;
+				try {
+					iscrittiAppello = appelliDao.getIscrittiAppello(id_appello, "", "");
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+					//in una pagine di errore generica (scleta migliore esteticamente) 
+					errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+					request.setAttribute("errorMessage", errorMessage);
+					String path = getServletContext().getContextPath() + "/ErrorPage";
+					response.sendRedirect(path);
+					return;
+				}
+				//controllo che tra quelli iscritti a questo appello almeno uno abbia come stato pubblicato o rifiutato
+				for(IscrittiAppello ia: iscrittiAppello) {
+					if(ia.getStato().equals("pubblicato") || ia.equals("rifiutato")) {
+						verbalizzabili = true;
+					}
+				}
+				if(verbalizzabili) {
+					try {
+						verbale = appelliDao.verbalizzaAppello(id_appello);
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+						//in una pagine di errore generica (scleta migliore esteticamente) 
+						errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+						request.setAttribute("errorMessage", errorMessage);
+						String path = getServletContext().getContextPath() + "/ErrorPage";
+						response.sendRedirect(path);
+						return;
+					}
+				}else {
+					errorMessage.setMessage("non ci sono voti da verbalizzare nell'appello selezionato");
+				}
 			}else {
 				errorMessage.setMessage("Impossibile verbalizzare appello, l'appello selezionato non corrisponde a un appello valido");
 			}
 
 		}
+		//path del template
+		String path = "WEB-INF/verbale.html";
+				
+		ServletContext servletContext = getServletContext();
+		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		
+		//verbale
+		ctx.setVariable("verbale", verbale);
+		
+		//se c'è un errore lo stampo a inizio pagina
+		ctx.setVariable("errorMessage", errorMessage);
+		
+		
+		templateEngine.process(path, ctx, response.getWriter());
 		//manca da stampare la pagina del verbale e da fare il controllo che prima di verbalizzare ci siano effettivamente dei voti da verbalizzare e non siano vuoti 
 	}
 

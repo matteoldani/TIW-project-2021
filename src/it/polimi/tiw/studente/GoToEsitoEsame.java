@@ -2,6 +2,7 @@ package it.polimi.tiw.studente;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -76,13 +77,13 @@ public class GoToEsitoEsame extends HttpServlet {
 				id_appello = Integer.parseInt(id_appello_string);
 			}catch(NumberFormatException e) {
 				id_appello = null;
-				errorMessage.setMessage("L'appello selezionato non è corretto");
+				errorMessage.setMessage("L'appello selezionato non e' corretto");
 			}
 			
 		}else{
 			id_appello = null;
 			if(id_appello_string != null && id_appello_string.equals("")) {
-				errorMessage.setMessage("L'appello selezionato non è corretto");
+				errorMessage.setMessage("L'appello selezionato non e' corretto");
 			}
 		}
 		
@@ -90,29 +91,70 @@ public class GoToEsitoEsame extends HttpServlet {
 		if(id_appello != null) {
 			
 			iscritto = null;
-			iscritto = appelliDao.getIscrittoAppello(id_appello, studente.getMatricola());
+			try {
+				iscritto = appelliDao.getIscrittoAppello(id_appello, studente.getMatricola());
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+				//in una pagine di errore generica (scleta migliore esteticamente) 
+				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+				request.setAttribute("errorMessage", errorMessage);
+				String path = getServletContext().getContextPath() + "/ErrorPage";
+				response.sendRedirect(path);
+				return;
+			}
 			
 			if(iscritto == null) {
 				errorMessage.setMessage("Non sei iscritto all'appello selezionato");
 			}
 			
 			CorsiDAO corsiDao = new CorsiDAO(connection);
-			c = corsiDao.getCorsoFromId(appelliDao.getAppelloFromID(id_appello).getId_corso());
+			try {
+				c = corsiDao.getCorsoFromId(appelliDao.getAppelloFromID(id_appello).getId_corso());
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+				//in una pagine di errore generica (scleta migliore esteticamente) 
+				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+				request.setAttribute("errorMessage", errorMessage);
+				String path = getServletContext().getContextPath() + "/ErrorPage";
+				response.sendRedirect(path);
+				return;
+			}
 		}
 		
 		//se l'erore è ancora vuoto allora prendo il voto
 		if(errorMessage.getMessage().equals("")) {
-			//posso settare le cose per i voti come singole variabili boolean <-- scelta questa strada
-			//posso settare un bean capace di gestire i voti
 			
-			iscritto = appelliDao.getIscrittoAppello(id_appello, studente.getMatricola());
+			try {
+				iscritto = appelliDao.getIscrittoAppello(id_appello, studente.getMatricola());
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+				//in una pagine di errore generica (scleta migliore esteticamente) 
+				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+				request.setAttribute("errorMessage", errorMessage);
+				String path = getServletContext().getContextPath() + "/ErrorPage";
+				response.sendRedirect(path);
+				return;
+			}
 			String stato = iscritto.getStato();
 			
 			//se il voto è gia stato rifiutato
-			if(stato.equals("rifiutato")) {
-				votoRifiutabile = false;
-				votoRifiutato = true;
-				votoPubblicato = true;
+			if(stato.equals("rifiutato") || stato.equals("verbalizzato")) {
+				if(stato.equals("rifiutato")) {
+					votoRifiutabile = false;
+					votoRifiutato = true;
+					votoPubblicato = true;
+				}else{
+					votoRifiutabile = false;
+					votoRifiutato = false;
+					votoPubblicato = true;
+				}
+				
 				voto = iscritto.getVoto();		
 			}else {
 				//il voto non è stato rifiutato ma è pubblicato
@@ -166,7 +208,19 @@ public class GoToEsitoEsame extends HttpServlet {
 			//corso
 			ctx.setVariable("corso", c);
 			//data appello
-			ctx.setVariable("data", appelliDao.getAppelloFromID(id_appello).getData());
+			try {
+				ctx.setVariable("data", appelliDao.getAppelloFromID(id_appello).getData());
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+				//in una pagine di errore generica (scleta migliore esteticamente) 
+				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+				request.setAttribute("errorMessage", errorMessage);
+				path = getServletContext().getContextPath() + "/ErrorPage";
+				response.sendRedirect(path);
+				return;
+			}
 			
 			
 			templateEngine.process(path, ctx, response.getWriter());

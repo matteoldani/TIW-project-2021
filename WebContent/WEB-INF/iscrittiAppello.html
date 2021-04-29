@@ -21,7 +21,7 @@
 		<h3>
 			Data: <span style="color: blue;" th:text="${dataAppello}">DataAppello</span>
 		</h3>
-		<h3> 
+		<h3 th:if="${verbalizzabili}"> 
 			<a th:href="@{/Verbalizzazione(id=${id_appello})}">Verbalizza</a>
 		</h3>
 		

@@ -2,9 +2,11 @@ package it.polimi.tiw.docente;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,7 +26,7 @@ import it.polimi.tiw.dao.DocentiDAO;
 /**
  * Servlet implementation class login
  */
-//@WebServlet(name = "login_docente", urlPatterns = { "/login_docente" })  < --- may causes problems
+@WebServlet("/LoginDocente")
 public class LoginDocente extends HttpServlet {
 	private static final long serialVersionUID = 2L;
 	private TemplateEngine templateEngine; //required thymeleaf
@@ -38,13 +40,11 @@ public class LoginDocente extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
     
-    public void init() throws ServletException {
-    	
+    public void init() throws ServletException { 	
     	//Credo la connessione con il database
     	connection = ConnectionHandler.getConnection(getServletContext());
     	//Istanzio il mio template engine per questa pagina
     	templateEngine = new ThymeleafInstance(getServletContext()).getTemplateEngine();
-
     }
 
 	/**
@@ -111,7 +111,20 @@ public class LoginDocente extends HttpServlet {
 		//get the param from the request
 		username = request.getParameter("username");
 		password = request.getParameter("password");
-		docente = docenteDAO.checkCredential(username, password);
+		try {
+			docente = docenteDAO.checkCredential(username, password);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+			//in una pagine di errore generica (scleta migliore esteticamente) 
+			Message errorMessage = new Message();
+			errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+			request.setAttribute("errorMessage", errorMessage);
+			String path = getServletContext().getContextPath() + "/ErrorPage";
+			response.sendRedirect(path);
+			return;
+		}
 		if(docente != null) {
 			//login succeed
 			if(request.getSession().getAttribute("studente") != null) {

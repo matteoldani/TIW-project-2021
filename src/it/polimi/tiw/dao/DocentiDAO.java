@@ -17,7 +17,7 @@ public class DocentiDAO {
 		this.connection = connection;
 	}
 	
-	public Docente checkCredential(String username, String password) {
+	public Docente checkCredential(String username, String password) throws SQLException {
 		
 		String query = "SELECT * FROM docenti WHERE username = ? AND password = ?";
 		Docente docente = null;
@@ -25,30 +25,26 @@ public class DocentiDAO {
 		PreparedStatement pstatement = null;
 		String tempUser, tempPass;
 		
-		try {
 			
-			pstatement = connection.prepareStatement(query);
-			pstatement.setString(1, username);
-			pstatement.setString(2, password);
-			result = pstatement.executeQuery();
-			
-			while(result.next()) {
-				tempUser = result.getString("username");
-				tempPass = result.getString("password");
-				if(username.equals(tempUser) && password.equals(tempPass)) {
-					//create the beans related to a docente 
-					docente = new Docente(result.getInt("id_docente"), result.getString("nome"), result.getString("cognome"), tempUser);
-				}
+		pstatement = connection.prepareStatement(query);
+		pstatement.setString(1, username);
+		pstatement.setString(2, password);
+		result = pstatement.executeQuery();
+		
+		while(result.next()) {
+			tempUser = result.getString("username");
+			tempPass = result.getString("password");
+			if(username.equals(tempUser) && password.equals(tempPass)) {
+				//create the beans related to a docente 
+				docente = new Docente(result.getInt("id_docente"), result.getString("nome"), result.getString("cognome"), tempUser);
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+
 
 		return docente;
 	}
 	
-	public ArrayList<Corso> getCourseList(int id_docente){
+	public ArrayList<Corso> getCourseList(int id_docente) throws SQLException{
 		
 		String query = "SELECT * FROM corsi WHERE id_docente = ? ORDER BY nome DESC";
 		Corso c = null;
@@ -56,24 +52,21 @@ public class DocentiDAO {
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		
-		try {
-			pstatement = connection.prepareStatement(query);
-			pstatement.setInt(1, id_docente);
-			result = pstatement.executeQuery();
-			if(result != null) {
-				//otherwise i have to return null
-				listaCorsi = new ArrayList<>();
-			}
-			
-			while(result.next()) {
-				c = new Corso(result.getInt("id_corso"), result.getString("nome"), result.getString("descrizione"), result.getInt("id_docente"));
-				listaCorsi.add(c);
-			}
-			
-		}catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		
+		pstatement = connection.prepareStatement(query);
+		pstatement.setInt(1, id_docente);
+		result = pstatement.executeQuery();
+		if(result != null) {
+			//otherwise i have to return null
+			listaCorsi = new ArrayList<>();
 		}
+		
+		while(result.next()) {
+			c = new Corso(result.getInt("id_corso"), result.getString("nome"), result.getString("descrizione"), result.getInt("id_docente"));
+			listaCorsi.add(c);
+		}
+		
+		
 		
 		return listaCorsi;
 		

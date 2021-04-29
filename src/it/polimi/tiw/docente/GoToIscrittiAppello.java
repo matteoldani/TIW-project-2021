@@ -3,6 +3,7 @@ package it.polimi.tiw.docente;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.servlet.ServletContext;
@@ -72,12 +73,16 @@ public class GoToIscrittiAppello extends HttpServlet {
 		Date dataAppello = null;
 		String orderAttribute = null;
 		String order;
+		boolean verbalizzabili = false;
 		
 		successMessage = (Message) request.getAttribute("successMessage");
 		if(successMessage != null) {
 			System.out.println(successMessage.getMessage());
 		}
 		request.removeAttribute("successMessage");
+		if(successMessage != null) {
+			System.out.println(successMessage.getMessage());
+		}
 		
 		//cerco di prendere come oridinare, se null ordino per matricola
 		if(request.getParameter("tag") != null) {
@@ -112,7 +117,7 @@ public class GoToIscrittiAppello extends HttpServlet {
 		
 		//sono arrivato a questa pagina senza avere un id
 		if(id==null || id.equals("")) {
-			errorMessage.setMessage("Non è stato selezioanto nessun appello");
+			errorMessage.setMessage("Non e' stato selezioanto nessun appello");
 		}
 		
 		//l'id non è un numero
@@ -120,16 +125,38 @@ public class GoToIscrittiAppello extends HttpServlet {
 			id_appello = Integer.parseInt(id);
 		}catch(NumberFormatException e) {
 			id_appello = null;
-			errorMessage.setMessage("L'appello selezionato non è presente");
+			errorMessage.setMessage("L'appello selezionato non e' presente");
 		}
 		
-		if(id_appello != null) {
-			System.out.println("id appello letto in mdoo corretto");
-			
+		if(id_appello != null) {			
 			//devo controlalre che effettivamente l'id appartenga a un corso che è tenuto dal professore 
 			docente = (Docente) request.getSession(false).getAttribute("docente");
-			Appello appello = appelliDao.getAppelloFromID(id_appello);
-			ArrayList<Corso> corsiDocente = docentiDao.getCourseList(docente.getId_docente());
+			Appello appello = null;
+			try {
+				appello = appelliDao.getAppelloFromID(id_appello);
+			} catch (SQLException e) {
+				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+				//in una pagine di errore generica (scleta migliore esteticamente) 
+				e.printStackTrace();
+				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+				request.setAttribute("errorMessage", errorMessage);
+				String path = getServletContext().getContextPath() + "/ErrorPage";
+				response.sendRedirect(path);
+				return;
+			}
+			ArrayList<Corso> corsiDocente = null;
+			try {
+				corsiDocente = docentiDao.getCourseList(docente.getId_docente());
+			} catch (SQLException e1) {
+				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+				//in una pagine di errore generica (scleta migliore esteticamente) 
+				e1.printStackTrace();
+				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+				request.setAttribute("errorMessage", errorMessage);
+				String path = getServletContext().getContextPath() + "/ErrorPage";
+				response.sendRedirect(path);
+				return;
+			}
 			boolean controllo = false;
 			for(Corso c : corsiDocente) {
 				if(c.getId_corso() == appello.getId_corso()) {
@@ -141,7 +168,24 @@ public class GoToIscrittiAppello extends HttpServlet {
 			
 			
 			if(controllo) {
-				iscrittoAppello = appelliDao.getIscrittiAppello(id_appello, orderAttribute, order);
+				try {
+					iscrittoAppello = appelliDao.getIscrittiAppello(id_appello, orderAttribute, order);
+				} catch (SQLException e) {
+					//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+					//in una pagine di errore generica (scleta migliore esteticamente) 
+					e.printStackTrace();
+					errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+					request.setAttribute("errorMessage", errorMessage);
+					String path = getServletContext().getContextPath() + "/ErrorPage";
+					response.sendRedirect(path);
+					return;
+				}
+				//controllo che tra quelli iscritti a questo appello almeno uno abbia come stato pubblicato o rifiutato
+				for(IscrittiAppello ia: iscrittoAppello) {
+					if(ia.getStato().equals("pubblicato") || ia.equals("rifiutato")) {
+						verbalizzabili = true;
+					}
+				}
 			}else {
 				errorMessage.setMessage("Non puoi accedere ai dati di questo appello");
 			}
@@ -172,11 +216,12 @@ public class GoToIscrittiAppello extends HttpServlet {
 		ctx.setVariable("orderAttribute", orderAttribute);
 		//come devo ordianre 
 		ctx.setVariable("order", order);
+		//verbalizzabili
+		ctx.setVariable("verbalizzabili", verbalizzabili);
 		
 		
-		templateEngine.process(path, ctx, response.getWriter());
 		
-		
+		templateEngine.process(path, ctx, response.getWriter());		
 	}
 
 	/**

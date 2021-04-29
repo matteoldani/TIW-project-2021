@@ -2,6 +2,7 @@ package it.polimi.tiw.studente;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -110,7 +111,19 @@ public class LoginStudente extends HttpServlet {
 		//get the param from the request
 		matricola = request.getParameter("username");
 		password = request.getParameter("password");
-		studente = studentiDao.checkCredentials(matricola, password);
+		try {
+			studente = studentiDao.checkCredentials(matricola, password);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+			//in una pagine di errore generica (scleta migliore esteticamente) 
+			error.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+			request.setAttribute("errorMessage", error);
+			String path = getServletContext().getContextPath() + "/ErrorPage";
+			response.sendRedirect(path);
+			return;
+		}
 		if(studente != null) {
 			//login succeed
 			if(request.getSession().getAttribute("docente") != null) {

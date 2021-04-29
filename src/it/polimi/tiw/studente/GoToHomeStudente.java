@@ -2,6 +2,7 @@ package it.polimi.tiw.studente;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.servlet.ServletContext;
@@ -58,7 +59,7 @@ public class GoToHomeStudente extends HttpServlet {
 		Studente studente = (Studente) request.getSession(false).getAttribute("studente");
 		StudentiDAO studentiDao = new StudentiDAO(connection);
 		CorsiDAO corsiDao = new CorsiDAO(connection);
-		ArrayList<Corso> corsiStudente = studentiDao.getCourseList(studente.getMatricola());
+		ArrayList<Corso> corsiStudente;
 		ArrayList<Appello> appelliCorso = null;
 		Corso c = null;
 		//if the request has an id i have to get also the date of the exams for that course 
@@ -67,7 +68,19 @@ public class GoToHomeStudente extends HttpServlet {
 		Message errorMessage = null;
 		
 		errorMessage = new Message();
-		
+		try {
+			corsiStudente = studentiDao.getCourseList(studente.getMatricola());
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+			//in una pagine di errore generica (scleta migliore esteticamente) 
+			errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+			request.setAttribute("errorMessage", errorMessage);
+			String path = getServletContext().getContextPath() + "/ErrorPage";
+			response.sendRedirect(path);
+			return;
+		}
 		/*
 		 * Controlli effettuati sul parametro id per evitare errori: 
 		 * 1) se null non devo far vedere nessun appello 
@@ -80,18 +93,17 @@ public class GoToHomeStudente extends HttpServlet {
 				selectedCourse = Integer.parseInt(id);
 			}catch(NumberFormatException e) {
 				selectedCourse = null;
-				errorMessage.setMessage("Il corso selezionato non è disponibile");
+				errorMessage.setMessage("Il corso selezionato non e' disponibile");
 			}
 			
 		}else{
 			selectedCourse = null;
 			if(id != null && id.equals("")) {
-				errorMessage.setMessage("Il corso selezionato non è disponibile");
+				errorMessage.setMessage("Il corso selezionato non e' disponibile");
 			}
 		}
 		
 		if(selectedCourse != null) {
-			System.out.println("letto l'id in mdo corretto");
 			//i need to get the dates 
 			for(Corso corso : corsiStudente) {
 				if(corso.getId_corso() == selectedCourse) {
@@ -100,9 +112,21 @@ public class GoToHomeStudente extends HttpServlet {
 			}
 			if(c != null) {
 				//vedre se si può prendere l'id in modo più comodo
-				appelliCorso = corsiDao.getAppelliCorso(c.getId_corso());
+				try {
+					appelliCorso = corsiDao.getAppelliCorso(c.getId_corso());
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+					//in una pagine di errore generica (scleta migliore esteticamente) 
+					errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+					request.setAttribute("errorMessage", errorMessage);
+					String path = getServletContext().getContextPath() + "/ErrorPage";
+					response.sendRedirect(path);
+					return;
+				}
 			}else {
-				errorMessage.setMessage("Il corso selezionato non è disponibile");
+				errorMessage.setMessage("Il corso selezionato non e' disponibile");
 			}
 		}
 		

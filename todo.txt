@@ -1,6 +1,18 @@
 Cose da fare 
 
-- inserire in gotoiscrtittiesame il controllo che possa o meno abilitare il verbalizza ovvero che controlla che effettivamento ci sia qualcosa da verbalizzare
-- fare questo controllo anche prima di effettuare la verbalizzazione vera e propria 
+--- inserire in gotoiscrtittiesame il controllo che possa o meno abilitare il verbalizza ovvero che controlla che effettivamento ci sia qualcosa da verbalizzare
+--- fare questo controllo anche prima di effettuare la verbalizzazione vera e propria 
 - stampare e creare la pagina capace di leggere il verbale e farlo vedere
 - le cose dette sopra riguardo il check le farei in un metodo di appelliDao che restituisce il numero di voti verbalizzabili oppure che restituisce true o false
+
+- non viene controllato il fatto che un voto verbalizzato non può essere modificato e poi ripubblicato e via dicendo
+- controllare perchè il messaggio di successo non viene letto nel modo corretto
+- verifiare la pagine di errore staccando il database 
+
+COMMENTI SULL'IMPLEMENTAZIONE: 
+
+- i controlli sull'id non sono eseguiti su una classe a parte perchè, considerato il poco sforzo per replicare il codice in
+  questo progetto ho preferito privilegiare una migliore customizzazione del messaggio di errore in quanto questa scelta non 
+  andava a discapito della leggibilità del codice
+  
+ 

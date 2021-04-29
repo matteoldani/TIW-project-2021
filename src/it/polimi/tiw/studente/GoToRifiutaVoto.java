@@ -2,8 +2,8 @@ package it.polimi.tiw.studente;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
 
 import it.polimi.tiw.beans.IscrittiAppello;
 import it.polimi.tiw.beans.Message;
@@ -67,18 +66,31 @@ public class GoToRifiutaVoto extends HttpServlet {
 				id_appello = Integer.parseInt(id_appello_string);
 			}catch(NumberFormatException e) {
 				id_appello = null;
-				errorMessage.setMessage("L'appello selezionato non è corretto");
+				errorMessage.setMessage("L'appello selezionato non e' corretto");
 			}
 			
 		}else{
 			id_appello = null;
 			if(id_appello_string != null && id_appello_string.equals("")) {
-				errorMessage.setMessage("L'appello selezionato non è corretto");
+				errorMessage.setMessage("L'appello selezionato non e' corretto");
 			}
 		}
 		//verifico che lo studente sia iscrtito a questo appello 
 		AppelliDAO appelliDao = new AppelliDAO(connection);
-		IscrittiAppello ia = appelliDao.getIscrittoAppello(id_appello, matricola);
+		IscrittiAppello ia = null;
+		try {
+			ia = appelliDao.getIscrittoAppello(id_appello, matricola);
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+			//in una pagine di errore generica (scleta migliore esteticamente) 
+			errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+			request.setAttribute("errorMessage", errorMessage);
+			String path = getServletContext().getContextPath() + "/ErrorPage";
+			response.sendRedirect(path);
+			return;
+		}
 		if(ia != null) {
 			//studente iscritto, devo verificare che il voto fosse rifiutabile
 			if(ia.getStato().equals("pubblicato")) {
@@ -90,7 +102,19 @@ public class GoToRifiutaVoto extends HttpServlet {
 				}else {
 					//se posso rifiutre
 					if(voto.equals("30 e Lode")) {
-						controllo = appelliDao.rifiutaVoto(id_appello, matricola);
+						try {
+							controllo = appelliDao.rifiutaVoto(id_appello, matricola);
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+							//in una pagine di errore generica (scleta migliore esteticamente) 
+							errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+							request.setAttribute("errorMessage", errorMessage);
+							String path = getServletContext().getContextPath() + "/ErrorPage";
+							response.sendRedirect(path);
+							return;
+						}
 					}else {
 						try {
 							voto_numerico = Integer.parseInt(voto);
@@ -99,11 +123,21 @@ public class GoToRifiutaVoto extends HttpServlet {
 							//se c'è iun prolema a livello di consistenza del database 
 							voto_numerico = null;							
 							errorMessage.setMessage("Errore nel database, riprova più tardi");
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+							//in una pagine di errore generica (scleta migliore esteticamente) 
+							errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+							request.setAttribute("errorMessage", errorMessage);
+							String path = getServletContext().getContextPath() + "/ErrorPage";
+							response.sendRedirect(path);
+							return;
 						}
 					}
 					
 					if(!controllo) {
-						errorMessage.setMessage("Impossibile rifiutare il voto, riprovare più tardi");
+						errorMessage.setMessage("Impossibile rifiutare il voto, riprovare piu' tardi");
 					}
 					
 				}
@@ -114,20 +148,18 @@ public class GoToRifiutaVoto extends HttpServlet {
 			if(errorMessage.getMessage().equals("")) {
 				String path = request.getContextPath() + "/EsitoEsame?id=" + id_appello;
 				response.sendRedirect(path);
-			}else {
-				String path = "WEB-INF/errorPage.html";
-				
-				ServletContext servletContext = getServletContext();
-				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+			}else {				
 				
 				//se ho trovato un errore l'utente viene mandato in una pagina in cui viene fatto vedere l'errore e 
 				//data la possibilità di tornare alla home. 
 				//in questo modo gestisco anche gli errori a livello di server. In ogni caso l'utente arriva in qeusta
 				//pagina solo se cerca di moficare in modo malevolo la request
 				
-				ctx.setVariable("errorMessage", errorMessage);
-				
-				templateEngine.process(path, ctx, response.getWriter());
+				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+				request.setAttribute("errorMessage", errorMessage);
+				String path = getServletContext().getContextPath() + "/ErrorPage";
+				response.sendRedirect(path);
+				return;
 			}
 			
 			

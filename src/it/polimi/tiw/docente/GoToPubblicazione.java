@@ -2,9 +2,9 @@ package it.polimi.tiw.docente;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
 
 import it.polimi.tiw.beans.Appello;
 import it.polimi.tiw.beans.Corso;
@@ -41,7 +40,7 @@ public class GoToPubblicazione extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
     
-public void init() throws ServletException {
+    public void init() throws ServletException {
     	
     	//Credo la connessione con il database
     	connection = ConnectionHandler.getConnection(getServletContext());
@@ -90,12 +89,35 @@ public void init() throws ServletException {
 		//se l'appello è corretto verifico che sia del docente giusto
 		
 		if(id_appello != null) {
-			System.out.println("id appello letto in mdoo corretto");
-			
+
 			//devo controlalre che effettivamente l'id appartenga a un corso che è tenuto dal professore 
 			docente = (Docente) request.getSession(false).getAttribute("docente");
-			Appello appello = appelliDao.getAppelloFromID(id_appello);
-			ArrayList<Corso> corsiDocente = docentiDao.getCourseList(docente.getId_docente());
+			Appello appello;
+			try {
+				appello = appelliDao.getAppelloFromID(id_appello);
+			} catch (SQLException e) {
+				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+				//in una pagine di errore generica (scleta migliore esteticamente) 
+				e.printStackTrace();
+				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+				request.setAttribute("errorMessage", errorMessage);
+				String path = getServletContext().getContextPath() + "/ErrorPage";
+				response.sendRedirect(path);
+				return;
+			}
+			ArrayList<Corso> corsiDocente = null;
+			try {
+				corsiDocente = docentiDao.getCourseList(docente.getId_docente());
+			} catch (SQLException e) {
+				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+				//in una pagine di errore generica (scleta migliore esteticamente) 
+				e.printStackTrace();
+				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+				request.setAttribute("errorMessage", errorMessage);
+				String path = getServletContext().getContextPath() + "/ErrorPage";
+				response.sendRedirect(path);
+				return;
+			}
 			boolean controllo = false;
 			for(Corso c : corsiDocente) {
 				if(c.getId_corso() == appello.getId_corso()) {
@@ -113,27 +135,24 @@ public void init() throws ServletException {
 		//se non ci sono errori allora pubblico 
 		if(errorMessage.getMessage().equals("")) {
 			boolean ris;
-			ris = appelliDao.pubblicaVoti(id_appello);
-			
-			if(ris) {
-				successMessage.setMessage("Pubblicazione effettuata con successo");
-				request.setAttribute("successMessage", successMessage);
-				String path = getServletContext().getContextPath() + "/IscrittiAppello?id=" + id_appello;
+			try {
+				ris = appelliDao.pubblicaVoti(id_appello);
+			} catch (SQLException e) {
+				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+				//in una pagine di errore generica (scleta migliore esteticamente) 
+				e.printStackTrace();
+				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+				request.setAttribute("errorMessage", errorMessage);
+				String path = getServletContext().getContextPath() + "/ErrorPage";
 				response.sendRedirect(path);
-			}else {
-	
-				String path = "WEB-INF/errorPage.html";
-				
-				ServletContext servletContext = getServletContext();
-				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-				
-				
-				//se c'è un errore lo stampo a inizio pagina
-				ctx.setVariable("errorMessage", errorMessage);
-
-				templateEngine.process(path, ctx, response.getWriter());
-				
+				return;
 			}
+			
+			successMessage.setMessage("Pubblicazione effettuata con successo");
+			request.setAttribute("successMessage", successMessage);
+			String path = getServletContext().getContextPath() + "/IscrittiAppello?id=" + id_appello;
+			response.sendRedirect(path);
+			
 		}
 
 	}

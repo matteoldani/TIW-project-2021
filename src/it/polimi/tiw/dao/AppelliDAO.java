@@ -23,7 +23,7 @@ private Connection connection;
 	}
 	
 	//return the list of exams scheduled for a course
-	public ArrayList<IscrittiAppello> getIscrittiAppello(int id_appello, String tag, String order){
+	public ArrayList<IscrittiAppello> getIscrittiAppello(int id_appello, String tag, String order) throws SQLException{
 		
 		Appello app = null;
 		ArrayList<IscrittiAppello> list = new ArrayList<>();
@@ -37,111 +37,107 @@ private Connection connection;
 		
 		
 		//eseguo query che costruisce la lista di iscritti all'appello
-		try {
-			switch(tag) {
-			case "matricola" : 
-				if(order.equals("ASC")) {
-					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.matricola ASC";
-				}else {
-					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.matricola DESC";
-				}
-				break;
-			case "cognome" : 
-				if(order.equals("ASC")) {
-					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.cognome ASC";
-				}else {
-					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.cognome DESC";
-				}
-				break;
-			case "nome" : 
-				if(order.equals("ASC")) {
-					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.nome ASC";
-				}else {
-					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.nome DESC";
-				}
-				break;
-			case "email" : 
-				if(order.equals("ASC")) {
-					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.email ASC";
-				}else {
-					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.email DESC";
-				}
-				break;
-			case "corso_laurea" : 
-				if(order.equals("ASC")) {
-					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.corso_laurea ASC";
-				}else {
-					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.corso_laurea DESC";
-				}
-				break;
-			case "voto" : 
-				if(order.equals("ASC")) {
-					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY iscritti_appello.voto ASC";
-				}else {
-					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY iscritti_appello.voto DESC";
-				}
-				break;
-			case "stato" : 
-				if(order.equals("ASC")) {
-					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY iscritti_appello.stato ASC";
-				}else {
-					query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY iscritti_appello.stato DESC";
-				}
-				break;
-				
-			
+		
+		switch(tag) {
+		case "matricola" : 
+			if(order.equals("ASC")) {
+				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.matricola ASC";
+			}else {
+				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.matricola DESC";
 			}
-			pstatement = connection.prepareStatement(query);
-			pstatement.setString(1, String.valueOf(id_appello));
-			
-			result = pstatement.executeQuery();
-			System.out.println(result);
-			
-			Studente studente;
-			IscrittiAppello iscrittiAppello;
-			String votoDefinitivo;
-			int votoLetto;
-			
-			while(result.next()) {
-				studente = new Studente(result.getInt("matricola"),
-										result.getString("nome"),
-										result.getString("cognome"),
-										result.getString("corso_laurea"),
-										result.getString("email"));
-				
-				votoLetto = result.getInt("voto");
-				switch(votoLetto) { //vuoto = -15, assente = -10, riprovato = -5, rimandato = 0, normali, lode = 33
-					case -15: votoDefinitivo = "-"; break;
-					case -10: votoDefinitivo = "Assente"; break;
-					case -5: votoDefinitivo = "Riprovato"; break;
-					case 0: votoDefinitivo = "Rimandato"; break;
-					case 33: votoDefinitivo = "30 e Lode"; break;
-					default: 
-						if(votoLetto >= 18 && votoLetto<= 30) {
-							votoDefinitivo = String.valueOf(votoLetto);
-						}else {
-							votoDefinitivo = "Errore voto";
-						}
-						break;
-				}
-				iscrittiAppello = new IscrittiAppello(studente, 
-													votoDefinitivo,
-													result.getString("stato"),
-													app);
-				
-				
-				list.add(iscrittiAppello);
+			break;
+		case "cognome" : 
+			if(order.equals("ASC")) {
+				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.cognome ASC";
+			}else {
+				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.cognome DESC";
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			break;
+		case "nome" : 
+			if(order.equals("ASC")) {
+				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.nome ASC";
+			}else {
+				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.nome DESC";
+			}
+			break;
+		case "email" : 
+			if(order.equals("ASC")) {
+				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.email ASC";
+			}else {
+				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.email DESC";
+			}
+			break;
+		case "corso_laurea" : 
+			if(order.equals("ASC")) {
+				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.corso_laurea ASC";
+			}else {
+				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.corso_laurea DESC";
+			}
+			break;
+		case "voto" : 
+			if(order.equals("ASC")) {
+				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY iscritti_appello.voto ASC";
+			}else {
+				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY iscritti_appello.voto DESC";
+			}
+			break;
+		case "stato" : 
+			if(order.equals("ASC")) {
+				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY iscritti_appello.stato ASC";
+			}else {
+				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY iscritti_appello.stato DESC";
+			}
+			break;
+			
+		
+		}
+		pstatement = connection.prepareStatement(query);
+		pstatement.setString(1, String.valueOf(id_appello));
+		
+		result = pstatement.executeQuery();
+		System.out.println(result);
+		
+		Studente studente;
+		IscrittiAppello iscrittiAppello;
+		String votoDefinitivo;
+		int votoLetto;
+		
+		while(result.next()) {
+			studente = new Studente(result.getInt("matricola"),
+									result.getString("nome"),
+									result.getString("cognome"),
+									result.getString("corso_laurea"),
+									result.getString("email"));
+			
+			votoLetto = result.getInt("voto");
+			switch(votoLetto) { //vuoto = -15, assente = -10, riprovato = -5, rimandato = 0, normali, lode = 33
+				case -15: votoDefinitivo = "-"; break;
+				case -10: votoDefinitivo = "Assente"; break;
+				case -5: votoDefinitivo = "Riprovato"; break;
+				case 0: votoDefinitivo = "Rimandato"; break;
+				case 33: votoDefinitivo = "30 e Lode"; break;
+				default: 
+					if(votoLetto >= 18 && votoLetto<= 30) {
+						votoDefinitivo = String.valueOf(votoLetto);
+					}else {
+						votoDefinitivo = "Errore voto";
+					}
+					break;
+			}
+			iscrittiAppello = new IscrittiAppello(studente, 
+												votoDefinitivo,
+												result.getString("stato"),
+												app);
+			
+			
+			list.add(iscrittiAppello);
 		}
 		
 		
 		return list;
 	}
 
-	public Appello getAppelloFromID(int id_appello) {
+	public Appello getAppelloFromID(int id_appello) throws SQLException {
 		
 		Appello appello = null;
 		
@@ -150,24 +146,22 @@ private Connection connection;
 		PreparedStatement pstatement = null;
 		
 		//eseguo query per prendere l'appello giusto
-		try {
-			pstatement = connection.prepareStatement(queryAppello);
-			pstatement.setString(1, String.valueOf(id_appello));
-	
-			result = pstatement.executeQuery();
-			
-			while(result.next()) {
-				appello = new Appello(id_appello, result.getDate("data"), result.getInt("id_corso"));
-			}
-		}catch(SQLException e) {
-			e.printStackTrace();
+		
+		pstatement = connection.prepareStatement(queryAppello);
+		pstatement.setString(1, String.valueOf(id_appello));
+
+		result = pstatement.executeQuery();
+		
+		while(result.next()) {
+			appello = new Appello(id_appello, result.getDate("data"), result.getInt("id_corso"));
 		}
+		
 		
 		
 		return appello;
 	}
 	
-	public IscrittiAppello getIscrittoAppello(int id_appello, int matricola) {
+	public IscrittiAppello getIscrittoAppello(int id_appello, int matricola) throws SQLException {
 		IscrittiAppello ia = null;
 		Appello app = null;
 		
@@ -226,76 +220,67 @@ private Connection connection;
 		return ia;
 	}
 
-	public boolean updateVoto(Integer matricola, Integer id_appello, String voto) {
+	public boolean updateVoto(Integer matricola, Integer id_appello, String voto) throws SQLException {
 		// TODO Auto-generated method stub
 		
 		String query = "UPDATE iscritti_appello SET voto = ?, stato = 'inserito' WHERE matricola = ? AND id_appello = ? ";
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		
-		try {
-			pstatement = connection.prepareStatement(query);
-			switch(voto) {
-				case "assente": pstatement.setInt(1, -10); break;
-				case "rimandato": pstatement.setInt(1, 0); break;
-				case "riprovato": pstatement.setInt(1, -5); break;
-				case "lode": pstatement.setInt(1, 33); break;
-				default: 
-					pstatement.setInt(1, Integer.parseInt(voto)); break;
+		
+		pstatement = connection.prepareStatement(query);
+		switch(voto) {
+			case "assente": pstatement.setInt(1, -10); break;
+			case "rimandato": pstatement.setInt(1, 0); break;
+			case "riprovato": pstatement.setInt(1, -5); break;
+			case "lode": pstatement.setInt(1, 33); break;
+			default: 
+				pstatement.setInt(1, Integer.parseInt(voto)); break;
 
-			}
-			pstatement.setInt(2, matricola);
-			pstatement.setInt(3, id_appello);
-			System.out.println(pstatement);
-			pstatement.executeUpdate();
-			return true;
-		}catch(SQLException e) {
-			e.printStackTrace();
-			return false;
 		}
+		pstatement.setInt(2, matricola);
+		pstatement.setInt(3, id_appello);
+		System.out.println(pstatement);
+		pstatement.executeUpdate();
+		return true;
+		
 		
 	}
 	
-	public boolean pubblicaVoti(Integer id_appello) {
+	public boolean pubblicaVoti(Integer id_appello) throws SQLException {
 		
 		String query = "UPDATE iscritti_appello SET stato = 'pubblicato' WHERE stato = 'inserito' AND id_appello = ? ";
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		
-		try {
-			pstatement = connection.prepareStatement(query);
-			pstatement.setInt(1, id_appello);
-			System.out.println(pstatement);
-			pstatement.executeUpdate();
-			return true;
-		}catch(SQLException e) {
-			e.printStackTrace();
-			return false;
-		}
+
+		pstatement = connection.prepareStatement(query);
+		pstatement.setInt(1, id_appello);
+		System.out.println(pstatement);
+		pstatement.executeUpdate();
+		return true;
+
 	}
 	
-	public boolean rifiutaVoto(Integer id_appello, Integer matricola) {
+	public boolean rifiutaVoto(Integer id_appello, Integer matricola) throws SQLException {
 		
 		String query = "UPDATE iscritti_appello SET stato = 'rifiutato' WHERE matricola = ? AND id_appello = ? ";
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		
 
-		try {
-			pstatement = connection.prepareStatement(query);
-			pstatement.setInt(1, matricola);
-			pstatement.setInt(2, id_appello);
-			System.out.println(pstatement);
-			pstatement.executeUpdate();
-			return true;
-		}catch(SQLException e) {
-			e.printStackTrace();
-			return false;
-		}
+
+		pstatement = connection.prepareStatement(query);
+		pstatement.setInt(1, matricola);
+		pstatement.setInt(2, id_appello);
+		System.out.println(pstatement);
+		pstatement.executeUpdate();
+		return true;
+	
 
 	}
 
-	public Verbale verbalizzaAppello(Integer id_appello) {
+	public Verbale verbalizzaAppello(Integer id_appello) throws SQLException {
 		
 		Verbale verbale = null;
 		String query;
@@ -307,8 +292,8 @@ private Connection connection;
 		//creare il verbale 
 		//inserire il verbale in verbali e aggiungere tutti i verbalizati in iscrtitti_verbalizzati
 		
-		//aggiornoi voti dei rimadnati dell'appello 
-		query = "UPDATE iscritti_appello SET voto = 'rimandato' WHERE  id_appello = ? AND stato = 'rifiutato'";
+		//aggiornoi voti dei rimadnati dell'appello --> rimandato = 0
+		query = "UPDATE iscritti_appello SET voto = 0 WHERE  id_appello = ? AND stato = 'rifiutato'";
 		
 		try {
 			pstatement = connection.prepareStatement(query);	
@@ -322,12 +307,13 @@ private Connection connection;
 		//prendo solo i pubblicati e rifiutati
 		//lo faccio priima di cambiare lo stato in verbalizzato per non dover prenere anche quelli che potenzialemente sono gia stati vervalizzati in verbali precedenti
 		ArrayList<IscrittiAppello> iscrittiAppello = getIscrittiAppello(id_appello, "", "");
-		for(IscrittiAppello ia : iscrittiAppello) {
-			if(!ia.getStato().equals("pubblicato") && !ia.getStato().equals("rifiutato")) {
-				iscrittiAppello.remove(ia);
+		for(int i=0; i<iscrittiAppello.size(); i++) {
+			if(!iscrittiAppello.get(i).getStato().equals("pubblicato") && !iscrittiAppello.get(i).getStato().equals("rifiutato")) {
+				iscrittiAppello.remove(iscrittiAppello.get(i));
+				i--;
 			}else {
 				//per ogni elemento che tengo imposto già che il voto viene verbalizzato 
-				ia.setStato("verbalizzato");
+				iscrittiAppello.get(i).setStato("verbalizzato");
 			}
 		}
 		

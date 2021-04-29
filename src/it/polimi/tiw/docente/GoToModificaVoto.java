@@ -2,6 +2,7 @@ package it.polimi.tiw.docente;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.servlet.ServletContext;
@@ -98,11 +99,33 @@ public class GoToModificaVoto extends HttpServlet {
 			//devo controllare che l'appello sia del prof e che la matricola sia nell'appello
 			
 			
-			appello = appelliDao.getAppelloFromID(id_appello);
+			try {
+				appello = appelliDao.getAppelloFromID(id_appello);
+			} catch (SQLException e) {
+				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+				//in una pagine di errore generica (scleta migliore esteticamente) 
+				e.printStackTrace();
+				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+				request.setAttribute("errorMessage", errorMessage);
+				String path = getServletContext().getContextPath() + "/ErrorPage";
+				response.sendRedirect(path);
+				return;
+			}
 			if(appello == null) {
 				errorMessage.setMessage("appello non esistente");
 			}else {
-				corso = corsiDao.getCorsoFromId(appello.getId_corso());
+				try {
+					corso = corsiDao.getCorsoFromId(appello.getId_corso());
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+					//in una pagine di errore generica (scleta migliore esteticamente) 
+					errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+					request.setAttribute("errorMessage", errorMessage);
+					String path = getServletContext().getContextPath() + "/ErrorPage";
+					response.sendRedirect(path);
+					return;
+				}
 				
 				if(corso == null) {
 					errorMessage.setMessage("appello selezionato non associato a nessun corso");
@@ -111,7 +134,18 @@ public class GoToModificaVoto extends HttpServlet {
 												
 						//il corso è del docente, devo solo controllare che la matricola sia iscritta all'appello e al corso
 						ArrayList<IscrittiAppello> listaIscritti = new ArrayList<>();
-						listaIscritti = appelliDao.getIscrittiAppello(id_appello, "", "");
+						try {
+							listaIscritti = appelliDao.getIscrittiAppello(id_appello, "", "");
+						} catch (SQLException e) {
+							//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+							//in una pagine di errore generica (scleta migliore esteticamente) 
+							e.printStackTrace();
+							errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+							request.setAttribute("errorMessage", errorMessage);
+							String path = getServletContext().getContextPath() + "/ErrorPage";
+							response.sendRedirect(path);
+							return;
+						}
 						boolean controllo = false;
 						for(IscrittiAppello iscritti : listaIscritti) {
 							if(iscritti.getStudente().getMatricola() == matricola) {
@@ -130,7 +164,18 @@ public class GoToModificaVoto extends HttpServlet {
 							errorMessage.setMessage("matricola non presente in questo appello");
 						}else {
 							IscrittiAppello ia;
-							stato = appelliDao.getIscrittoAppello(id_appello, matricola).getStato();
+							try {
+								stato = appelliDao.getIscrittoAppello(id_appello, matricola).getStato();
+							} catch (SQLException e) {
+								//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+								//in una pagine di errore generica (scleta migliore esteticamente) 
+								e.printStackTrace();
+								errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+								request.setAttribute("errorMessage", errorMessage);
+								String path = getServletContext().getContextPath() + "/ErrorPage";
+								response.sendRedirect(path);
+								return;
+							}
 						}
 	
 					}else {
@@ -183,56 +228,68 @@ public class GoToModificaVoto extends HttpServlet {
 		Integer matricola = null;
 		Integer votoNumerico = null;
 		Message errorMessage = new Message();
+		String commonError = "Impossible processare i dati inseriti. Matricola, id appello e voto inseriti potrebbero non essere validi";
 		errorMessage.setMessage(""); //se cambia vuol dire che c'è stato un errore e non devo modificare il database
 		
 		
 		//controllo che sia arriavto un id appello corretto
 		if(id_appello_string == null || id_appello_string.equals("")) {
-			errorMessage.setMessage("Impossible processare i dati inseriti. Matricola, id appello e voto inseriti potrebbero non essere validi");
+			errorMessage.setMessage(commonError);
 		}else {
 			try {
 				id_appello = Integer.parseInt(id_appello_string);
 			}catch(NumberFormatException e) {
 				id_appello = null;
-				errorMessage.setMessage("Impossible processare i dati inseriti. Matricola, id appello e voto inseriti potrebbero non essere validi");
+				errorMessage.setMessage(commonError);
 			}
 		}
 		
 		//controllo che la matricola sia corretta
 		if(matricola_string == null || matricola_string.equals("")) {
-			errorMessage.setMessage("Impossible processare i dati inseriti. Matricola, id appello e voto inseriti potrebbero non essere validi");
+			errorMessage.setMessage(commonError);
 		}else {
 			try {
 				matricola = Integer.parseInt(matricola_string);
 			}catch(NumberFormatException e) {
 				matricola = null;
-				errorMessage.setMessage("Impossible processare i dati inseriti. Matricola, id appello e voto inseriti potrebbero non essere validi");
+				errorMessage.setMessage(commonError);
 			}
 		}
 		
 		//controllo che il voto sia valido
 		if(voto == null || voto.equals("")) {
-			errorMessage.setMessage("Impossible processare i dati inseriti. Matricola, id appello e voto inseriti potrebbero non essere validi");
+			errorMessage.setMessage(commonError);
 		}else {
 			if(!voto.equals("assente") && !voto.equals("rimandato") && !voto.equals("riprovato")  && !voto.equals("lode")) {
 				try {
 					votoNumerico = Integer.parseInt(voto);
 					if(votoNumerico < 18 || votoNumerico > 30) {
-						errorMessage.setMessage("Impossible processare i dati inseriti. Matricola, id appello e voto inseriti potrebbero non essere validi");
+						errorMessage.setMessage(commonError);
 					}
 						
 				}catch(NumberFormatException e) {
 					matricola = null;
-					errorMessage.setMessage("Impossible processare i dati inseriti. Matricola, id appello e voto inseriti potrebbero non essere validi");
+					errorMessage.setMessage(commonError);
 				}
 			}
 		}
 		
-		IscrittiAppello ia;
+		IscrittiAppello ia = null;
 		AppelliDAO appelliDao = new AppelliDAO(connection);
 		//controllo che appello e matricola associati esistanoù
 		if(errorMessage.getMessage().equals("")) {
-			ia = appelliDao.getIscrittoAppello(id_appello, matricola);
+			try {
+				ia = appelliDao.getIscrittoAppello(id_appello, matricola);
+			} catch (SQLException e) {
+				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+				//in una pagine di errore generica (scleta migliore esteticamente) 
+				e.printStackTrace();
+				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+				request.setAttribute("errorMessage", errorMessage);
+				String path = getServletContext().getContextPath() + "/ErrorPage";
+				response.sendRedirect(path);
+				return;
+			}
 			if(ia == null) {
 				errorMessage.setMessage("Lo studente scelto non era iscrtito a questo appello");
 			}
@@ -241,10 +298,21 @@ public class GoToModificaVoto extends HttpServlet {
 		
 		//controllo che lo stato nel database non sia "pubblicato"
 		if(errorMessage.getMessage().equals("")){
-			ia = appelliDao.getIscrittoAppello(id_appello, matricola);
+			try {
+				ia = appelliDao.getIscrittoAppello(id_appello, matricola);
+			} catch (SQLException e) {
+				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+				//in una pagine di errore generica (scleta migliore esteticamente) 
+				e.printStackTrace();
+				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+				request.setAttribute("errorMessage", errorMessage);
+				String path = getServletContext().getContextPath() + "/ErrorPage";
+				response.sendRedirect(path);
+				return;
+			}
 			
 			if(ia.getStato().equals("pubblicato") || ia.getStato().equals("rifiutato") || ia.getStato().equals("verbalizzato")) {
-				errorMessage.setMessage("Non è possibile modificare un voto gia pubblicato o rifiutato");
+				errorMessage.setMessage("Non e' possibile modificare un voto gia pubblicato o rifiutato");
 			}
 		}
 		
@@ -253,34 +321,30 @@ public class GoToModificaVoto extends HttpServlet {
 		//se tutto è valido il messaggio d'errore non è stato modificato
 		if(errorMessage.getMessage().equals("")) {
 			boolean ris;
-			ris = appelliDao.updateVoto(matricola, id_appello, voto);
-			if(ris) {
-				response.sendRedirect(getServletContext().getContextPath() + "/IscrittiAppello?id="+id_appello.toString());
-			}else {
-				String path = "WEB-INF/errorPage.html";
-				
-				ServletContext servletContext = getServletContext();
-				final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-				
-				errorMessage.setMessage("Non è stato possibile aggiornare il voto per un problema con il server");
-				//se c'è un errore lo stampo a inizio pagina
-				ctx.setVariable("errorMessage", errorMessage);
-
-				templateEngine.process(path, ctx, response.getWriter());
+			try {
+				ris = appelliDao.updateVoto(matricola, id_appello, voto);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+				//in una pagine di errore generica (scleta migliore esteticamente) 
+				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+				request.setAttribute("errorMessage", errorMessage);
+				String path = getServletContext().getContextPath() + "/ErrorPage";
+				response.sendRedirect(path);
+				return;
 			}
 			
+			response.sendRedirect(getServletContext().getContextPath() + "/IscrittiAppello?id="+id_appello.toString());
 			
 		}else {
-			String path = "WEB-INF/errorPage.html";
 			
-			ServletContext servletContext = getServletContext();
-			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+			//anche se non è un errore lato server in questo caso è dovuto al tentativo di fare una post maligna e quindi
+			//vale la pena madare l'utente malevolo nella pagine comunque di errore stampando l'effettivo errore 
+			request.setAttribute("errorMessage", errorMessage);
+			String path = getServletContext().getContextPath() + "/ErrorPage";
+			response.sendRedirect(path);
+			return;
 			
-			
-			//se c'è un errore lo stampo a inizio pagina
-			ctx.setVariable("errorMessage", errorMessage);
-
-			templateEngine.process(path, ctx, response.getWriter());
 		}
 		
 	}
