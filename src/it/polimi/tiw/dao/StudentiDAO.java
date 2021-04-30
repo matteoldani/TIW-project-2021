@@ -13,8 +13,11 @@ public class StudentiDAO {
 	
 	private Connection connection;
 	
-	public StudentiDAO(Connection connection) {
+	public StudentiDAO(Connection connection) throws SQLException {
 		this.connection = connection;
+		if(connection == null) {
+			throw new SQLException();
+		}
 	}
 	
 	public Studente checkCredentials(String matricola, String password) throws SQLException {
@@ -26,7 +29,7 @@ public class StudentiDAO {
 		String tempMatricola, tempPass;
 		
 
-		
+	
 		pstatement = connection.prepareStatement(query);
 		pstatement.setString(1, matricola);
 		pstatement.setString(2, password);

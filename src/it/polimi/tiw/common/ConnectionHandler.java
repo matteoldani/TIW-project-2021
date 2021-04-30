@@ -21,9 +21,9 @@ public class ConnectionHandler {
 			//try to connect
 			connection = DriverManager.getConnection(url, user, password);
 		} catch (ClassNotFoundException e) {
-			throw new UnavailableException("Can't load database driver");
+			return null; //throw new UnavailableException("Can't load database driver");
 		} catch (SQLException e) {
-			throw new UnavailableException("Couldn't get db connection");
+			return null; //throw new UnavailableException("Couldn't get db connection");
 		}
 		//return the connection that is the same for every servlet
 		return connection;

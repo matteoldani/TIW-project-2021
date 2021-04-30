@@ -104,7 +104,7 @@ public class LoginDocente extends HttpServlet {
 		
 		String username = null;
 		String password = null;
-		DocentiDAO docenteDAO = new DocentiDAO(this.connection);
+		DocentiDAO docenteDAO;
 		Message error = new Message();
 		Docente docente = null;
 		
@@ -112,6 +112,7 @@ public class LoginDocente extends HttpServlet {
 		username = request.getParameter("username");
 		password = request.getParameter("password");
 		try {
+			docenteDAO = new DocentiDAO(this.connection);
 			docente = docenteDAO.checkCredential(username, password);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -120,7 +121,7 @@ public class LoginDocente extends HttpServlet {
 			//in una pagine di errore generica (scleta migliore esteticamente) 
 			Message errorMessage = new Message();
 			errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-			request.setAttribute("errorMessage", errorMessage);
+			request.getSession().setAttribute("errorMessage", errorMessage);
 			String path = getServletContext().getContextPath() + "/ErrorPage";
 			response.sendRedirect(path);
 			return;
@@ -142,5 +143,12 @@ public class LoginDocente extends HttpServlet {
 		}
 		
 	}
-
+	
+	public void destroy() {
+		try {
+			ConnectionHandler.closeConnection(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }

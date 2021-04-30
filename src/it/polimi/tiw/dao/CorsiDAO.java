@@ -14,8 +14,11 @@ public class CorsiDAO {
 	
 	private Connection connection;
 	
-	public CorsiDAO(Connection connection) {
+	public CorsiDAO(Connection connection) throws SQLException {
 		this.connection = connection;
+		if(connection == null) {
+			throw new SQLException();
+		}
 	}
 	
 	//return the list of exams scheduled for a course

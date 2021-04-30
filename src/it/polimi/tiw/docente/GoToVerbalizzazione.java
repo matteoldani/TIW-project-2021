@@ -62,8 +62,8 @@ public class GoToVerbalizzazione extends HttpServlet {
 		Integer id_appello = null;
 		Message errorMessage = new Message();
 		Message successMessage = new Message();
-		AppelliDAO appelliDao = new AppelliDAO(connection);
-		DocentiDAO docentiDao = new DocentiDAO(connection);
+		AppelliDAO appelliDao;
+		DocentiDAO docentiDao;
 		Verbale verbale = null;
 		errorMessage.setMessage("");
 		successMessage.setMessage("");
@@ -87,84 +87,59 @@ public class GoToVerbalizzazione extends HttpServlet {
 			//devo controlalre che effettivamente l'id appartenga a un corso che è tenuto dal professore 
 
 			Appello appello;
-			try {
-				appello = appelliDao.getAppelloFromID(id_appello);
-			} catch (SQLException e) {
-				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
-				//in una pagine di errore generica (scleta migliore esteticamente) 
-				e.printStackTrace();
-				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.setAttribute("errorMessage", errorMessage);
-				String path = getServletContext().getContextPath() + "/ErrorPage";
-				response.sendRedirect(path);
-				return;
-			}
 			ArrayList<Corso> corsiDocente;
+
 			try {
+				appelliDao = new AppelliDAO(connection);
+				docentiDao = new DocentiDAO(connection);
+				appello = appelliDao.getAppelloFromID(id_appello);
 				corsiDocente = docentiDao.getCourseList(docente.getId_docente());
-			} catch (SQLException e) {
-				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
-				//in una pagine di errore generica (scleta migliore esteticamente) 
-				e.printStackTrace();
-				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.setAttribute("errorMessage", errorMessage);
-				String path = getServletContext().getContextPath() + "/ErrorPage";
-				response.sendRedirect(path);
-				return;
-			}
-			boolean controllo = false;
-			for(Corso c : corsiDocente) {
-				if(c.getId_corso() == appello.getId_corso()) {
-					controllo = true;
-				}
-			}
-			
-			
-			if(controllo) {
 				
-				//devo controllare che esista qualcosa di verbalizzabile 
-				boolean verbalizzabili = false;
-				ArrayList<IscrittiAppello> iscrittiAppello;
-				try {
-					iscrittiAppello = appelliDao.getIscrittiAppello(id_appello, "", "");
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
-					//in una pagine di errore generica (scleta migliore esteticamente) 
-					errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-					request.setAttribute("errorMessage", errorMessage);
-					String path = getServletContext().getContextPath() + "/ErrorPage";
-					response.sendRedirect(path);
-					return;
-				}
-				//controllo che tra quelli iscritti a questo appello almeno uno abbia come stato pubblicato o rifiutato
-				for(IscrittiAppello ia: iscrittiAppello) {
-					if(ia.getStato().equals("pubblicato") || ia.equals("rifiutato")) {
-						verbalizzabili = true;
+				boolean controllo = false;
+				for(Corso c : corsiDocente) {
+					if(c.getId_corso() == appello.getId_corso()) {
+						controllo = true;
 					}
 				}
-				if(verbalizzabili) {
-					try {
-						verbale = appelliDao.verbalizzaAppello(id_appello);
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
-						//in una pagine di errore generica (scleta migliore esteticamente) 
-						errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-						request.setAttribute("errorMessage", errorMessage);
-						String path = getServletContext().getContextPath() + "/ErrorPage";
-						response.sendRedirect(path);
-						return;
+				
+				
+				if(controllo) {
+					
+					//devo controllare che esista qualcosa di verbalizzabile 
+					boolean verbalizzabili = false;
+					ArrayList<IscrittiAppello> iscrittiAppello;
+					
+					iscrittiAppello = appelliDao.getIscrittiAppello(id_appello, "", "");
+					
+					//controllo che tra quelli iscritti a questo appello almeno uno abbia come stato pubblicato o rifiutato
+					for(IscrittiAppello ia: iscrittiAppello) {
+						if(ia.getStato().equals("pubblicato") || ia.equals("rifiutato")) {
+							verbalizzabili = true;
+						}
+					}
+					if(verbalizzabili) {						
+						verbale = appelliDao.verbalizzaAppello(id_appello);						
+					}else {
+						errorMessage.setMessage("non ci sono voti da verbalizzare nell'appello selezionato");
 					}
 				}else {
-					errorMessage.setMessage("non ci sono voti da verbalizzare nell'appello selezionato");
+					errorMessage.setMessage("Impossibile verbalizzare appello, l'appello selezionato non corrisponde a un appello valido");
 				}
-			}else {
-				errorMessage.setMessage("Impossibile verbalizzare appello, l'appello selezionato non corrisponde a un appello valido");
-			}
 
+			} catch (SQLException e) {
+				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+				//in una pagine di errore generica (scleta migliore esteticamente) 
+				e.printStackTrace();
+				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+				request.getSession().setAttribute("errorMessage", errorMessage);
+				String path = getServletContext().getContextPath() + "/ErrorPage";
+				response.sendRedirect(path);
+				return;
+			}
+			
+			
+			
+			
 		}
 		//path del template
 		String path = "WEB-INF/verbale.html";
@@ -189,6 +164,14 @@ public class GoToVerbalizzazione extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
+	}
+	
+	public void destroy() {
+		try {
+			ConnectionHandler.closeConnection(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

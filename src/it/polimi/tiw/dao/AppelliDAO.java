@@ -18,8 +18,11 @@ public class AppelliDAO {
 	
 private Connection connection;
 	
-	public AppelliDAO(Connection connection) {
+	public AppelliDAO(Connection connection) throws SQLException {
 		this.connection = connection;
+		if(connection == null) {
+			throw new SQLException();
+		}
 	}
 	
 	//return the list of exams scheduled for a course
@@ -30,6 +33,7 @@ private Connection connection;
 		String query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.matricola ASC";
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
+		
 		
 		
 		//eseguo query per prendere l'appello giusto
@@ -262,7 +266,7 @@ private Connection connection;
 
 	}
 	
-	public boolean rifiutaVoto(Integer id_appello, Integer matricola) throws SQLException {
+	public void rifiutaVoto(Integer id_appello, Integer matricola) throws SQLException {
 		
 		String query = "UPDATE iscritti_appello SET stato = 'rifiutato' WHERE matricola = ? AND id_appello = ? ";
 		ResultSet result = null;
@@ -274,9 +278,7 @@ private Connection connection;
 		pstatement.setInt(1, matricola);
 		pstatement.setInt(2, id_appello);
 		System.out.println(pstatement);
-		pstatement.executeUpdate();
-		return true;
-	
+		pstatement.executeUpdate();	
 
 	}
 
@@ -318,7 +320,7 @@ private Connection connection;
 		}
 		
 		//aggiorno lo stato di tutti quelli che erano pubblicati e rifiutati in "verbalizzato"
-		query = "UPDATE iscritti_appello SET stato = 'verbalizzatto' WHERE  id_appello = ? AND (stato ='rifiutato' OR stato = 'pubblicato')";
+		query = "UPDATE iscritti_appello SET stato = 'verbalizzato' WHERE  id_appello = ? AND (stato ='rifiutato' OR stato = 'pubblicato')";
 		
 		try {
 			pstatement = connection.prepareStatement(query);	

@@ -119,7 +119,7 @@
 						y
 					</td>
 					<td> 
-						<a th:href="@{/ModificaVoto(id_appello=${id_appello}, matricola=${iscritti.studente.matricola})}" th:text="${iscritti.stato == 'pubblicato' || iscritti.stato == 'rifiutato'} ? Visualizza : Modifica"> Modifica</a>
+						<a th:href="@{/ModificaVoto(id_appello=${id_appello}, matricola=${iscritti.studente.matricola})}" th:text="${iscritti.stato == 'pubblicato' || iscritti.stato == 'rifiutato' || iscritti.stato == 'verbalizzato'} ? Visualizza : Modifica"> Modifica</a>
 					</td>
 					
 					

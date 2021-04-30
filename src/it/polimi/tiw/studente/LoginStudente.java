@@ -104,22 +104,23 @@ public class LoginStudente extends HttpServlet {
 		
 		String matricola = null;
 		String password = null;
-		StudentiDAO studentiDao= new StudentiDAO(this.connection);
-		Message error = new Message();
+		StudentiDAO studentiDao;
+		Message errorMessage = new Message();
 		Studente studente = null;
 		
 		//get the param from the request
 		matricola = request.getParameter("username");
 		password = request.getParameter("password");
 		try {
+			studentiDao = new StudentiDAO(this.connection);
 			studente = studentiDao.checkCredentials(matricola, password);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 			//in una pagine di errore generica (scleta migliore esteticamente) 
-			error.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-			request.setAttribute("errorMessage", error);
+			errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+			request.getSession().setAttribute("errorMessage", errorMessage);
 			String path = getServletContext().getContextPath() + "/ErrorPage";
 			response.sendRedirect(path);
 			return;
@@ -135,8 +136,8 @@ public class LoginStudente extends HttpServlet {
 			
 		}else {
 			//login failed
-			error.setMessage("Username e/o password errati");
-			request.setAttribute("errorMessage", error);
+			errorMessage.setMessage("Username e/o password errati");
+			request.getSession().setAttribute("errorMessage", errorMessage);;
 			doGet(request, response);
 		}
 	}

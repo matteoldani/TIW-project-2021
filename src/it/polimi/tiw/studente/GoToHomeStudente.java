@@ -57,8 +57,8 @@ public class GoToHomeStudente extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		Studente studente = (Studente) request.getSession(false).getAttribute("studente");
-		StudentiDAO studentiDao = new StudentiDAO(connection);
-		CorsiDAO corsiDao = new CorsiDAO(connection);
+		StudentiDAO studentiDao;
+		CorsiDAO corsiDao;
 		ArrayList<Corso> corsiStudente;
 		ArrayList<Appello> appelliCorso = null;
 		Corso c = null;
@@ -69,14 +69,17 @@ public class GoToHomeStudente extends HttpServlet {
 		
 		errorMessage = new Message();
 		try {
+			studentiDao = new StudentiDAO(connection);
+			corsiDao = new CorsiDAO(connection);
 			corsiStudente = studentiDao.getCourseList(studente.getMatricola());
+			
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 			//in una pagine di errore generica (scleta migliore esteticamente) 
 			errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-			request.setAttribute("errorMessage", errorMessage);
+			request.getSession().setAttribute("errorMessage", errorMessage);
 			String path = getServletContext().getContextPath() + "/ErrorPage";
 			response.sendRedirect(path);
 			return;
@@ -120,7 +123,7 @@ public class GoToHomeStudente extends HttpServlet {
 					//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 					//in una pagine di errore generica (scleta migliore esteticamente) 
 					errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-					request.setAttribute("errorMessage", errorMessage);
+					request.getSession().setAttribute("errorMessage", errorMessage);
 					String path = getServletContext().getContextPath() + "/ErrorPage";
 					response.sendRedirect(path);
 					return;
@@ -151,12 +154,23 @@ public class GoToHomeStudente extends HttpServlet {
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 
+	
+	
+	
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
+	}
+	
+	public void destroy() {
+		try {
+			ConnectionHandler.closeConnection(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

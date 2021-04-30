@@ -13,8 +13,11 @@ public class DocentiDAO {
 	
 	private Connection connection;
 	
-	public DocentiDAO(Connection connection) {
+	public DocentiDAO(Connection connection) throws SQLException {
 		this.connection = connection;
+		if(connection == null) {
+			throw new SQLException();
+		}
 	}
 	
 	public Docente checkCredential(String username, String password) throws SQLException {

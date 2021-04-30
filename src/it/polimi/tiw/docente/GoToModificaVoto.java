@@ -64,8 +64,8 @@ public class GoToModificaVoto extends HttpServlet {
 		Studente studente = null;
 		String voto = null;
 		String stato = null;
-		AppelliDAO appelliDao = new AppelliDAO(connection);
-		CorsiDAO corsiDao = new CorsiDAO(connection);
+		AppelliDAO appelliDao;
+		CorsiDAO corsiDao;
 		Docente docente = (Docente) request.getSession().getAttribute("docente");
 		String id_appello_string = request.getParameter("id_appello");
 		String matricola_string = request.getParameter("matricola");
@@ -100,91 +100,66 @@ public class GoToModificaVoto extends HttpServlet {
 			
 			
 			try {
+				appelliDao = new AppelliDAO(connection);
+				corsiDao = new CorsiDAO(connection);
 				appello = appelliDao.getAppelloFromID(id_appello);
+				if(appello == null) {
+					errorMessage.setMessage("appello non esistente");
+				}else {
+				
+					corso = corsiDao.getCorsoFromId(appello.getId_corso());
+					
+					if(corso == null) {
+						errorMessage.setMessage("appello selezionato non associato a nessun corso");
+					}else {
+						if(corso.getId_docente() == docente.getId_docente()) {
+													
+							//il corso è del docente, devo solo controllare che la matricola sia iscritta all'appello e al corso
+							ArrayList<IscrittiAppello> listaIscritti = new ArrayList<>();
+							
+							listaIscritti = appelliDao.getIscrittiAppello(id_appello, "", "");
+							
+							boolean controllo = false;
+							for(IscrittiAppello iscritti : listaIscritti) {
+								if(iscritti.getStudente().getMatricola() == matricola) {
+									controllo =  true;
+									studente = iscritti.getStudente();
+									voto = iscritti.getVoto();
+									break;
+								}
+							}
+							
+							if(!controllo) {
+								//dovrei controllare che sia iscrtito al corso ma per ora non è fatto siccome il database è consistente
+								// e non modificabile da questo punto di vista 
+								
+								//ho bisogno dello studente, dell'id appello e dell'error message 
+								errorMessage.setMessage("matricola non presente in questo appello");
+							}else {
+								IscrittiAppello ia;
+								
+								stato = appelliDao.getIscrittoAppello(id_appello, matricola).getStato();
+
+							}
+		
+						}else {
+							errorMessage.setMessage("Appello selezionato non esistente");
+						}
+							
+					}
+						
+				}
 			} catch (SQLException e) {
 				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 				//in una pagine di errore generica (scleta migliore esteticamente) 
 				e.printStackTrace();
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.setAttribute("errorMessage", errorMessage);
+				request.getSession().setAttribute("errorMessage", errorMessage);
 				String path = getServletContext().getContextPath() + "/ErrorPage";
 				response.sendRedirect(path);
 				return;
 			}
-			if(appello == null) {
-				errorMessage.setMessage("appello non esistente");
-			}else {
-				try {
-					corso = corsiDao.getCorsoFromId(appello.getId_corso());
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-					//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
-					//in una pagine di errore generica (scleta migliore esteticamente) 
-					errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-					request.setAttribute("errorMessage", errorMessage);
-					String path = getServletContext().getContextPath() + "/ErrorPage";
-					response.sendRedirect(path);
-					return;
-				}
-				
-				if(corso == null) {
-					errorMessage.setMessage("appello selezionato non associato a nessun corso");
-				}else {
-					if(corso.getId_docente() == docente.getId_docente()) {
-												
-						//il corso è del docente, devo solo controllare che la matricola sia iscritta all'appello e al corso
-						ArrayList<IscrittiAppello> listaIscritti = new ArrayList<>();
-						try {
-							listaIscritti = appelliDao.getIscrittiAppello(id_appello, "", "");
-						} catch (SQLException e) {
-							//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
-							//in una pagine di errore generica (scleta migliore esteticamente) 
-							e.printStackTrace();
-							errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-							request.setAttribute("errorMessage", errorMessage);
-							String path = getServletContext().getContextPath() + "/ErrorPage";
-							response.sendRedirect(path);
-							return;
-						}
-						boolean controllo = false;
-						for(IscrittiAppello iscritti : listaIscritti) {
-							if(iscritti.getStudente().getMatricola() == matricola) {
-								controllo =  true;
-								studente = iscritti.getStudente();
-								voto = iscritti.getVoto();
-								break;
-							}
-						}
-						
-						if(!controllo) {
-							//dovrei controllare che sia iscrtito al corso ma per ora non è fatto siccome il database è consistente
-							// e non modificabile da questo punto di vista 
-							
-							//ho bisogno dello studente, dell'id appello e dell'error message 
-							errorMessage.setMessage("matricola non presente in questo appello");
-						}else {
-							IscrittiAppello ia;
-							try {
-								stato = appelliDao.getIscrittoAppello(id_appello, matricola).getStato();
-							} catch (SQLException e) {
-								//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
-								//in una pagine di errore generica (scleta migliore esteticamente) 
-								e.printStackTrace();
-								errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-								request.setAttribute("errorMessage", errorMessage);
-								String path = getServletContext().getContextPath() + "/ErrorPage";
-								response.sendRedirect(path);
-								return;
-							}
-						}
-	
-					}else {
-						errorMessage.setMessage("Appello selezionato non esistente");
-					}
-						
-				}
-					
-			}
+			
 		}
 			
 		//path del template
@@ -216,8 +191,10 @@ public class GoToModificaVoto extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		
+		/*
+		 * In questo metodo si è scelto di lasciare divisi i try catch per una migliore divisione e comprensione del codice.
+		 * 		
+		 */
 		//post per aggiornare il voto e lo stato dello studente
 		
 		Docente docente = (Docente) request.getSession().getAttribute("docente");
@@ -275,7 +252,19 @@ public class GoToModificaVoto extends HttpServlet {
 		}
 		
 		IscrittiAppello ia = null;
-		AppelliDAO appelliDao = new AppelliDAO(connection);
+		AppelliDAO appelliDao = null;
+		try {
+			appelliDao = new AppelliDAO(connection);
+		} catch (SQLException e1) {
+			//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+			//in una pagine di errore generica (scleta migliore esteticamente) 
+			e1.printStackTrace();
+			errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+			request.getSession().setAttribute("errorMessage", errorMessage);
+			String path = getServletContext().getContextPath() + "/ErrorPage";
+			response.sendRedirect(path);
+			return;
+		}
 		//controllo che appello e matricola associati esistanoù
 		if(errorMessage.getMessage().equals("")) {
 			try {
@@ -285,7 +274,7 @@ public class GoToModificaVoto extends HttpServlet {
 				//in una pagine di errore generica (scleta migliore esteticamente) 
 				e.printStackTrace();
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.setAttribute("errorMessage", errorMessage);
+				request.getSession().setAttribute("errorMessage", errorMessage);
 				String path = getServletContext().getContextPath() + "/ErrorPage";
 				response.sendRedirect(path);
 				return;
@@ -305,14 +294,14 @@ public class GoToModificaVoto extends HttpServlet {
 				//in una pagine di errore generica (scleta migliore esteticamente) 
 				e.printStackTrace();
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.setAttribute("errorMessage", errorMessage);
+				request.getSession().setAttribute("errorMessage", errorMessage);
 				String path = getServletContext().getContextPath() + "/ErrorPage";
 				response.sendRedirect(path);
 				return;
 			}
 			
 			if(ia.getStato().equals("pubblicato") || ia.getStato().equals("rifiutato") || ia.getStato().equals("verbalizzato")) {
-				errorMessage.setMessage("Non e' possibile modificare un voto gia pubblicato o rifiutato");
+				errorMessage.setMessage("Non e' possibile modificare un voto gia pubblicato, rifiutato o verbalizzato");
 			}
 		}
 		
@@ -328,7 +317,7 @@ public class GoToModificaVoto extends HttpServlet {
 				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 				//in una pagine di errore generica (scleta migliore esteticamente) 
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.setAttribute("errorMessage", errorMessage);
+				request.getSession().setAttribute("errorMessage", errorMessage);
 				String path = getServletContext().getContextPath() + "/ErrorPage";
 				response.sendRedirect(path);
 				return;
@@ -340,13 +329,21 @@ public class GoToModificaVoto extends HttpServlet {
 			
 			//anche se non è un errore lato server in questo caso è dovuto al tentativo di fare una post maligna e quindi
 			//vale la pena madare l'utente malevolo nella pagine comunque di errore stampando l'effettivo errore 
-			request.setAttribute("errorMessage", errorMessage);
+			request.getSession().setAttribute("errorMessage", errorMessage);
 			String path = getServletContext().getContextPath() + "/ErrorPage";
 			response.sendRedirect(path);
 			return;
 			
 		}
 		
+	}
+	
+	public void destroy() {
+		try {
+			ConnectionHandler.closeConnection(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -69,10 +69,23 @@ public class GoToPubblicazione extends HttpServlet {
 		Message errorMessage = new Message();
 		Message successMessage = new Message();
 		Docente docente = (Docente) request.getSession().getAttribute("docente");
-		AppelliDAO appelliDao = new AppelliDAO(connection);
-		DocentiDAO docentiDao = new DocentiDAO(connection);
+		AppelliDAO appelliDao;
+		DocentiDAO docentiDao;
 		
 		errorMessage.setMessage("");
+		try {
+			appelliDao = new AppelliDAO(connection);
+			docentiDao = new DocentiDAO(connection);
+		}catch(SQLException e) {
+			//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+			//in una pagine di errore generica (scleta migliore esteticamente) 
+			e.printStackTrace();
+			errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+			request.getSession().setAttribute("errorMessage", errorMessage);
+			String path = getServletContext().getContextPath() + "/ErrorPage";
+			response.sendRedirect(path);
+			return;
+		}
 		
 		//controllo che sia arriavto un id appello corretto
 		if(id_appello_string == null || id_appello_string.equals("")) {
@@ -92,32 +105,22 @@ public class GoToPubblicazione extends HttpServlet {
 
 			//devo controlalre che effettivamente l'id appartenga a un corso che è tenuto dal professore 
 			docente = (Docente) request.getSession(false).getAttribute("docente");
-			Appello appello;
-			try {
-				appello = appelliDao.getAppelloFromID(id_appello);
-			} catch (SQLException e) {
-				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
-				//in una pagine di errore generica (scleta migliore esteticamente) 
-				e.printStackTrace();
-				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.setAttribute("errorMessage", errorMessage);
-				String path = getServletContext().getContextPath() + "/ErrorPage";
-				response.sendRedirect(path);
-				return;
-			}
+			Appello appello = null;
 			ArrayList<Corso> corsiDocente = null;
 			try {
+				appello = appelliDao.getAppelloFromID(id_appello);
 				corsiDocente = docentiDao.getCourseList(docente.getId_docente());
 			} catch (SQLException e) {
 				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 				//in una pagine di errore generica (scleta migliore esteticamente) 
 				e.printStackTrace();
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.setAttribute("errorMessage", errorMessage);
+				request.getSession().setAttribute("errorMessage", errorMessage);
 				String path = getServletContext().getContextPath() + "/ErrorPage";
 				response.sendRedirect(path);
 				return;
 			}
+			
 			boolean controllo = false;
 			for(Corso c : corsiDocente) {
 				if(c.getId_corso() == appello.getId_corso()) {
@@ -142,19 +145,27 @@ public class GoToPubblicazione extends HttpServlet {
 				//in una pagine di errore generica (scleta migliore esteticamente) 
 				e.printStackTrace();
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.setAttribute("errorMessage", errorMessage);
+				request.getSession().setAttribute("errorMessage", errorMessage);
 				String path = getServletContext().getContextPath() + "/ErrorPage";
 				response.sendRedirect(path);
 				return;
 			}
 			
 			successMessage.setMessage("Pubblicazione effettuata con successo");
-			request.setAttribute("successMessage", successMessage);
+			request.getSession().setAttribute("successMessage", successMessage);
 			String path = getServletContext().getContextPath() + "/IscrittiAppello?id=" + id_appello;
 			response.sendRedirect(path);
 			
 		}
 
+	}
+	
+	public void destroy() {
+		try {
+			ConnectionHandler.closeConnection(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

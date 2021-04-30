@@ -57,8 +57,8 @@ public class GoToHomeDocente extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		Docente docente = (Docente) request.getSession(false).getAttribute("docente");
-		DocentiDAO docentiDao = new DocentiDAO(connection);
-		CorsiDAO corsiDao = new CorsiDAO(connection);
+		DocentiDAO docentiDao;
+		CorsiDAO corsiDao;
 		ArrayList<Corso> corsiDocente;
 		ArrayList<Appello> appelliCorso = null;
 		Corso c = null;
@@ -69,13 +69,15 @@ public class GoToHomeDocente extends HttpServlet {
 		
 		errorMessage = new Message();
 		try {
+			corsiDao = new CorsiDAO(connection);
+			docentiDao = new DocentiDAO(connection);
 			corsiDocente = docentiDao.getCourseList(docente.getId_docente());
 		} catch (SQLException e1) {
 			//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 			//in una pagine di errore generica (scleta migliore esteticamente) 
 			e1.printStackTrace();
 			errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-			request.setAttribute("errorMessage", errorMessage);
+			request.getSession().setAttribute("errorMessage", errorMessage);
 			String path = getServletContext().getContextPath() + "/ErrorPage";
 			response.sendRedirect(path);
 			return;
@@ -121,7 +123,7 @@ public class GoToHomeDocente extends HttpServlet {
 					//in una pagine di errore generica (scleta migliore esteticamente) 
 					e.printStackTrace();
 					errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-					request.setAttribute("errorMessage", errorMessage);
+					request.getSession().setAttribute("errorMessage", errorMessage);
 					String path = getServletContext().getContextPath() + "/ErrorPage";
 					response.sendRedirect(path);
 					return;
@@ -159,6 +161,14 @@ public class GoToHomeDocente extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
+	}
+	
+	public void destroy() {
+		try {
+			ConnectionHandler.closeConnection(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -76,94 +76,85 @@ public class GoToRifiutaVoto extends HttpServlet {
 			}
 		}
 		//verifico che lo studente sia iscrtito a questo appello 
-		AppelliDAO appelliDao = new AppelliDAO(connection);
+		AppelliDAO appelliDao ;
 		IscrittiAppello ia = null;
 		try {
+			appelliDao = new AppelliDAO(connection);
 			ia = appelliDao.getIscrittoAppello(id_appello, matricola);
+			
+			if(ia != null) {
+				//studente iscritto, devo verificare che il voto fosse rifiutabile
+				if(ia.getStato().equals("pubblicato")) {
+					String voto = ia.getVoto();
+					Integer voto_numerico;
+					boolean controllo = false;
+					
+					
+					if(voto.equals("rimandato") || voto.equals("riprovato") || voto.equals("assente")) {
+						errorMessage.setMessage("Voto non rifiutabile");
+					}else {
+						
+						//se posso rifiutre
+						if(voto.equals("30 e Lode")) {						
+							appelliDao.rifiutaVoto(id_appello, matricola);	
+						}else {
+							try {
+								voto_numerico = Integer.parseInt(voto);
+								appelliDao.rifiutaVoto(id_appello, matricola);
+							}catch(NumberFormatException e) {
+								//se c'è iun prolema a livello di consistenza del database 
+								voto_numerico = null;							
+								errorMessage.setMessage("Errore nel database, riprova più tardi");
+								request.getSession().setAttribute("errorMessage", errorMessage);
+								String path = getServletContext().getContextPath() + "/ErrorPage";
+								response.sendRedirect(path);
+								return;
+							} 
+						}					
+					}
+				}else {
+					errorMessage.setMessage("Voto non rifiutabile");
+				}
+				
+			}else {
+				errorMessage.setMessage("L'utente non e' iscrtitto a questo appello");
+			}
+			
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 			//in una pagine di errore generica (scleta migliore esteticamente) 
 			errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-			request.setAttribute("errorMessage", errorMessage);
+			request.getSession().setAttribute("errorMessage", errorMessage);
 			String path = getServletContext().getContextPath() + "/ErrorPage";
 			response.sendRedirect(path);
 			return;
 		}
-		if(ia != null) {
-			//studente iscritto, devo verificare che il voto fosse rifiutabile
-			if(ia.getStato().equals("pubblicato")) {
-				String voto = ia.getVoto();
-				Integer voto_numerico;
-				boolean controllo = false;
-				if(voto.equals("rimandato") || voto.equals("riprovato") || voto.equals("assente")) {
-					errorMessage.setMessage("Voto non rifiutabile");
-				}else {
-					//se posso rifiutre
-					if(voto.equals("30 e Lode")) {
-						try {
-							controllo = appelliDao.rifiutaVoto(id_appello, matricola);
-						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-							//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
-							//in una pagine di errore generica (scleta migliore esteticamente) 
-							errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-							request.setAttribute("errorMessage", errorMessage);
-							String path = getServletContext().getContextPath() + "/ErrorPage";
-							response.sendRedirect(path);
-							return;
-						}
-					}else {
-						try {
-							voto_numerico = Integer.parseInt(voto);
-							controllo = appelliDao.rifiutaVoto(id_appello, matricola);
-						}catch(NumberFormatException e) {
-							//se c'è iun prolema a livello di consistenza del database 
-							voto_numerico = null;							
-							errorMessage.setMessage("Errore nel database, riprova più tardi");
-						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-							//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
-							//in una pagine di errore generica (scleta migliore esteticamente) 
-							errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-							request.setAttribute("errorMessage", errorMessage);
-							String path = getServletContext().getContextPath() + "/ErrorPage";
-							response.sendRedirect(path);
-							return;
-						}
-					}
-					
-					if(!controllo) {
-						errorMessage.setMessage("Impossibile rifiutare il voto, riprovare piu' tardi");
-					}
-					
-				}
-			}else {
-				errorMessage.setMessage("Voto non rifiutabile");
-			}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		if(errorMessage.getMessage().equals("")) {
+			String path = request.getContextPath() + "/EsitoEsame?id=" + id_appello;
+			response.sendRedirect(path);
+		}else {				
 			
-			if(errorMessage.getMessage().equals("")) {
-				String path = request.getContextPath() + "/EsitoEsame?id=" + id_appello;
-				response.sendRedirect(path);
-			}else {				
-				
-				//se ho trovato un errore l'utente viene mandato in una pagina in cui viene fatto vedere l'errore e 
-				//data la possibilità di tornare alla home. 
-				//in questo modo gestisco anche gli errori a livello di server. In ogni caso l'utente arriva in qeusta
-				//pagina solo se cerca di moficare in modo malevolo la request
-				
-				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.setAttribute("errorMessage", errorMessage);
-				String path = getServletContext().getContextPath() + "/ErrorPage";
-				response.sendRedirect(path);
-				return;
-			}
+			//se ho trovato un errore l'utente viene mandato in una pagina in cui viene fatto vedere l'errore e 
+			//data la possibilità di tornare alla home. 
+			//in questo modo gestisco anche gli errori a livello di server. In ogni caso l'utente arriva in qeusta
+			//pagina solo se cerca di moficare in modo malevolo la request
 			
-			
-			
+			errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+			request.getSession().setAttribute("errorMessage", errorMessage);
+			String path = getServletContext().getContextPath() + "/ErrorPage";
+			response.sendRedirect(path);
+			return;
 		}
 		
 	}
@@ -174,6 +165,14 @@ public class GoToRifiutaVoto extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
+	}
+	
+	public void destroy() {
+		try {
+			ConnectionHandler.closeConnection(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -60,7 +60,8 @@ public class GoToEsitoEsame extends HttpServlet {
 		Studente studente = (Studente) request.getSession().getAttribute("studente");
 		Message errorMessage = new Message();
 		IscrittiAppello iscritto = null;
-		AppelliDAO appelliDao = new AppelliDAO(connection);
+		AppelliDAO appelliDao = null;
+		CorsiDAO corsiDao;
 		String voto = null;
 		Integer voto_numerico = null;
 		Corso c = null;
@@ -92,37 +93,28 @@ public class GoToEsitoEsame extends HttpServlet {
 			
 			iscritto = null;
 			try {
+				appelliDao = new AppelliDAO(connection);
+				corsiDao = new CorsiDAO(connection);
 				iscritto = appelliDao.getIscrittoAppello(id_appello, studente.getMatricola());
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
-				//in una pagine di errore generica (scleta migliore esteticamente) 
-				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.setAttribute("errorMessage", errorMessage);
-				String path = getServletContext().getContextPath() + "/ErrorPage";
-				response.sendRedirect(path);
-				return;
-			}
-			
-			if(iscritto == null) {
-				errorMessage.setMessage("Non sei iscritto all'appello selezionato");
-			}
-			
-			CorsiDAO corsiDao = new CorsiDAO(connection);
-			try {
+				
+				if(iscritto == null) {
+					errorMessage.setMessage("Non sei iscritto all'appello selezionato");
+				}
+				
 				c = corsiDao.getCorsoFromId(appelliDao.getAppelloFromID(id_appello).getId_corso());
+				
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 				//in una pagine di errore generica (scleta migliore esteticamente) 
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.setAttribute("errorMessage", errorMessage);
+				request.getSession().setAttribute("errorMessage", errorMessage);
 				String path = getServletContext().getContextPath() + "/ErrorPage";
 				response.sendRedirect(path);
 				return;
 			}
+			
 		}
 		
 		//se l'erore è ancora vuoto allora prendo il voto
@@ -136,7 +128,7 @@ public class GoToEsitoEsame extends HttpServlet {
 				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 				//in una pagine di errore generica (scleta migliore esteticamente) 
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.setAttribute("errorMessage", errorMessage);
+				request.getSession().setAttribute("errorMessage", errorMessage);
 				String path = getServletContext().getContextPath() + "/ErrorPage";
 				response.sendRedirect(path);
 				return;
@@ -216,7 +208,7 @@ public class GoToEsitoEsame extends HttpServlet {
 				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 				//in una pagine di errore generica (scleta migliore esteticamente) 
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.setAttribute("errorMessage", errorMessage);
+				request.getSession().setAttribute("errorMessage", errorMessage);
 				path = getServletContext().getContextPath() + "/ErrorPage";
 				response.sendRedirect(path);
 				return;
@@ -238,6 +230,14 @@ public class GoToEsitoEsame extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
+	}
+	
+	public void destroy() {
+		try {
+			ConnectionHandler.closeConnection(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
