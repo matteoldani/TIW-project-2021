@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 
+import it.polimi.tiw.beans.Appello;
 import it.polimi.tiw.beans.Corso;
 import it.polimi.tiw.beans.IscrittiAppello;
 import it.polimi.tiw.beans.Message;
@@ -65,6 +66,7 @@ public class GoToEsitoEsame extends HttpServlet {
 		String voto = null;
 		Integer voto_numerico = null;
 		Corso c = null;
+		Appello appello = null;
 		boolean votoRifiutabile = false;
 		boolean votoRifiutato = false;
 		boolean votoPubblicato = false;
@@ -100,8 +102,13 @@ public class GoToEsitoEsame extends HttpServlet {
 				if(iscritto == null) {
 					errorMessage.setMessage("Non sei iscritto all'appello selezionato");
 				}
+				appello = appelliDao.getAppelloFromID(id_appello);
+				if(appello == null) {
+					errorMessage.setMessage("Appello non esistente");
+				}else{
+					c = corsiDao.getCorsoFromId(appello.getId_corso());
+				}
 				
-				c = corsiDao.getCorsoFromId(appelliDao.getAppelloFromID(id_appello).getId_corso());
 				
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -115,12 +122,16 @@ public class GoToEsitoEsame extends HttpServlet {
 				return;
 			}
 			
+		}else {
+			errorMessage.setMessage("Appello non inserito in modo corretto");
 		}
 		
 		//se l'erore è ancora vuoto allora prendo il voto
+		
 		if(errorMessage.getMessage().equals("")) {
 			
 			try {
+				
 				iscritto = appelliDao.getIscrittoAppello(id_appello, studente.getMatricola());
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
@@ -200,6 +211,9 @@ public class GoToEsitoEsame extends HttpServlet {
 			//corso
 			ctx.setVariable("corso", c);
 			//data appello
+			
+			// errormessge
+			ctx.setVariable("errorMessage", errorMessage);
 			try {
 				ctx.setVariable("data", appelliDao.getAppelloFromID(id_appello).getData());
 			} catch (SQLException e) {
@@ -215,9 +229,18 @@ public class GoToEsitoEsame extends HttpServlet {
 			}
 			
 			
+			templateEngine.process(path, ctx, response.getWriter());	
+			
+		}else {
+			//se trovo un errore devo stampare solo quello 
+			String path = "WEB-INF/esitoEsame.html";
+			
+			ServletContext servletContext = getServletContext();
+			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+			
+			// errormessge
+			ctx.setVariable("errorMessage", errorMessage);
 			templateEngine.process(path, ctx, response.getWriter());
-			
-			
 			
 		}
 		

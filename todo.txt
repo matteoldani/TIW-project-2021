@@ -1,10 +1,16 @@
-Cose da fare 
+TESTING MANUALE:
 
-
-
-- non viene controllato il fatto che un voto verbalizzato non può essere modificato e poi ripubblicato e via dicendo
-- controllare perchè il messaggio di successo non viene letto nel modo corretto
-- verifiare la pagine di errore staccando il database 
+	DOCENTE: 
+			-HomeDocente --> testato e funzionante
+			-IscrittiAppello --> testato e funzionante
+			-ModificaVoto --> testato e funzionante
+			-Pubblicazione --> testato e funzionante
+			-Verbalizzazione --> testato e funzionante
+			
+	STUDENTE
+			-HomeStudente --> testato e funzionante
+			-EsitoEsame --> testato e funzionante
+			-RifiutaVoto -->
 
 COMMENTI SULL'IMPLEMENTAZIONE: 
 

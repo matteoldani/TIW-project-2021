@@ -17,10 +17,12 @@ import org.thymeleaf.context.WebContext;
 
 import it.polimi.tiw.beans.Appello;
 import it.polimi.tiw.beans.Corso;
+import it.polimi.tiw.beans.IscrittiAppello;
 import it.polimi.tiw.beans.Message;
 import it.polimi.tiw.beans.Studente;
 import it.polimi.tiw.common.ConnectionHandler;
 import it.polimi.tiw.common.ThymeleafInstance;
+import it.polimi.tiw.dao.AppelliDAO;
 import it.polimi.tiw.dao.CorsiDAO;
 import it.polimi.tiw.dao.StudentiDAO;
 
@@ -59,6 +61,7 @@ public class GoToHomeStudente extends HttpServlet {
 		Studente studente = (Studente) request.getSession(false).getAttribute("studente");
 		StudentiDAO studentiDao;
 		CorsiDAO corsiDao;
+		AppelliDAO appelliDao = null;
 		ArrayList<Corso> corsiStudente;
 		ArrayList<Appello> appelliCorso = null;
 		Corso c = null;
@@ -71,6 +74,7 @@ public class GoToHomeStudente extends HttpServlet {
 		try {
 			studentiDao = new StudentiDAO(connection);
 			corsiDao = new CorsiDAO(connection);
+			appelliDao = new AppelliDAO(connection);
 			corsiStudente = studentiDao.getCourseList(studente.getMatricola());
 			
 		} catch (SQLException e1) {
@@ -117,6 +121,21 @@ public class GoToHomeStudente extends HttpServlet {
 				//vedre se si può prendere l'id in modo più comodo
 				try {
 					appelliCorso = corsiDao.getAppelliCorso(c.getId_corso());
+					//devo selezionare solo gli appelli a cuui lo studente è iscritto 
+					ArrayList<IscrittiAppello> ia;
+					boolean check = false;
+					for(Appello app : appelliCorso) {
+						check = false;
+						ia = appelliDao.getIscrittiAppello(app.getId_appello(), "", "");
+						for(IscrittiAppello iscrApp: ia) {
+							if(iscrApp.getStudente().getMatricola() == studente.getMatricola()) {
+								check = true;
+							}
+						}
+						if(!check) {
+							appelliCorso.remove(app);
+						}
+					}
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -65,6 +65,8 @@ public class GoToVerbalizzazione extends HttpServlet {
 		AppelliDAO appelliDao;
 		DocentiDAO docentiDao;
 		Verbale verbale = null;
+		Corso corso = null;
+		Appello appello = null;
 		errorMessage.setMessage("");
 		successMessage.setMessage("");
 		
@@ -86,7 +88,7 @@ public class GoToVerbalizzazione extends HttpServlet {
 			
 			//devo controlalre che effettivamente l'id appartenga a un corso che è tenuto dal professore 
 
-			Appello appello;
+			
 			ArrayList<Corso> corsiDocente;
 
 			try {
@@ -96,9 +98,14 @@ public class GoToVerbalizzazione extends HttpServlet {
 				corsiDocente = docentiDao.getCourseList(docente.getId_docente());
 				
 				boolean controllo = false;
-				for(Corso c : corsiDocente) {
-					if(c.getId_corso() == appello.getId_corso()) {
-						controllo = true;
+				if(appello == null) {
+					errorMessage.setMessage("appello non trovato nel database");
+				}else{
+					
+					for(Corso c : corsiDocente) {
+						if(c.getId_corso() == appello.getId_corso()) {
+							controllo = true;
+						}
 					}
 				}
 				
@@ -152,6 +159,17 @@ public class GoToVerbalizzazione extends HttpServlet {
 		
 		//se c'è un errore lo stampo a inizio pagina
 		ctx.setVariable("errorMessage", errorMessage);
+		
+		//mi serve il nome del corso
+		if(corso != null) {
+			ctx.setVariable("nomeCorso", corso.getNome());
+		}
+		
+		
+		//mi serve la data dell'appello
+		if(appello != null){
+			ctx.setVariable("dataAppello", appello.getData());
+		}
 		
 		
 		templateEngine.process(path, ctx, response.getWriter());

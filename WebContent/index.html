@@ -1,175 +1,58 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title> Università di Magenta</title>
-		<link rel="stylesheet" href="css/bootstrap.css">
-	</head>
-	
-	<body>
-	
-	
-      
-      <h1 class="display-4">Pricing</h1>
-      <p class="lead">Quickly build an effective pricing table for your potential customers with this Bootstrap example. It's built with default Bootstrap components and utilities with little customization.</p>
-      
-      <div class="card-deck mb-3 text-center">
-        <div class="card mb-4 box-shadow">
-          <div class="card-header">
-            <h4 class="my-0 font-weight-normal">Free</h4>
-          </div>
-          <div class="card-body">
-            <h1 class="card-title pricing-card-title">$0 <small class="text-muted">/ mo</small></h1>
-            <ul class="list-unstyled mt-3 mb-4">
-              <li>10 users included</li>
-              <li>2 GB of storage</li>
-              <li>Email support</li>
-              <li>Help center access</li>
-            </ul>
-            <button type="button" class="btn btn-lg btn-block btn-outline-primary">Sign up for free</button>
-          </div>
-        </div>
-        <div class="card mb-4 box-shadow">
-          <div class="card-header">
-            <h4 class="my-0 font-weight-normal">Pro</h4>
-          </div>
-          <div class="card-body">
-            <h1 class="card-title pricing-card-title">$15 <small class="text-muted">/ mo</small></h1>
-            <ul class="list-unstyled mt-3 mb-4">
-              <li>20 users included</li>
-              <li>10 GB of storage</li>
-              <li>Priority email support</li>
-              <li>Help center access</li>
-            </ul>
-            <button type="button" class="btn btn-lg btn-block btn-primary">Get started</button>
-          </div>
-        </div>
-        <div class="card mb-4 box-shadow">
-          <div class="card-header">
-            <h4 class="my-0 font-weight-normal">Enterprise</h4>
-          </div>
-          <div class="card-body">
-            <h1 class="card-title pricing-card-title">$29 <small class="text-muted">/ mo</small></h1>
-            <ul class="list-unstyled mt-3 mb-4">
-              <li>30 users included</li>
-              <li>15 GB of storage</li>
-              <li>Phone and email support</li>
-              <li>Help center access</li>
-            </ul>
-            <button type="button" class="btn btn-lg btn-block btn-primary">Contact us</button>
-          </div>
-        </div>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+   
+    <title>Università di Magenta</title>
+
+    <link href="css/bootstrap-grid.css" rel="stylesheet">
+    <!-- Custom styles for this page -->
+    <link rel="stylesheet" href="css/style.css">
+
+  </head>
+<body>
+  
+
+<div class="center">
+  <img src="img/logo.png" class="logo">
+  <h1 class="title">Università di Magenta</h1>
+  <p class="subtitle">Benvenuto, accedi al portale per la gestione dei voti</p>
+</div>
+
+<div class="container">
+  <div class="row justify-content-center">
+
+    <div class="col-md-4 card center">
+      <img src="img/student.png" class="thumbnail">
+      <div class="card-body">
+        <h1 class="card-title pricing-card-title">Studente</h1>
+        <ul class="list-unstyled mt-3 mb-4">
+          <li>Consultare gli esiti dei propri appelli</li>
+          <li>Accettare un voto</li>
+          <li>Rifiutare un voto</li>
+        </ul>
+        <a href="/verbalizzazione_voti/HomeStudente"> <button type="button" class="login"> Login </button></a>
       </div>
+    </div>
 
-      <footer class="pt-4 my-md-5 pt-md-5 border-top">
-        <div class="row">
-          <div class="col-12 col-md">
-            <img class="mb-2" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg" alt="" width="24" height="24">
-            <small class="d-block mb-3 text-muted">© 2017-2018</small>
-          </div>
-          <div class="col-6 col-md">
-            <h5>Features</h5>
-            <ul class="list-unstyled text-small">
-              <li><a class="text-muted" href="#">Cool stuff</a></li>
-              <li><a class="text-muted" href="#">Random feature</a></li>
-              <li><a class="text-muted" href="#">Team feature</a></li>
-              <li><a class="text-muted" href="#">Stuff for developers</a></li>
-              <li><a class="text-muted" href="#">Another one</a></li>
-              <li><a class="text-muted" href="#">Last time</a></li>
-            </ul>
-          </div>
-          <div class="col-6 col-md">
-            <h5>Resources</h5>
-            <ul class="list-unstyled text-small">
-              <li><a class="text-muted" href="#">Resource</a></li>
-              <li><a class="text-muted" href="#">Resource name</a></li>
-              <li><a class="text-muted" href="#">Another resource</a></li>
-              <li><a class="text-muted" href="#">Final resource</a></li>
-            </ul>
-          </div>
-          <div class="col-6 col-md">
-            <h5>About</h5>
-            <ul class="list-unstyled text-small">
-              <li><a class="text-muted" href="#">Team</a></li>
-              <li><a class="text-muted" href="#">Locations</a></li>
-              <li><a class="text-muted" href="#">Privacy</a></li>
-              <li><a class="text-muted" href="#">Terms</a></li>
-            </ul>
-          </div>
-        </div>
-      </footer>
-    
-    
-		<div class="container text-center p-5">
-			<h1>Benvenuto all'Università di Magenta</h1>
-			<h2>Accedi al portale per la gestione dei voti</h2>
-			<br><br>
-			<!-- 
-			Future uses
-			<!-- This card needs Bootstrap 4 Beta to work. -->
-			<!-- Don't forget to copy small-card.css file too! -->
-			<div class="card-group">
-				<div class="card card-custom bg-white border-white">
-				  <div class="card-custom-img" style="background-image: url(http://res.cloudinary.com/d3/image/upload/c_scale,q_auto:good,w_1110/trianglify-v1-cs85g_cc5d2i.jpg);"></div>
-				  <div class="card-custom-avatar">
-				    <img class="img-fluid" src="http://res.cloudinary.com/d3/image/upload/c_pad,g_center,h_200,q_auto:eco,w_200/bootstrap-logo_u3c8dx.jpg" alt="Avatar" />
-				  </div>
-				  <div class="card-body" style="overflow-y: auto">
-				    <h4 class="card-title">Studenti</h4>
-				    <p class="card-text">
-				    	Cards have minimum height set. You can use Bootstrap 
-				    	<a href="https://getbootstrap.com/docs/4.0/components/card/#card-decks">card-decks</a> 
-				    	to align them nicely in a row.
-				    </p>
-				  </div>
-				  <div class="card-footer" style="background: inherit; border-color: inherit;">
-				    <a href="#" class="btn btn-primary">Option</a>
-				    
-				  </div>
-				</div>
-				
-				<div class="card card-custom bg-white border-white">
-				  <div class="card-custom-img" style="background-image: url(http://res.cloudinary.com/d3/image/upload/c_scale,q_auto:good,w_1110/trianglify-v1-cs85g_cc5d2i.jpg);"></div>
-				  <div class="card-custom-avatar">
-				    <img class="img-fluid" src="http://res.cloudinary.com/d3/image/upload/c_pad,g_center,h_200,q_auto:eco,w_200/bootstrap-logo_u3c8dx.jpg" alt="Avatar" />
-				  </div>
-				  <div class="card-body" style="overflow-y: auto">
-				    <h4 class="card-title">Studenti</h4>
-				    <p class="card-text">
-				    	Cards have minimum height set. You can use Bootstrap 
-				    	<a href="https://getbootstrap.com/docs/4.0/components/card/#card-decks">card-decks</a> 
-				    	to align them nicely in a row.
-				    </p>
-				  </div>
-				  <div class="card-footer" style="background: inherit; border-color: inherit;">
-				    <a href="#" class="btn btn-primary">Option</a>
-				    
-				  </div>
-				</div>
-			 
-			
-				<div class="col-md-6 p-3">
-				<h3>Studenti</h3>
-				<ul style="list-style-type: none;">
-					<li> Consultare gli esiti dei propri appelli </li>
-					<li> Accettare o rifiutare un voto </li>
-				</ul>
-				<a href="/verbalizzazione_voti/HomeStudente">LOGIN</a>
-				
-				</div>
-				<div class="col-md-6 p-3">
-					<h3>Docenti</h3>
-					<ul style="list-style-type: none;">
-						<li> Vedere l'elenco delgi iscritti ai propri appelli </li>
-						<li> Inserire o modificare un voto </li>
-						<li> Verbalizzare un appello </li>
-					</ul>
-					<a href="/verbalizzazione_voti/HomeDocente">LOGIN</a>
-					
-				</div>
-			</div>
-			
-		</div>
-	</body>
+    <div class="col-md-4 card center">
+      
+      <div class="card-body">
+        <img src="img/teacher.png" class="thumbnail">
 
+        <h1 class="card-title pricing-card-title">Docente</h1>
+        <ul class="list-unstyled mt-3 mb-4">
+          <li>Vedere gli iscritti ai propri appelli</li>  
+          <li>Inserire o modificare un voto</li>
+          <li>Verbalizzare un appello</li>
+        </ul>
+        <a href="/verbalizzazione_voti/HomeDocente"> <button type="button" class="login"> Login </button></a>
+      </div>
+    </div>
+
+  </div>
+</div>
+  
+</div>
+</body>
 </html>

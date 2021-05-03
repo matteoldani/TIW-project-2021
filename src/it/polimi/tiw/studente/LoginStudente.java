@@ -137,7 +137,7 @@ public class LoginStudente extends HttpServlet {
 		}else {
 			//login failed
 			errorMessage.setMessage("Username e/o password errati");
-			request.getSession().setAttribute("errorMessage", errorMessage);;
+			request.setAttribute("errorMessage", errorMessage);;
 			doGet(request, response);
 		}
 	}

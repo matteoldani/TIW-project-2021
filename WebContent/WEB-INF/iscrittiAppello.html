@@ -2,130 +2,250 @@
 <html xmlns:th="http://www.thymeleaf.org">
 	<head>
 		<meta charset="UTF-8">
-		<title> Universit&aacute; di Magenta</title>
-		<link rel="stylesheet" href="css/bootstrap.css">
+		<title> Universit&agrave; di Magenta</title>
+		<link href="css/bootstrap-grid.css" rel="stylesheet">
+	    <!-- Custom styles for this page -->
+	    <link rel="stylesheet" href="css/style.css">
 	</head>
 	
 	<body>
-		
-		<h3 th:if="${errorMessage != null}">
-			<span style="color: red;" th:text="${errorMessage.message}"> Error Message </span>
-		</h3>
-		<h3 th:if="${successMessage != null}">
-			<span style="color: green;" th:text="${successMessage.message}"> Success Message </span>
-		</h3>
-		
-		<h3>
-			Corso: <span style="color: blue;" th:text="${nomeCorso}"> NomeCorso </span>
-		</h3>
-		<h3>
-			Data: <span style="color: blue;" th:text="${dataAppello}">DataAppello</span>
-		</h3>
-		<h3 th:if="${verbalizzabili}"> 
-			<a th:href="@{/Verbalizzazione(id=${id_appello})}">Verbalizza</a>
-		</h3>
-		
-		
-		
-		<table border="1">
-			<thead>
-				<tr>
-					<th>
-						<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
-							<input type="hidden" name="id" th:value="${id_appello}">
-							<input type="hidden" name="tag" value="matricola">
-							<input type="hidden" name="order" th:value="${orderAttribute == 'matricola'} ? (${order == 'DESC'} ? 'ASC' : 'DESC') ">
-							<input type="submit" value="Matricola">		
-						</form>				
-					</th>
-					<th>
-						<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
-							<input type="hidden" name="id" th:value="${id_appello}">
-							<input type="hidden" name="tag" value="cognome">
-							<input type="hidden" name="order" th:value="${orderAttribute == 'cognome'} ? (${order == 'DESC'} ? 'ASC' : 'DESC') ">
-							<input type="submit" value="Cognome">		
-						</form>
-					</th>
-					<th>
-						<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
-							<input type="hidden" name="id" th:value="${id_appello}">
-							<input type="hidden" name="tag" value="nome">
-							<input type="hidden" name="order" th:value="${orderAttribute == 'nome'} ? (${order == 'DESC'} ? 'ASC' : 'DESC')">
-							<input type="submit" value="Nome">		
-						</form>
-					</th>
-					<th>
-						<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
-							<input type="hidden" name="id" th:value="${id_appello}">
-							<input type="hidden" name="tag" value="email">
-							<input type="hidden" name="order" th:value="${orderAttribute == 'email'} ? (${order == 'DESC'} ? 'ASC' : 'DESC')">
-							<input type="submit" value="E-Mail">		
-						</form>
-					</th>
-					<th>
-						<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
-							<input type="hidden" name="id" th:value="${id_appello}">
-							<input type="hidden" name="tag" value="corso_laurea">
-							<input type="hidden" name="order" th:value="${orderAttribute == 'corso_laurea'} ? (${order == 'DESC'} ? 'ASC' : 'DESC')">
-							<input type="submit" value="Corso di Laurea">		
-						</form>
-					</th>
-					<th>
-						<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
-							<input type="hidden" name="id" th:value="${id_appello}">
-							<input type="hidden" name="tag" value="voto">
-							<input type="hidden" name="order" th:value="${orderAttribute == 'voto'} ? (${order == 'DESC'} ? 'ASC' : 'DESC') ">
-							<input type="submit" value="Voto">		
-						</form>
-					</th>
-					<th>
-						<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
-							<input type="hidden" name="id" th:value="${id_appello}">
-							<input type="hidden" name="tag" value="stato">
-							<input type="hidden" name="order" th:value="${orderAttribute == 'stato'} ? (${order == 'DESC'} ? 'ASC' : 'DESC') ">
-							<input type="submit" value="Stato Valutazione">		
-						</form>
-					</th>
-					<th>
-						<form action="/verbalizzazione_voti/Pubblicazione" method="POST">
-							<input type="hidden" name="id" th:value="${id_appello}">
-							<input type="submit" value="Pubblica">		
-						</form>
-					</th>
-					
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="iscritti : ${iscritti}" >
-					<td th:text="${iscritti.studente.matricola}"> 
-						910756
-					</td>
-					<td th:text="${iscritti.studente.cognome}"> 
-						Oldani
-					</td>
-					<td th:text="${iscritti.studente.nome}"> 
-						Matteo
-					</td>
-					<td th:text="${iscritti.studente.email}"> 
-						matteo.oldani@mail.polimi.it
-					</td>
-					<td th:text="${iscritti.studente.corso_laurea}"> 
-						Ingegneria Informatica
-					</td>
-					<td th:text="${iscritti.voto}"> 
-						x
-					</td>
-					<td th:text="${iscritti.stato}"> 
-						y
-					</td>
-					<td> 
-						<a th:href="@{/ModificaVoto(id_appello=${id_appello}, matricola=${iscritti.studente.matricola})}" th:text="${iscritti.stato == 'pubblicato' || iscritti.stato == 'rifiutato' || iscritti.stato == 'verbalizzato'} ? Visualizza : Modifica"> Modifica</a>
-					</td>
-					
-					
-			</tbody>
-		</table>
 
+		<navbar>
+			<ul class="navbar">
+				<li class="navbar"><img src="img/logo-white.png" class="navbar"></li>
+				<li class="navbar"> <span class="navbar">Universit&agrave; di Magenta</span></li>
+				<li class="navbar-right"><a href="/verbalizzazione_voti/Logout" class="navbar">Logout</a></li>
+			</ul>
+		</navbar>
+
+		<div class="container center justify-content-center">
+		
+			<h3 th:if="${errorMessage != null}">
+				<span style="color: red;" th:text="${errorMessage.message}"> Error Message </span>
+			</h3>
+			<h3 th:if="${successMessage != null}">
+				<span style="color: green;" th:text="${successMessage.message}"> Success Message </span>
+			</h3>
+
+			<h3>
+				Corso: <span class="no-bold" th:text="${nomeCorso}"> NomeCorso </span>
+			</h3>
+			<h3>
+				Data: <span class="no-bold" th:text="${dataAppello}">DataAppello</span>
+			</h3>
+		
+			
+			<a th:href="@{/Verbalizzazione(id=${id_appello})}" th:if="${verbalizzabili}" href="index.html"> 
+				<button type="button" class="verbalizzaButton"> Verbalizza </button>
+			</a>
+			<a href="/verbalizzazione_voti/HomeDocente"> <button type="button" class="errorButton"> Home </button></a>
+			
+		
+		
+		
+			<table class="iscritti-table">
+				<thead class="heading-buttons">
+					<tr>
+						<th>
+							<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
+								<input type="hidden" name="id" th:value="${id_appello}">
+								<input type="hidden" name="tag" value="matricola">
+								<input type="hidden" name="order" th:value="${orderAttribute == 'matricola'} ? (${order == 'DESC'} ? 'ASC' : 'DESC') ">
+								<input type="submit" value="Matricola">		
+							</form>				
+						</th>
+						<th>
+							<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
+								<input type="hidden" name="id" th:value="${id_appello}">
+								<input type="hidden" name="tag" value="cognome">
+								<input type="hidden" name="order" th:value="${orderAttribute == 'cognome'} ? (${order == 'DESC'} ? 'ASC' : 'DESC') ">
+								<input type="submit" value="Cognome">		
+							</form>
+						</th>
+						<th>
+							<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
+								<input type="hidden" name="id" th:value="${id_appello}">
+								<input type="hidden" name="tag" value="nome">
+								<input type="hidden" name="order" th:value="${orderAttribute == 'nome'} ? (${order == 'DESC'} ? 'ASC' : 'DESC')">
+								<input type="submit" value="Nome">		
+							</form>
+						</th>
+						<th>
+							<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
+								<input type="hidden" name="id" th:value="${id_appello}">
+								<input type="hidden" name="tag" value="email">
+								<input type="hidden" name="order" th:value="${orderAttribute == 'email'} ? (${order == 'DESC'} ? 'ASC' : 'DESC')">
+								<input type="submit" value="E-Mail">		
+							</form>
+						</th>
+						<th>
+							<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
+								<input type="hidden" name="id" th:value="${id_appello}">
+								<input type="hidden" name="tag" value="corso_laurea">
+								<input type="hidden" name="order" th:value="${orderAttribute == 'corso_laurea'} ? (${order == 'DESC'} ? 'ASC' : 'DESC')">
+								<input type="submit" value="Corso di Laurea">		
+							</form>
+						</th>
+						<th>
+							<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
+								<input type="hidden" name="id" th:value="${id_appello}">
+								<input type="hidden" name="tag" value="voto">
+								<input type="hidden" name="order" th:value="${orderAttribute == 'voto'} ? (${order == 'DESC'} ? 'ASC' : 'DESC') ">
+								<input type="submit" value="Voto">		
+							</form>
+						</th>
+						<th>
+							<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
+								<input type="hidden" name="id" th:value="${id_appello}">
+								<input type="hidden" name="tag" value="stato">
+								<input type="hidden" name="order" th:value="${orderAttribute == 'stato'} ? (${order == 'DESC'} ? 'ASC' : 'DESC') ">
+								<input type="submit" value="Stato Valutazione">		
+							</form>
+						</th>
+						<th>
+							<form action="/verbalizzazione_voti/Pubblicazione" method="POST">
+								<input type="hidden" name="id" th:value="${id_appello}">
+								<input type="submit" value="Pubblica" class="green-background">		
+							</form>
+						</th>
+						
+					</tr>
+				</thead>
+				<tbody th:remove="all-but-first">
+					<tr th:each="iscritti : ${iscritti}" class="iscritti-items">
+						<td th:text="${iscritti.studente.matricola}"> 
+							910756
+						</td>
+						<td th:text="${iscritti.studente.cognome}"> 
+							Oldani
+						</td>
+						<td th:text="${iscritti.studente.nome}"> 
+							Matteo
+						</td>
+						<td th:text="${iscritti.studente.email}"> 
+							matteo.oldani@mail.polimi.it
+						</td>
+						<td th:text="${iscritti.studente.corso_laurea}"> 
+							Ingegneria Informatica
+						</td>
+						<td th:text="${iscritti.voto}"> 
+							x
+						</td>
+						<td th:text="${iscritti.stato}"> 
+							y
+						</td>
+						<td> 
+							<a th:href="@{/ModificaVoto(id_appello=${id_appello}, matricola=${iscritti.studente.matricola})}" th:text="${iscritti.stato == 'pubblicato' || iscritti.stato == 'rifiutato' || iscritti.stato == 'verbalizzato'} ? Visualizza : Modifica" href="index.html" class="modificaButton"> Modifica</a>
+						</td>
+					</tr>	
+					<tr class="iscritti-items">
+						<td > 
+							910756
+						</td>
+						<td > 
+							Oldani
+						</td>
+						<td > 
+							Matteo
+						</td>
+						<td > 
+							matteo.oldani@mail.polimi.it
+						</td>
+						<td > 
+							Ingegneria Informatica
+						</td>
+						<td > 
+							x
+						</td>
+						<td> 
+							y
+						</td>
+						<td> 
+							<a class="modificaButton"> Modifica</a>
+						</td>
+					</tr>	
+					<tr class="iscritti-items">
+						<td > 
+							910756
+						</td>
+						<td > 
+							Oldani
+						</td>
+						<td > 
+							Matteo
+						</td>
+						<td > 
+							matteo.oldani@mail.polimi.it
+						</td>
+						<td > 
+							Ingegneria Informatica
+						</td>
+						<td > 
+							x
+						</td>
+						<td> 
+							y
+						</td>
+						<td> 
+							<a class="modificaButton" > Modifica</a>
+						</td>
+					</tr>	
+					<tr class="iscritti-items">
+						<td > 
+							910756
+						</td>
+						<td > 
+							Oldani
+						</td>
+						<td > 
+							Matteo
+						</td>
+						<td > 
+							matteo.oldani@mail.polimi.it
+						</td>
+						<td > 
+							Ingegneria Informatica
+						</td>
+						<td > 
+							x
+						</td>
+						<td> 
+							y
+						</td>
+						<td> 
+							<a class="modificaButton"> Modifica</a>
+						</td>
+					</tr>	
+					<tr class="iscritti-items">
+						<td > 
+							910756
+						</td>
+						<td > 
+							Oldani
+						</td>
+						<td > 
+							Matteo
+						</td>
+						<td > 
+							matteo.oldani@mail.polimi.it
+						</td>
+						<td > 
+							Ingegneria Informatica
+						</td>
+						<td > 
+							x
+						</td>
+						<td> 
+							y
+						</td>
+						<td> 
+							<a class="modificaButton"> Modifica</a>
+						</td>
+					</tr>	
+					</tr>		
+				</tbody>
+			</table>
+		</div>
 				
 	</body>
 

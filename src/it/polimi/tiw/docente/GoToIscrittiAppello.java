@@ -150,14 +150,21 @@ public class GoToIscrittiAppello extends HttpServlet {
 				//errore
 				appello = appelliDao.getAppelloFromID(id_appello);
 				corsiDocente = docentiDao.getCourseList(docente.getId_docente());
+				
 				boolean controllo = false;
-				for(Corso c : corsiDocente) {
-					if(c.getId_corso() == appello.getId_corso()) {
-						controllo = true;
-						nomeCorso = c.getNome();
-						dataAppello = appello.getData();
+				if(appello == null) {
+					errorMessage.setMessage("appello non trovato nel database");
+				}else{
+					
+					for(Corso c : corsiDocente) {
+						if(c.getId_corso() == appello.getId_corso()) {
+							controllo = true;
+							nomeCorso = c.getNome();
+							dataAppello = appello.getData();
+						}
 					}
 				}
+				
 				
 				if(controllo) {
 					
@@ -186,14 +193,18 @@ public class GoToIscrittiAppello extends HttpServlet {
 			}
 
 			boolean controllo = false;
-			for(Corso c : corsiDocente) {
-				if(c.getId_corso() == appello.getId_corso()) {
-					controllo = true;
-					nomeCorso = c.getNome();
-					dataAppello = appello.getData();
+			if(appello == null) {
+				errorMessage.setMessage("appello non trovato nel database");
+			}else{
+				
+				for(Corso c : corsiDocente) {
+					if(c.getId_corso() == appello.getId_corso()) {
+						controllo = true;
+						nomeCorso = c.getNome();
+						dataAppello = appello.getData();
+					}
 				}
 			}
-			
 			
 			
 

@@ -1,23 +1,42 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 	<head>
 		<meta charset="UTF-8">
-		<title> Universit&aacute; di Magenta</title>
-		<link rel="stylesheet" href="css/bootstrap.css">
+		<title> Universit&agrave; di Magenta</title>
+		<link href="css/bootstrap-grid.css" rel="stylesheet">
+	    <!-- Custom styles for this page -->
+	    <link rel="stylesheet" href="css/style.css">
 	</head>
 	
 	<body>
-		<h1>
-			<span >Pagina di errore </span>
-		</h1>
-		<!--  in questo modo non serve il context path, capire meglio perchè prima dell'orale -->
+
+		<navbar>
+			<ul class="navbar">
+				<li class="navbar"><img src="img/logo-white.png" class="navbar"></li>
+				<li class="navbar"> <span class="navbar">Universit&agrave; di Magenta</span></li>
+				<li class="navbar-right"><a href="/verbalizzazione_voti/Logout" class="navbar">Logout</a></li>
+			</ul>
+		</navbar>
+
 		
-		<h3>
-			<span style="color: red;" th:text="${errorMessage.message}"> Message </span>
-		</h3>
-		
-		<h3 th:if="${session.docente != null}"><a href="/verbalizzazione_voti/HomeDocente"> Torna alla Home Docente</a></h3>
-		<h3 th:if="${session.studente != null}"><a href="/verbalizzazione_voti/HomeStudente"> Torna alla Home Docente</a></h3>
-		<h3 th:if="${session.docente == null && session.studente == null}"> <a href="/verbalizzazione_voti">Home Universita'</a></h3>
+		<div class="container center justify-content-center">
 			
+			<h1>
+				<span >Pagina di errore </span>
+			</h1>
+
+			<h3>
+				<span style="color: red;" th:text="${errorMessage.message}" class="errorMessage"> Message </span>
+			</h3>
+			<a href="/verbalizzazione_voti/HomeDocente" th:if="${session.docente != null}"> <button type="button" class="errorButton"> Home </button></a>
+			<a href="/verbalizzazione_voti/HomeStudente" th:if="${session.studente != null}"> <button type="button" class="errorButton"> Home </button></a>
+			<a href="/verbalizzazione_voti" th:if="${session.docente == null && session.studente == null}"> 
+				<button type="button" class="errorButton"> Home </button>
+			</a>
+			
+		</div>
+		
 	</body>
+
+</html>

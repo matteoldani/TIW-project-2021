@@ -120,13 +120,18 @@ public class GoToPubblicazione extends HttpServlet {
 				response.sendRedirect(path);
 				return;
 			}
-			
 			boolean controllo = false;
-			for(Corso c : corsiDocente) {
-				if(c.getId_corso() == appello.getId_corso()) {
-					controllo = true;
+			if(appello == null) {
+				errorMessage.setMessage("appello non trovato nel database");
+			}else{
+				
+				for(Corso c : corsiDocente) {
+					if(c.getId_corso() == appello.getId_corso()) {
+						controllo = true;
+					}
 				}
 			}
+			
 			
 			
 			if(!controllo) {
@@ -156,6 +161,14 @@ public class GoToPubblicazione extends HttpServlet {
 			String path = getServletContext().getContextPath() + "/IscrittiAppello?id=" + id_appello;
 			response.sendRedirect(path);
 			
+		}else {
+			//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+			//in una pagine di errore generica (scleta migliore esteticamente) 
+			errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+			request.getSession().setAttribute("errorMessage", errorMessage);
+			String path = getServletContext().getContextPath() + "/ErrorPage";
+			response.sendRedirect(path);
+			return;
 		}
 
 	}

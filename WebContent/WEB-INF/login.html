@@ -2,25 +2,56 @@
 <html xmlns:th="http://www.thymeleaf.org">
 	<head>
 		<meta charset="UTF-8">
-		<title> Universit&aacute; di Magenta</title>
-		<link rel="stylesheet" href="css/bootstrap.css">
+		<title> Universit&agrave; di Magenta</title>
+		<link rel="stylesheet" href="css/bootstrap-grid.css">
+		<link rel="stylesheet" href="css/style.css">
+
 	</head>
 	
 	<body>
-		<h1>
-			<span >LogIn </span>
-			<span th:text="${userType.type}">Unknown</span>
-		</h1>
-		<!--  in questo modo non serve il context path, capire meglio perchè prima dell'orale -->
-		<form th:action="@{${urlPath.path}}" method="POST">
-			<input type="text" name="username" placeholder="Username ..."><br>
-			<input type="password" name="password" placeholder="Password ..."><br>
-			<input type="submit" value="LOGIN">
-		</form>
-		<h3>
-			<span style="color: red;" th:text="${errorMessage.message}"> Message </span>
-		</h3>
-				
+
+		<div class="center">
+		  <img src="img/logo.png" class="logo">
+		  <h1 class="title">Universit&agrave; di Magenta</h1>
+		  <p class="subtitle">Benvenuto, accedi al portale per la gestione dei voti</p>
+		</div>
+
+
+		<div class="container">
+			<div class="row justify-content-center center">
+				<div class="card">
+
+					<h1>
+						<span >Login</span>
+						<span th:text="${userType.type}">Unknown</span>
+					</h1>
+					
+					<form th:action="@{${urlPath.path}}" method="POST">
+						<div class="row">
+							<div class="col-5">
+								<img th:src="${userType.type == studente} ? 'img/student-login-magenta.png' : 'img/teacher-login-magenta.png'" src="img/teacher-login.png" class="img-login">
+							</div>
+						
+							<div class="col-7">
+							
+								<h3> Username </h3>
+								<input type="text" name="username" placeholder="Username ..."><br>
+								<h3> Password </h3>
+								<input type="password" name="password" placeholder="Password ..."><br>
+								
+							</div>
+						</div>
+						<br><br>
+						<input type="submit" value="LOGIN" class="login-input">
+					</form>
+					<h3 class="center">
+						<span style="color: red;" th:text="${errorMessage.message}"> Messagio di errore </span>
+					</h3>
+					
+				</div>
+			</div>
+			
+		</div>		
 	</body>
 
 </html>

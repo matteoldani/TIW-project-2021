@@ -2,50 +2,132 @@
 <html xmlns:th="http://www.thymeleaf.org">
 	<head>
 		<meta charset="UTF-8">
-		<title> Universit&aacute; di Magenta</title>
-		<link rel="stylesheet" href="css/bootstrap.css">
+		<title> Universit&agrave; di Magenta</title>
+		<link href="css/bootstrap-grid.css" rel="stylesheet">
+	    <!-- Custom styles for this page -->
+	    <link rel="stylesheet" href="css/style.css">
 	</head>
 	
 	<body>
-		<h1>
-			Verbale
-		</h1>
+		<navbar>
+			<ul class="navbar">
+				<li class="navbar"><img src="img/logo-white.png" class="navbar"></li>
+				<li class="navbar"> <span class="navbar">Universit&agrave; di Magenta</span></li>
+				<li class="navbar-right"><a href="/verbalizzazione_voti/Logout" class="navbar">Logout</a></li>
+			</ul>
+		</navbar>
+
+		<div class="container center justify-content-center">
+
+			<h3 class="justify-content-center">
+				<span class="errorMessage" th:text="${errorMessage.message}"> Message </span>
+			</h3>
+
+
+			<h1>
+				Verbale
+			</h1>
 		
-		<h3>
-			<span style="color: red;" th:text="${errorMessage.message}"> Message </span>
-		</h3>
-		
-		<div th:if="${verbale != null}">
-			Verbale: <span th:text="${verbale.id_verbale}">id_verbale</span> <br>
-			Data: <span th:text="${verbale.data}">data</span> <br>
-			Ora: <span th:text="${verbale.ora}"> ora</span> <br>
-			Corso <span th:text="${nomeCorso}"> nomeCorso</span><br>
-			Data appello: <span th:text="${dataAppello}"> dataAppello</span><br>
-		</div>
-		
-		<div th:if="${verbale != null}">
 			
-			<table>
-				<thead>
-					<tr> Matricola </tr>
-					<tr> Voto </tr>
+			<div th:if="${verbale != null}" class="verbale">
+				<span class="student-info"> Verbale: </span><span th:text="${verbale.id_verbale}">id_verbale</span> <br>
+				<span class="student-info"> Data: </span> <span th:text="${verbale.data}">data</span> <br>
+				<span class="student-info"> Ora: </span> <span th:text="${verbale.ora}"> ora</span> <br>
+				<span class="student-info"> Corso: </span> <span th:text="${nomeCorso}"> nomeCorso</span><br>
+				<span class="student-info"> Data Appello: </span> <span th:text="${dataAppello}"> dataAppello</span><br>
+			</div>
+
+			<h1>
+				Studenti Verbalizzati
+			</h1>
+			
+
+				
+			<table class="verbalizzati-table" th:if="${verbale != null}">
+				<thead style="padding: 20px;">
+					<th> Matricola </th>
+					<th> Voto </th>
 				</thead>
-				<tbody>
+				<tbody th:remove="all-but-first">
 					<tr th:each="iscritti : ${verbale.iscrittiVerbalizzati}" >
-					<td th:text="${iscritti.studente.matricola}"> 
-						910756
-					</td>
-					<td th:text="${iscritti.voto}"> 
-						30
-					</td>
+						<td th:text="${iscritti.studente.matricola}"> 
+							910756
+						</td>
+						<td th:text="${iscritti.voto}"> 
+							30
+						</td>
+					</tr>
+					<tr>
+						<td> 
+							910756
+						</td>
+						<td> 
+							30
+						</td>
+					</tr>
+					<tr>
+						<td> 
+							910756
+						</td>
+						<td> 
+							30
+						</td>
+					</tr>
+					<tr>
+						<td> 
+							910756
+						</td>
+						<td> 
+							30
+						</td>
+					</tr>
+					<tr>
+						<td> 
+							910756
+						</td>
+						<td> 
+							30
+						</td>
+					</tr>
+					<tr>
+						<td> 
+							910756
+						</td>
+						<td> 
+							30
+						</td>
+					</tr>
+					<tr>
+						<td> 
+							910756
+						</td>
+						<td> 
+							30
+						</td>
+					</tr>
+					<tr>
+						<td> 
+							910756
+						</td>
+						<td> 
+							30
+						</td>
+					</tr>
+					<tr>
+						<td> 
+							910756
+						</td>
+						<td> 
+							30
+						</td>
+					</tr>
+
 				</tbody>
 			</table>
-			
-			<a th:href="@{/IscrittiAppello(id=${verbale.id_appello})}"> Torna alla pagina precedente</a>
-			
+			<a th:if="${verbale == null}" th:href="@{/HomeDocente}" href="index.html" > <button type="button" class="errorButton"> Home</button></a>
+			<a th:if="${verbale != null}" th:href="@{/IscrittiAppello(id=${verbale.id_appello})}" href="index.html" > <button type="button" class="errorButton"> Iscritti Appello </button></a>
 		</div>
 		
-	
 	</body>
 
 </html>
