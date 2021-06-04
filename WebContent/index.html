@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+   
+    <title>Università di Magenta</title>
+
+    <link href="css/bootstrap-grid.css" rel="stylesheet">
+    <!-- Custom styles for this page -->
+    <link rel="stylesheet" href="css/style.css">
+    <script type="text/javascript" src="js/login/indexLogin.js" defer></script>
+    <script type="text/javascript" src="js/utils/utils.js" defer></script>
+  </head>
+
+  <body>
+    
+
+    <div class="center">
+      <img src="img/logo.png" class="logo">
+      <h1 class="title">Università di Magenta</h1>
+      <p class="subtitle">Benvenuto, accedi al portale per la gestione dei voti</p>
+      <p class="errorMessage" id="errorMessage"> </p>
+    </div>
+
+    <div class="container">
+      <div class="row justify-content-center">
+
+        <div class="col-md-4 card center">
+          <img src="img/student.png" class="thumbnail">
+          <div class="card-body">
+            <h1 class="card-title pricing-card-title">Studente</h1>
+            <ul class="list-unstyled mt-3 mb-4">
+              <li>Consultare gli esiti dei propri appelli</li>
+              <li>Accettare un voto</li>
+              <li>Rifiutare un voto</li>
+            </ul>
+            <a href="/verbalizzazione_voti_js/HomeStudente"> <button type="button" class="login" id="loginStudente"> Login </button></a>
+          </div>
+        </div>
+
+        <div class="col-md-4 card center">
+          
+          <div class="card-body">
+            <img src="img/teacher.png" class="thumbnail">
+
+            <h1 class="card-title pricing-card-title">Docente</h1>
+            <ul class="list-unstyled mt-3 mb-4">
+              <li>Vedere gli iscritti ai propri appelli</li>  
+              <li>Inserire o modificare un voto</li>
+              <li>Verbalizzare un appello</li>
+            </ul>
+            <button type="button" class="login" id="loginDocente"> Login </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </body>
+
+</html>

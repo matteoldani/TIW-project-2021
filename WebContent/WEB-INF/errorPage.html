@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<meta charset="UTF-8">
+		<title> Universit&agrave; di Magenta</title>
+		<link href="css/bootstrap-grid.css" rel="stylesheet">
+	    <!-- Custom styles for this page -->
+	    <link rel="stylesheet" href="css/style.css">
+	</head>
+	
+	<body>
+
+		<navbar>
+			<ul class="navbar">
+				<li class="navbar"><img src="img/logo-white.png" class="navbar"></li>
+				<li class="navbar"> <span class="navbar">Universit&agrave; di Magenta</span></li>
+				<li class="navbar-right"><a href="/verbalizzazione_voti_js/Logout" class="navbar">Logout</a></li>
+			</ul>
+		</navbar>
+
+		
+		<div class="container center justify-content-center">
+			
+			<h1>
+				<span >Pagina di errore </span>
+			</h1>
+
+			<h3>
+				<span style="color: red;" th:text="${errorMessage.message}" class="errorMessage"> Message </span>
+			</h3>
+			<a href="/verbalizzazione_voti_js/HomeDocente" th:if="${session.docente != null}"> <button type="button" class="errorButton"> Home </button></a>
+			<a href="/verbalizzazione_voti_js/HomeStudente" th:if="${session.studente != null}"> <button type="button" class="errorButton"> Home </button></a>
+			<a href="/verbalizzazione_voti_js" th:if="${session.docente == null && session.studente == null}"> 
+				<button type="button" class="errorButton"> Home </button>
+			</a>
+			
+		</div>
+		
+	</body>
+
+</html>

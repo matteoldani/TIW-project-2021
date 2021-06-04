@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" version="3.1">
+  <display-name>verbalizzazione_voti_js</display-name>
+  <context-param>
+    <param-name>dbUrl</param-name>
+    <param-value>jdbc:mysql://localhost:3306/verbalizzazione_voti</param-value>
+  </context-param>
+  <context-param>
+    <param-name>dbUser</param-name>
+    <param-value>root</param-value>
+  </context-param>
+  <context-param>
+    <param-name>dbPassword</param-name>
+    <param-value>password</param-value> <!--  )UDEh^A?p=j@B8ev -->
+  </context-param>
+  <context-param>
+    <param-name>dbDriver</param-name>
+    <param-value>com.mysql.cj.jdbc.Driver</param-value>
+  </context-param>
+  <context-param>
+    <param-name>webappC</param-name>
+    <param-value>10</param-value>
+  </context-param>
+  
+
+ <filter> 
+  <filter-name>DocenteChecker</filter-name> 
+      <filter-class>it.polimi.tiw.filters.DocenteChecker</filter-class> 
+ </filter> 
+ <filter> 
+  <filter-name>StudenteChecker</filter-name> 
+      <filter-class>it.polimi.tiw.filters.StudenteChecker</filter-class> 
+ </filter> 
+
+ <filter-mapping> 
+    <filter-name>DocenteChecker</filter-name> 
+    <url-pattern>/HomeDocente</url-pattern> 
+    <url-pattern>/IscrittiAppello</url-pattern> 
+    <url-pattern>/ModificaVoto</url-pattern> 
+    <url-pattern>/Pubblicazione</url-pattern> 
+    <url-pattern>/Verbalizzazione</url-pattern>
+    <url-pattern>/ListaAppelli</url-pattern>
+
+ </filter-mapping> 
+ <filter-mapping> 
+    <filter-name>StudenteChecker</filter-name> 
+    <url-pattern>/HomeStudente</url-pattern> 
+    <url-pattern>/EsitoEsame</url-pattern>
+    <url-pattern>/RifiutaVoto</url-pattern>
+ </filter-mapping> 
+ 
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
+</web-app>
