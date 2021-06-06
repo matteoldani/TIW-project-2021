@@ -17,20 +17,12 @@ COMMENTI SULL'IMPLEMENTAZIONE:
   		-visualizza date appelli
   		-visualizza iscritti appelli
   		-tasto Home
-  		-tasto verbalizza
-      -pagina verbalizza
-      -tasto pubblica 
-      
-
-
-
-
-
-
-
-      note  --> posso fare dei file js con tutto il codice html. ogni volta che un oggeto viene creato insierisco l'html 
-            --> quando un oggetto non serve più elimino tutto il codice con una funzione destroy
-
-            ---> FATTOOOOOOO
+  		-tasto verbalizza --> solo display o no, non funziona ancora
+  		-riordinamento tabella iscritti --> controllare solo se il voto è corretto in automatico
+  		-sezione modifica voto fatta
+  		-modifica del voto fatta!
+  		-
+  		
+  		
   
  
