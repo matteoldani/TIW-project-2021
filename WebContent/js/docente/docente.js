@@ -1,9 +1,12 @@
 ( function() {
 
-	var courseList,
-		appelliList,
-		listaIscritti,
-		homeButton,
+	var courseList = null,
+		appelliList = null,
+		listaIscritti = null,
+		modificaVoto = null,
+		errorMessage = null,
+		verbalizzaVoto = null,
+		generalContainer = document.getElementById("generalContainer");
 	    pageOrchestrator = new PageOrchestrator(); // main controller
 
 	  window.addEventListener("load", () => {
@@ -15,36 +18,290 @@
 	    } // display initial content
 	  }, false);
 
-	
-	function ListaIscritti(_errorMessage, _appello){
-		this.errorMessage = _errorMessage;
-		this.divContainer = document.getElementById("iscrittiAppelloContainer");
-		this.container = document.getElementById("iscrittiAppello");
-		this.body = document.getElementById("iscrittiAppelloBody");
-		this.appello = _appello;
 
-		this.iscrtitti = null;
+
+	function VerbalizzaVoto(){
+
+		this.verbale;
+		this.data;
+		this.ora;
+		this.corso;
+		this.dataAppello;
+
+		this.id_appello;
+
+		this.container;
+		this.body;
+
+		this.home;
+		this.iscrtittiAppello;
+
+		this.update = function(_id_appello){
+			generalContainer.innerHTML = "";
+			generalContainer.innerHTML = verbalizzatiGenerator();
+
+			this.id_appello = _id_appello;
+
+			this.verbale = document.getElementById("id_verbale");
+			this.data = document.getElementById("data_verbale");
+			this.ora = document.getElementById("ora_verbale");
+			this.corso = document.getElementById("corso_verbale");
+			this.dataAppello = document.getElementById("data_appello_verbale");
+
+			this.container = document.getElementById("verbale_container");
+			this.body = document.getElementById("body_verbale");
+
+			this.home = document.getElementById("homeButton");
+			this.iscrtittiAppello = document.getElementById("iscrittiButton");
+
+			this.home.addEventListener("click", (event) => {
+				this.hide();
+				courseList.update();
+				courseList.show();
+			});
+
+			//se schiaccio il bottone per toare alla pagina degli iscitti 
+			this.iscrtittiAppello.addEventListener("click", (event) => {
+				this.hide();
+				listaIscritti.update(this.id_appello);
+				listaIscritti.show();
+			});
+
+		}
+
+		this.show = function(){
+			errorMessage.hide();
+			var self = this;
+			var url = "/verbalizzazione_voti_js/Verbalizzazione?id=" + this.id_appello;
+
+			makeCall("GET", url, null, 
+				function(req){
+					if(req.readyState == XMLHttpRequest.DONE){
+						var responseMessage = req.responseText;
+
+						if(req.status == 200){
+							var verbalizzatiJson = JSON.parse(responseMessage);
+
+							self.writeVerbalizzati(verbalizzatiJson)
+						}else{
+							errorMessage.setError(responseMessage);
+							errorMessage.show();
+						}
+					}
+
+				});
+		}
+
+		this.writeVerbalizzati = function(verbalizzatiJson){
+
+
+			this.verbale.textContent = verbalizzatiJson.id_verbale;
+			this.data.textContent = verbalizzatiJson.data.day + "/" + verbalizzatiJson.data.month + "/" + verbalizzatiJson.data.year;;
+			this.ora.textContent = verbalizzatiJson.ora.hour + "." + verbalizzatiJson.ora.minute;
+			this.corso.textContent = verbalizzatiJson.corso;
+			this.dataAppello.textContent = verbalizzatiJson.data_appello;
+			var self = this;
+			verbalizzatiJson.iscrittiVerbalizzati.forEach(function(iscritto){
+				var tr, tdMatr, tdVoto;
+				tr = document.createElement("tr");
+				tdMatr = document.createElement("td");
+				tdMatr.textContent = iscritto.studente.matricola;
+				tdVoto = document.createElement("td");
+				tdVoto.textContent = iscritto.voto;
+				tr.appendChild(tdMatr);
+				tr.appendChild(tdVoto);
+
+				self.body.appendChild(tr);
+			});
+
+		}
+
+		this.hide = function(){
+			generalContainer.innerHTML = "";
+		}
+
+	}
+
+	function ModificaVoto(){
+		this.divContainer;
+		this.modificaTitle;
+		this.container;
+		this.datoMatricola;
+		this.datoCognome;
+		this.datoNome;
+		this.datoEmail;
+		this.datoCL;
+
+		this.datoVotoModificabile;
+		this.datoVotoVisualizzabile;
+		this.votoVisualizzabile;
+		this.voto;
+
+		this.id_appello;
+		this.matricola;
+
+		this.eventRegistered = false;
+
+		
+
+		this.update = function(_id_appello, _matricola){
+
+			generalContainer.innerHTML = "";
+			generalContainer.innerHTML = modificaVotoGenerator();
+			this.divContainer = document.getElementById("modificaEsitoContainer");
+			this.modificaTitle = document.getElementById("modificaTitle");
+			this.container = document.getElementById("modificaVoto");
+			this.datoMatricola = document.getElementById("datoMatricola");
+			this.datoCognome = document.getElementById("datoCognome");
+			this.datoNome = document.getElementById("datoNome");
+			this.datoEmail = document.getElementById("datoEmail");
+			this.datoCL = document.getElementById("datoCL");
+
+			this.datoVotoModificabile = document.getElementById("datoVotoModificabile");
+			this.datoVotoVisualizzabile = document.getElementById("datoVotoVisualizzabile");
+			this.votoVisualizzabile = document.getElementById("votoVisualizzabile");
+			this.voto = document.getElementById("voto");
+
+			this.id_appello = _id_appello;
+			this.matricola = _matricola;
+
+			
+			document.getElementById("modificaEsito").addEventListener("click", (event) => {
+				//imposto parametri del form
+				document.getElementById("matricola_hidden").value = this.matricola;
+				document.getElementById("id_appello_hidden").value = this.id_appello;
+
+				//prendo il form e faccio la call
+				var form = document.getElementById("formModifica");
+				console.log(form);
+				if(form.checkValidity()){
+					makeCall("POST", "/verbalizzazione_voti_js/ModificaVoto", form, 
+						function(req){
+							if(req.readyState == XMLHttpRequest.DONE){
+								var responseMessage = req.responseText;
+								if (req.status == 200) {
+									var e = document.createEvent("HTMLEvents");
+									e.initEvent("click", false, true);
+									document.getElementById("backToIscritti").dispatchEvent(e);
+									console.log("evento andatoa buon fine e voto cambiato");
+
+								}else{
+									errorMessage.setError(responseMessage);
+									errorMessage.show();
+								}
+							}
+						}
+					);
+				}
+			});
+
+
+			//se schiaccio il bottone per toare alla pagina degli iscitti 
+			document.getElementById("backToIscritti").addEventListener("click", (event) => {
+				this.hide();
+				listaIscritti.update(this.id_appello);
+				listaIscritti.show();
+			});
+		}
+
+		this.show = function(){
+
+			errorMessage.hide();
+
+			var self = this;
+			var url = "/verbalizzazione_voti_js/ModificaVoto?id_appello="+
+						this.id_appello +"&&matricola=" + this.matricola;
+			makeCall("GET", url, null, 
+				function(req){
+					if(req.readyState == XMLHttpRequest.DONE){
+
+						var responseMessage = req.responseText;
+						if(req.status == 200){
+							console.log(responseMessage);
+							var modificaJson = JSON.parse(responseMessage);
+							self.writeModifica(modificaJson);
+
+						}else{
+							errorMessage.setError(responseMessage);
+							errorMessage.show();
+						}
+					}
+				}
+			);
+		}
+
+		this.writeModifica = function(modificaJson){
+			var modifica = true;
+			if(modificaJson.stato == "verbalizzato" || modificaJson.stato == "pubblicato"){
+				modifica = false;
+			}
+
+			if(modifica){
+				this.modificaTitle.textContent = "Modifica Voto";
+			}else{
+				this.modificaTitle.textContent = "Visualizza Voto";
+			}
+
+			this.datoMatricola.textContent = modificaJson.matricola;
+			this.datoCognome.textContent = modificaJson.cognome;
+			this.datoNome.textContent = modificaJson.nome;
+			this.datoEmail.textContent = modificaJson.email;
+			this.datoCL.textContent = modificaJson.corso_laurea;
+
+			if(modifica){
+				this.datoVotoVisualizzabile.setAttribute("hidden", "true");
+				this.datoVotoModificabile.removeAttribute("hidden");
+				
+				//put the voto in the selct tag	
+				var opts = this.voto.options;
+				for (var opt, j = 0; opt = opts[j]; j++) {
+				  if (opt.value == modificaJson.voto) {
+				    this.voto.selectedIndex = j;
+				    break;
+				  }
+				}
+				
+
+			}else{
+				this.datoVotoVisualizzabile.removeAttribute("hidden");
+				this.datoVotoModificabile.setAttribute("hidden", "true");
+				this.votoVisualizzabile.textContent = modificaJson.voto;
+			}			
+
+		}
+
+		this.hide = function(){
+		  	generalContainer.innerHTML = "";
+		}
+	}
+	
+	function ListaIscritti(){
+		
+		this.divContainer;
+		this.container;
+		this.body;
+		this.appello;
+
+		this.iscrtitti;
 
 		//elementi dell'intestazione 
-		this.corso = document.getElementById("curseName");
-		this.data = document.getElementById("appelloDate");
-		this.verbalizza = document.getElementById("verbalizzaButton");
-		this.home = document.getElementById("homeButton");
+		this.corso;
+		this.data;
+		this.verbalizza;
+		this.home;
 
-		//register to home button an event to relaod the home page 
-		this.home.addEventListener("click", (event) => {
-			this.hide();
-			courseList.show();
-		});
+		this.pubblica;
+		
 
 		this.activateVerbalizza = function(){
 			this.verbalizza.removeAttribute("hidden");
-			this.verbalizza.addEventListener("click", this.verbalizzaAppello());
+			this.verbalizza.addEventListener("click", (event) => {
+				console.log(this.appello);
+				verbalizzaVoto.update(this.appello);
+				verbalizzaVoto.show();
+			});
 		}
 
-		this.verbalizzaAppello = function(){
-			//farò le cose necessarie alla verbalizzione dell'appelo
-		}
 
 		this.checkVerbalizza = function(){
 			var controllo = false;
@@ -59,12 +316,94 @@
 			}
 		}
 
+		this.activatePubblica = function(){
+			var controllo = this.checkPubblica();
+			if(controllo == true){
+				this.pubblica.classList.add("green-background");
+				this.pubblica.addEventListener("click", (event) =>{
+				
+					//creo un ffinto form da mandare come paramentro della richeista di post 
+					var form = document.createElement("form");
+					//creo l'input type da mandare 
+					var input = document.createElement("input");
+					//immposto name e value 
+					input.setAttribute("value", this.appello);
+					input.setAttribute("name", "id");
+					form.appendChild(input);
+
+					var self = this;
+					makeCall("POST", "/verbalizzazione_voti_js/Pubblicazione", form, 
+						function(req){
+							if(req.readyState == XMLHttpRequest.DONE){
+								var responseMessage = req.responseText;
+
+								if(req.status == 200){
+									self.hide();
+									self.update(self.appello);
+									self.show();
+									self.success.textContent = responseMessage;
+								}else{
+									errorMessage.setError(responseMessage);
+									errorMessage.show();
+								}
+							}
+						})
+				});
+			}else{
+				this.pubblica.classList.add("grey-background");
+			}
+		}
+
+		this.checkPubblica = function(){
+			var controllo = false;
+			this.iscritti.forEach(function(is){
+				if(is.stato == "inserito"){
+					controllo = true;
+				}
+			});
+
+			console.log(controllo);
+			return controllo;
+			
+		}
+
+		this.update = function(_appello){
+			generalContainer.innerHTML = "";
+			generalContainer.innerHTML = listaIscrittiGenerator();
+			this.appello = _appello;
+			this.divContainer = document.getElementById("iscrittiAppelloContainer");
+			this.container = document.getElementById("iscrittiAppello");
+			this.body = document.getElementById("iscrittiAppelloBody");
+			
+
+			this.iscrtitti = null;
+
+			//elementi dell'intestazione 
+			this.success = document.getElementById("successMessage");
+			this.corso = document.getElementById("curseName");
+			this.data = document.getElementById("appelloDate");
+			this.verbalizza = document.getElementById("verbalizzaButton");
+			this.home = document.getElementById("homeButton");
+			this.pubblica = document.getElementById("pubblicaButton");
+
+			//register to home button an event to relaod the home page 
+			this.home.addEventListener("click", (event) => {
+				this.hide();
+				courseList.update();
+				courseList.show();
+			});
+
+
+			
+
+		}
+
 		this.show = function(){
-			this.container.style.visibility = "visible";
-			this.divContainer.removeAttribute("hidden");
+			
+			errorMessage.hide();
 
 			var self = this;
-			var url = "/verbalizzazione_voti_js/IscrittiAppello?id=" + this.appello.getId();
+			var url = "/verbalizzazione_voti_js/IscrittiAppello?id=" + this.appello;
 			makeCall("GET", url, null, 
 				function(req){
 					if(req.readyState == XMLHttpRequest.DONE){
@@ -74,14 +413,14 @@
 
 							if(responseMessage == null){
 								//non ci sono iscrtitti al corso
-								//stampa messaggio
+								
 								return;
 							}
 
 							var iscrtittiJson = JSON.parse(responseMessage);
 							self.iscritti = iscrtittiJson;
-							console.log(self);
 							self.checkVerbalizza();
+							self.activatePubblica();
 							self.writeIscritti(iscrtittiJson);
 
 						}else{
@@ -89,16 +428,18 @@
 								window.location.href="index.html";
 								return;
 							}
-							self.errorMessage.textContent = responseMessage;
+							errorMessage.setError(responseMessage);
+							errorMessage.show();
 						}
 					}
 				}
 			);
+
+			//lo faccio qua perchè devo prima avere gli iscritti 
+
 		}
 
 		this.writeIscritti = function(iscrtittiJson){
-
-			this.body.innerHTML = "";
 
 			var self = this;
 			console.log(iscrtittiJson);
@@ -139,57 +480,46 @@
 				tr.appendChild(tdStato);
 
 				tdModifica = document.createElement("td");
-				tdModifica.textContent = "Modifica";
-				tdMatricola.addEventListener("click", (event) => {
+				if(tdStato.textContent == "pubblicato" || tdStato.textContent == "verbalizzato"){
+					tdModifica.textContent = "Visualizza";
+				}else{
+					tdModifica.textContent = "Modifica";
+				}
+				
+				tdModifica.addEventListener("click", (event) => {
 					console.log("click di modifica del voto");
+					self.hide();
+					modificaVoto.update(iscritto.appello.id_appello, iscritto.studente.matricola);
+					modificaVoto.show();
+
 				});
 				tr.appendChild(tdModifica);
 
 				self.body.appendChild(tr);
 
 			});
-
 		}
 
 		this.hide = function(){
-			this.divContainer.setAttribute("hidden", "true");	
-		}
-
-	}
-
-	function Course(_name, _id){
-		this.name = _name;
-		this.id = _id;
-
-		this.getName = function(){ return this.name;}
-		this.getId = function(){ return this.id;}
-	}
-
-	function Appello(_id, _course_id){
-		this.course_id = _course_id;
-		this.id = _id;
-
-		this.getId = function(){
-			return this.id;
-		}
-		this.getCourse_id = function(){
-			return this.course;
+			//this.divContainer.setAttribute("hidden", "true");	
+			generalContainer.innerHTML="";
 		}
 	}
 
-	function AppelliList(_course, _container, _errorMessage){ 
+	function AppelliList(){ 
 		//container e body andranno creati quando viene lanciato l'evento e sanno parte di course List
-		this.course = _course;
-		this.container = _container;
-		this.errorMessage = _errorMessage;
-		this.appelli = [];
+		this.course;
+		this.container;
+		this.appelli;
 
-
+		this.update = function(_course, _container){
+			this.course = _course;
+			this.container = _container;
+		}
 
 		this.show = function(){
 
-			this.container.removeAttribute("hidden");
-
+			errorMessage.hide();
 			var self = this;
 			var url = "/verbalizzazione_voti_js/ListaAppelli?id=" + this.course.getId();
 			makeCall("GET", url, null, 
@@ -202,7 +532,8 @@
 							
 							//controllo se ci sono corsi
 							if(appelliJson == null){
-								self.errorMessage.textContent = "Non hai nessuno appello per questo corso";
+								errorMessage.setError("Non hai nessuno appello per questo corso");
+								errorMessage.show();
 								return;
 							} 
 
@@ -212,7 +543,8 @@
 								window.location.href="index.html";
 								return;
 							}
-							self.errorMessage.textContent = responseMessage;
+							errorMessage.setError(responseMessage);
+							errorMessage.show();
 						}
 					}
 				} 
@@ -221,10 +553,9 @@
 
 		this.writeAppelli = function(appelliJson){
 			var ul, li, span;
-
+			this.appelli = [];
 			var self = this;
 			ul = document.createElement("ul");
-
 			appelliJson.forEach(function(appello){
 				var appelloTemp = new Appello(appello.id_appello, appello.id_corso);
 				self.appelli.push(appelloTemp);
@@ -239,32 +570,34 @@
 				li.addEventListener("click", (event) => {
 					console.log("click2");
 					event.stopPropagation();
-
+					self.hide()
 					courseList.hide();
-					listaIscritti = new ListaIscritti(self.errorMessage, appelloTemp);
+					listaIscritti.update(appelloTemp.getId());
 					listaIscritti.show();
 				});
 
 			});
 
 			this.container.appendChild(ul);
-			this.container.style.visibility = "visible";
-			ul.style.visibility = "visible";
+			
+		}
 
+		this.hide = function(){
+			//non elimino l'inner html perchè è legato al course list
+			this.container.setAttribute("hidden", "true");
 		}
 	}
 
-	function CourseList(_errorMessage, _divContainer, _container, _body){
-		this.errorMessage = _errorMessage;
-		this.container = _container;
-		this.body = _body;
-		this.courses = [];
-		this.divContainer = _divContainer;
+	function CourseList(){
+		this.container;
+		this.body;
+		this.courses;
+		this.divContainer;
 
 		this.reset = function(){
+			errorMessage.hide();
 			var elements = document.querySelectorAll('td[class="list-item"');
-			console.log(elements);
-
+			
 			elements.forEach( el => {
 				//rimuovo tutti gli elementi a parte il primo
 				el.innerHTML = el.firstChild.textContent;
@@ -272,8 +605,20 @@
 					
 		}
 
+		this.update = function(){
+			generalContainer.innerHTML = "";
+			generalContainer.innerHTML = courseListGenerator();
+			this.divContainer = document.getElementById("courseListContainer"),
+			this.container = document.getElementById("courseList"),
+			this.body =	document.getElementById("courseListBody")
+			
+		}
+
 		this.show = function(){
-			this.divContainer.removeAttribute("hidden");
+			
+			//imposto nome del professore 
+			document.getElementById("docenteName").textContent = sessionStorage.getItem('user');
+			errorMessage.hide();
 			var self = this;
 			makeCall("GET", "/verbalizzazione_voti_js/HomeDocente", null, 
 				function(req){
@@ -295,18 +640,18 @@
 								window.location.href="index.html";
 								return;
 							}
-							self.errorMessage.textContent = responseMessage;
+							errorMessage.setError(responseMessage);
+							errorMessage.show();
 						}
 					}
 				}
 			);
-		};
+		}
 
 		this.writeCourses = function(courseJson){
 			
 			this.container.innerHTML = "";
-			//this.body.innerHTML = "";
-
+			this.courses = [];
 			var self = this;
 			courseJson.forEach(function(course){
 				var row, cell, span; //messe qui perchè avevo bisogno di mandare la cell
@@ -325,7 +670,7 @@
 					//devo chiedere gli appelli del corso
 					console.log("click");
 					self.reset();
-					appelliList = new AppelliList(courseTemp, cell, self.errorMessage);
+					appelliList.update(courseTemp, cell);
 					appelliList.show();
 
 				});
@@ -336,34 +681,57 @@
 		}
 
 		this.hide = function(){
-			this.divContainer.setAttribute("hidden", "true");
-
-
+			generalContainer.innerHTML="";
 		}
 	}
 
-	
+	function ErrorMessage(){
+		this.divContainer = document.getElementById("errorMessageContainer");
+		this.message = document.getElementById("errorMessage");
+
+		this.show = function(){
+			this.divContainer.removeAttribute("hidden");
+		}
+
+		this.setError = function(_errorMessage){
+			this.message.textContent = _errorMessage;
+		}
+
+		this.getErrorMessage = function() {
+			return this.message.textContent;
+		}
+
+		this.hide = function() {
+			this.divContainer.setAttribute("hidden", "true");
+		}
+
+		this.reset = function(){
+			this.message.textContent = "";
+		}
+	}
+
 
 	function PageOrchestrator(){
 
 		//creo la variabile che contiene l'errore 
-		var errorMessage = document.getElementById("errorMessage");
+		
 		//
 
 		this.start = function(){
-			//imposto nome del professore 
-			document.getElementById("docenteName").textContent = sessionStorage.getItem('user');
+			
+			errorMessage = new ErrorMessage();
+			courseList = new CourseList();
+			appelliList = new AppelliList();
+			listaIscritti = new ListaIscritti();
+			modificaVoto = new ModificaVoto();
+			verbalizzaVoto = new VerbalizzaVoto();
 
 			//creo oggetto capace di tenere i corsi al suo interno
-			courseList = new CourseList(
-				errorMessage, 
-				document.getElementById("courseListContainer"),
-				document.getElementById("courseList"),
-				document.getElementById("courseListBody")
-				);
+			courseList.update();
 
 			document.querySelector("a[href='/verbalizzazione_voti_js/Logout']").addEventListener('click', () => {
 	      	  		window.sessionStorage.removeItem('user');
+	      	  		window.location.href="/verbalizzazione_voti_js/index.html";
 	      		}
 	      	);
 

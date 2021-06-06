@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +24,7 @@ import it.polimi.tiw.dao.DocentiDAO;
  * Servlet implementation class GoToPubblicazione
  */
 @WebServlet("/Pubblicazione")
+@MultipartConfig
 public class GoToPubblicazione extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null; //required connection to db
@@ -75,10 +77,10 @@ public class GoToPubblicazione extends HttpServlet {
 			//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 			//in una pagine di errore generica (scleta migliore esteticamente) 
 			e.printStackTrace();
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+			errorMessage = new Message();
 			errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-			request.getSession().setAttribute("errorMessage", errorMessage);
-			String path = getServletContext().getContextPath() + "/ErrorPage";
-			response.sendRedirect(path);
+			response.getWriter().println("Errore interno al database. Riprova piu' tardi");
 			return;
 		}
 		
@@ -109,10 +111,10 @@ public class GoToPubblicazione extends HttpServlet {
 				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 				//in una pagine di errore generica (scleta migliore esteticamente) 
 				e.printStackTrace();
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+				errorMessage = new Message();
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.getSession().setAttribute("errorMessage", errorMessage);
-				String path = getServletContext().getContextPath() + "/ErrorPage";
-				response.sendRedirect(path);
+				response.getWriter().println("Errore interno al database. Riprova piu' tardi");
 				return;
 			}
 			boolean controllo = false;
@@ -144,25 +146,22 @@ public class GoToPubblicazione extends HttpServlet {
 				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 				//in una pagine di errore generica (scleta migliore esteticamente) 
 				e.printStackTrace();
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+				errorMessage = new Message();
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.getSession().setAttribute("errorMessage", errorMessage);
-				String path = getServletContext().getContextPath() + "/ErrorPage";
-				response.sendRedirect(path);
+				response.getWriter().println("Errore interno al database. Riprova piu' tardi");
 				return;
 			}
 			
-			successMessage.setMessage("Pubblicazione effettuata con successo");
-			request.getSession().setAttribute("successMessage", successMessage);
-			String path = getServletContext().getContextPath() + "/IscrittiAppello?id=" + id_appello;
-			response.sendRedirect(path);
+			response.getWriter().println("Pubblicazione effettuata con successo");
 			
 		}else {
 			//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 			//in una pagine di errore generica (scleta migliore esteticamente) 
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+			errorMessage = new Message();
 			errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-			request.getSession().setAttribute("errorMessage", errorMessage);
-			String path = getServletContext().getContextPath() + "/ErrorPage";
-			response.sendRedirect(path);
+			response.getWriter().println("Errore interno al database. Riprova piu' tardi");
 			return;
 		}
 

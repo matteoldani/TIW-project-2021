@@ -6,10 +6,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 
 import it.polimi.tiw.beans.Appello;
 import it.polimi.tiw.beans.Corso;
@@ -25,6 +30,7 @@ import it.polimi.tiw.dao.CorsiDAO;
  * Servlet implementation class GoToModificaVoto
  */
 @WebServlet("/ModificaVoto")
+@MultipartConfig
 public class GoToModificaVoto extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null; //required connection to db
@@ -64,6 +70,8 @@ public class GoToModificaVoto extends HttpServlet {
 		Integer id_appello = null;
 		Integer matricola = null;
 		Message errorMessage = new Message();
+		
+		errorMessage.setMessage("");
 		
 		if(id_appello_string == null || id_appello_string.equals("")) {
 			errorMessage.setMessage("Non sono stati inseriti un id appello e/o una matricola corretti");
@@ -145,39 +153,32 @@ public class GoToModificaVoto extends HttpServlet {
 				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 				//in una pagine di errore generica (scleta migliore esteticamente) 
 				e.printStackTrace();
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+				errorMessage = new Message();
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.getSession().setAttribute("errorMessage", errorMessage);
-				String path = getServletContext().getContextPath() + "/ErrorPage";
-				response.sendRedirect(path);
+				response.getWriter().println("Errore interno al database. Riprova piu' tardi");
 				return;
 			}
 			
 		}
+		
+		if(errorMessage.getMessage().equals("")) {
+			//non ho avuto errori
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			JsonElement studenteJsonElement = gson.toJsonTree(studente);
+			studenteJsonElement.getAsJsonObject().addProperty("stato", stato);
+			studenteJsonElement.getAsJsonObject().addProperty("voto", voto);
 			
-		/*
-		//path del template
-		String path = "WEB-INF/modificaEsito.html";
-		
-		ServletContext servletContext = getServletContext();
-		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		
-		//estudente con le informazioni
-		ctx.setVariable("studente", studente);
-		//id appello
-		ctx.setVariable("id_appello", id_appello);
-		//vecchio voto
-		ctx.setVariable("voto", voto);
-		//stato del voto
-		ctx.setVariable("stato", stato);
-		
-		//se c'è un errore lo stampo a inizio pagina
-		ctx.setVariable("errorMessage", errorMessage);
-
-		templateEngine.process(path, ctx, response.getWriter());
+			String json = gson.toJson(studenteJsonElement);
 			
-			*/
-
-		
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			response.getWriter().write(json);
+		}else {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(errorMessage.getMessage());
+		}
+			
 		
 	}
 
@@ -202,7 +203,7 @@ public class GoToModificaVoto extends HttpServlet {
 		String commonError = "Impossible processare i dati inseriti. Matricola, id appello e voto inseriti potrebbero non essere validi";
 		errorMessage.setMessage(""); //se cambia vuol dire che c'è stato un errore e non devo modificare il database
 		
-		
+		System.out.println(id_appello_string + "  " + matricola_string + "   " + voto);
 		//controllo che sia arriavto un id appello corretto
 		if(id_appello_string == null || id_appello_string.equals("")) {
 			errorMessage.setMessage(commonError);
@@ -253,10 +254,10 @@ public class GoToModificaVoto extends HttpServlet {
 			//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 			//in una pagine di errore generica (scleta migliore esteticamente) 
 			e1.printStackTrace();
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+			errorMessage = new Message();
 			errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-			request.getSession().setAttribute("errorMessage", errorMessage);
-			String path = getServletContext().getContextPath() + "/ErrorPage";
-			response.sendRedirect(path);
+			response.getWriter().println("Errore interno al database. Riprova piu' tardi");
 			return;
 		}
 		//controllo che appello e matricola associati esistanoù
@@ -267,11 +268,10 @@ public class GoToModificaVoto extends HttpServlet {
 				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 				//in una pagine di errore generica (scleta migliore esteticamente) 
 				e.printStackTrace();
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+				errorMessage = new Message();
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.getSession().setAttribute("errorMessage", errorMessage);
-				String path = getServletContext().getContextPath() + "/ErrorPage";
-				response.sendRedirect(path);
-				return;
+				response.getWriter().println("Errore interno al database. Riprova piu' tardi");
 			}
 			if(ia == null) {
 				errorMessage.setMessage("Lo studente scelto non era iscrtito a questo appello");
@@ -287,10 +287,10 @@ public class GoToModificaVoto extends HttpServlet {
 				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 				//in una pagine di errore generica (scleta migliore esteticamente) 
 				e.printStackTrace();
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+				errorMessage = new Message();
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.getSession().setAttribute("errorMessage", errorMessage);
-				String path = getServletContext().getContextPath() + "/ErrorPage";
-				response.sendRedirect(path);
+				response.getWriter().println("Errore interno al database. Riprova piu' tardi");
 				return;
 			}
 			
@@ -310,22 +310,22 @@ public class GoToModificaVoto extends HttpServlet {
 				e.printStackTrace();
 				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 				//in una pagine di errore generica (scleta migliore esteticamente) 
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+				errorMessage = new Message();
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.getSession().setAttribute("errorMessage", errorMessage);
-				String path = getServletContext().getContextPath() + "/ErrorPage";
-				response.sendRedirect(path);
+				response.getWriter().println("Errore interno al database. Riprova piu' tardi");
 				return;
 			}
 			
-			response.sendRedirect(getServletContext().getContextPath() + "/IscrittiAppello?id="+id_appello.toString());
+			response.setStatus(200);
 			
 		}else {
 			
 			//anche se non è un errore lato server in questo caso è dovuto al tentativo di fare una post maligna e quindi
 			//vale la pena madare l'utente malevolo nella pagine comunque di errore stampando l'effettivo errore 
-			request.getSession().setAttribute("errorMessage", errorMessage);
-			String path = getServletContext().getContextPath() + "/ErrorPage";
-			response.sendRedirect(path);
+		
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+			response.getWriter().println(errorMessage.getMessage());
 			return;
 			
 		}

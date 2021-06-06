@@ -6,10 +6,12 @@
 		<link href="css/bootstrap-grid.css" rel="stylesheet">
 	    <!-- Custom styles for this page -->
 	    <link rel="stylesheet" href="css/style.css">
-
+	    <script type="text/javascript" src="js/docente/components/components.js"></script>
+	    <script type="text/javascript" src="js/utils/sort.js" defer></script>
 	    <script type="text/javascript" src="js/utils/utils.js" defer></script>
-	    <script type="text/javascript" src="js/docente/courseList.js" defer></script>
+	    <script type="text/javascript" src="js/utils/objects.js"></script>
 	    <script type="text/javascript" src="js/docente/docente.js" defer></script>
+
 
 	</head>
 	
@@ -23,90 +25,18 @@
 			</ul>
 		</navbar>
 
-		<div class="container center" id="courseListContainer">
-
+		<!-- error messsage section -->
+		<div class="container center" id="errorMessageContainer" hidden>
 			<h3 class="justify-content-center">
 				<span class="errorMessage" id="errorMessage"></span>
 			</h3>
-
-			<h3 id="welcomeTitle"> 
-				Benvenuto nella sua Home prof. <span id="docenteName"></span>
-				<br>Qui &eacute; possibile scegliere l'appello desiderato e vederne gli iscritti.
-			</h3>
-			
-		
-			<table class="center" id="courseList">
-				<thead>
-					<tr>
-						<th class="table-title">Corsi</th>
-					</tr>
-				</thead>
-
-				<tbody id="courseListBody">
-				</tbody>	
-
-			</table>
-		</div>	
-
-		<div class="container center justify-content-center" id="iscrittiAppelloContainer" hidden>
-		
-
-			<h3 id="successMessage">
-				<span style="color: green;"></span>
-			</h3>
-
-			<h3>
-				Corso: <span class="no-bold" id="courseName"> NomeCorso </span>
-			</h3>
-			<h3>
-				Data: <span class="no-bold" id="appelloDate">DataAppello</span>
-			</h3>
-		
-			
-			
-			<button type="button" class="verbalizzaButton" id="verbalizzaButton" hidden> Verbalizza </button>
-			
-			<button type="button" class="errorButton" id="homeButton"> Home </button>
-	
-		
-			<table class="iscritti-table" id="iscrittiAppello">
-				<thead class="heading-buttons">
-					<tr>
-						<th class="iscritti-td">
-							Matricola				
-						</th>
-						<th class="iscritti-td">
-							Cognome
-						</th>
-						<th class="iscritti-td">
-							Nome
-						</th>
-						<th class="iscritti-td">
-							E-Mail
-						</th>
-						<th class="iscritti-td">
-							Corso di laurea
-						</th>
-						<th class="iscritti-td">
-							Voto
-						</th>
-						<th class="iscritti-td">
-							Stato valutazione
-						</th>
-						<th>
-							<form action="/verbalizzazione_voti_js/Pubblicazione" method="POST">
-								<input type="hidden" name="id" th:value="${id_appello}">
-								<input type="button" value="Pubblica" class="green-background">		
-							</form>
-						</th>
-						
-					</tr>
-				</thead>
-
-				<tbody id="iscrittiAppelloBody">	
-				</tbody>
-			</table>
 		</div>
+
+			
+		<div id="generalContainer">
+
+		</div>
+		
 				
 	</body>
 

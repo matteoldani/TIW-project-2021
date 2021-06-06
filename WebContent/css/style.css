@@ -296,6 +296,7 @@ td.list-item a:hover {
 	border-color: #ff00ff;
 	margin: 0px;
 	width: 100%;
+	height: 45px;
 }
 
 thead.heading-buttons tr th input{
@@ -321,9 +322,16 @@ thead.heading-buttons tr:hover th:hover input:hover{
 	background-color: green !important;
 }
 
-input.green-background:hover{
+button.green-background:hover{
 	background-color: #276322 !important;
 }
+
+.grey-background{
+	background-color: grey !important;
+}
+
+
+
 
 .modificaButton{
 	text-decoration: none;
@@ -368,7 +376,25 @@ input.modificaEsito:hover{
 
 .iscritti-td{
 	color: white;
-	padding-left:5px;
+	padding-left:10px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	padding-right: 10px;
+}
+
+.pubblica-th{
+	padding:0px;
+}
+
+#pubblicaButton{
+	border-style: none;
+	color: white;
+	width: 100%;
+	height: 45px;
+}
+
+th.iscritti-td:hover{
+	background-color: #A300A3;
 }
 
 

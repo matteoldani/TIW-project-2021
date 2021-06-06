@@ -11,6 +11,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+
 import it.polimi.tiw.beans.Appello;
 import it.polimi.tiw.beans.Corso;
 import it.polimi.tiw.beans.Docente;
@@ -19,6 +23,7 @@ import it.polimi.tiw.beans.Message;
 import it.polimi.tiw.beans.Verbale;
 import it.polimi.tiw.common.ConnectionHandler;
 import it.polimi.tiw.dao.AppelliDAO;
+import it.polimi.tiw.dao.CorsiDAO;
 import it.polimi.tiw.dao.DocentiDAO;
 
 /**
@@ -57,6 +62,7 @@ public class GoToVerbalizzazione extends HttpServlet {
 		Message successMessage = new Message();
 		AppelliDAO appelliDao;
 		DocentiDAO docentiDao;
+		CorsiDAO corsiDao;
 		Verbale verbale = null;
 		Corso corso = null;
 		Appello appello = null;
@@ -87,6 +93,7 @@ public class GoToVerbalizzazione extends HttpServlet {
 			try {
 				appelliDao = new AppelliDAO(connection);
 				docentiDao = new DocentiDAO(connection);
+				corsiDao = new CorsiDAO(connection);
 				appello = appelliDao.getAppelloFromID(id_appello);
 				corsiDocente = docentiDao.getCourseList(docente.getId_docente());
 				
@@ -98,6 +105,7 @@ public class GoToVerbalizzazione extends HttpServlet {
 					for(Corso c : corsiDocente) {
 						if(c.getId_corso() == appello.getId_corso()) {
 							controllo = true;
+							corso = corsiDao.getCorsoFromId(c.getId_corso());
 						}
 					}
 				}
@@ -130,45 +138,27 @@ public class GoToVerbalizzazione extends HttpServlet {
 				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 				//in una pagine di errore generica (scleta migliore esteticamente) 
 				e.printStackTrace();
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+				errorMessage = new Message();
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.getSession().setAttribute("errorMessage", errorMessage);
-				String path = getServletContext().getContextPath() + "/ErrorPage";
-				response.sendRedirect(path);
+				response.getWriter().println("Errore interno al database. Riprova piu' tardi");
 				return;
-			}
-			
-			
-			
-			
+			}	
 		}
-		/*
-		//path del template
-		String path = "WEB-INF/verbale.html";
-				
-		ServletContext servletContext = getServletContext();
-		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		
-		//verbale
-		ctx.setVariable("verbale", verbale);
-		
-		//se c'è un errore lo stampo a inizio pagina
-		ctx.setVariable("errorMessage", errorMessage);
-		
-		//mi serve il nome del corso
-		if(corso != null) {
-			ctx.setVariable("nomeCorso", corso.getNome());
+		if(errorMessage.getMessage().equals("")) {
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			JsonElement verbaleJsonElement = gson.toJsonTree(verbale);
+			verbaleJsonElement.getAsJsonObject().addProperty("corso", corso.getNome());
+			verbaleJsonElement.getAsJsonObject().addProperty("data_appello", appello.getData().toString());
+			verbaleJsonElement.getAsJsonObject().addProperty("id_appello", appello.getId_appello());
+
+			String json = gson.toJson(verbaleJsonElement);
+			
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			response.getWriter().write(json);		
 		}
 		
-		
-		//mi serve la data dell'appello
-		if(appello != null){
-			ctx.setVariable("dataAppello", appello.getData());
-		}
-		
-		
-		templateEngine.process(path, ctx, response.getWriter());
-		//manca da stampare la pagina del verbale e da fare il controllo che prima di verbalizzare ci siano effettivamente dei voti da verbalizzare e non siano vuoti 
-		 * */
 		
 	}
 
