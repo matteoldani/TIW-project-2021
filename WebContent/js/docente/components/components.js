@@ -44,6 +44,8 @@ this.listaIscrittiGenerator = function(){
 				<button type="button" class="verbalizzaButton" id="verbalizzaButton" hidden> Verbalizza </button>
 				
 				<button type="button" class="errorButton" id="homeButton"> Home </button>
+
+				<button type="button" class="errorButton" id="multipleInsertion"> Inserisci Voti </button>
 		
 			
 				<table class="iscritti-table" id="iscrittiAppello">
@@ -177,6 +179,71 @@ this.verbalizzatiGenerator = function(){
 			<button type="button" class="errorButton" id="homeButton"> Home</button>
 			<button type="button" class="errorButton" id="iscrittiButton"> Iscritti Appello </button>
 		</div>`;
+}
+
+
+this.createModal = function(){
+	return `<div class="modal center" id="modal">
+				<div class="modal-content center" id="modal-content">
+				
+					<table class="modal-table center" id="modal-table">
+						<thead class="heading-buttons-modal">
+							<tr>
+							<th class="iscritti-td sortable">
+								Matricola				
+							</th>
+							<th class="iscritti-td sortable">
+								Cognome
+							</th>
+							<th class="iscritti-td sortable">
+								Nome
+							</th>
+							<th class="iscritti-td sortable">
+								E-Mail
+							</th>
+							<th class="iscritti-td sortable">
+								Corso di laurea
+							</th>
+							<th class="iscritti-td sortable">
+								Voto
+							</th>
+							<th class="iscritti-td sortable">
+								Stato valutazione
+							</th>
+							<th class="pubblica-th">						
+								<button type="button" class="green-background" id="pubblicaButton">Inserisci</button>	
+							</th>
+								
+							</tr>
+						</thead>
+						<tbody id="modal-table-body">
+						</tbody>
+					</table>
+				</div>
+			</div>`;
+}
+
+this.createVotiSelect = function(){
+	return `<select name="voto" id="votoOption">
+			  <option value="-" > - </option>
+			  <option value="assente" >Assente</option>
+			  <option value="riprovato" >Riprovato</option>
+			  <option value="rimandato" >Rimandato</option>
+			  <option value="18" >18</option>
+			  <option value="19" >19</option>
+			  <option value="20" >20</option>
+			  <option value="21" >21</option>
+			  <option value="22" >22</option>
+			  <option value="23" >23</option>
+			  <option value="24" >24</option>
+			  <option value="25" >25</option>
+			  <option value="26" >26</option>
+			  <option value="27" >27</option>
+			  <option value="28" >28</option>
+			  <option value="29" >29</option>
+			  <option value="30" >30</option>
+			  <option value="lode">30 e Lode</option>
+			</select>`;
 }
 
 

@@ -50,8 +50,7 @@ public class GoToRifiutaVoto extends HttpServlet {
 		Integer id_appello = null;
 		Message errorMessage = new Message();
 		errorMessage.setMessage("");
-		
-		
+				
 		//non devo fare i controlli sulla matricola perchè fatti a monte dal filter
 		
 		//faccio i controlli sull'id appello
@@ -68,10 +67,12 @@ public class GoToRifiutaVoto extends HttpServlet {
 
 			errorMessage.setMessage("L'appello selezionato non e' corretto");
 		}
+		
+		
 		//verifico che lo studente sia iscrtito a questo appello 
 		AppelliDAO appelliDao ;
 		IscrittiAppello ia = null;
-		if(errorMessage.equals("")) {
+		if(errorMessage.getMessage().equals("")) {
 			try {
 				appelliDao = new AppelliDAO(connection);
 				ia = appelliDao.getIscrittoAppello(id_appello, matricola);
@@ -84,10 +85,12 @@ public class GoToRifiutaVoto extends HttpServlet {
 						boolean controllo = false;
 						
 						
+						
 						if(voto.equals("rimandato") || voto.equals("riprovato") || voto.equals("assente")) {
 							errorMessage.setMessage("Voto non rifiutabile");
 						}else {
 							
+						
 							//se posso rifiutre
 							if(voto.equals("30 e Lode")) {						
 								appelliDao.rifiutaVoto(id_appello, matricola);	
@@ -97,11 +100,14 @@ public class GoToRifiutaVoto extends HttpServlet {
 									appelliDao.rifiutaVoto(id_appello, matricola);
 								}catch(NumberFormatException e) {
 									//se c'è iun prolema a livello di consistenza del database 
+									e.printStackTrace();
 									voto_numerico = null;							
-									errorMessage.setMessage("Errore nel database, riprova più tardi");
-									request.getSession().setAttribute("errorMessage", errorMessage);
-									String path = getServletContext().getContextPath() + "/ErrorPage";
-									response.sendRedirect(path);
+									response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+									errorMessage = new Message();
+									errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+									response.getWriter().println("Errore interno al database. Riprova piu' tardi");
+									
+									
 									return;
 								} 
 							}					
@@ -119,10 +125,10 @@ public class GoToRifiutaVoto extends HttpServlet {
 				e1.printStackTrace();
 				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 				//in una pagine di errore generica (scleta migliore esteticamente) 
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+				errorMessage = new Message();
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.getSession().setAttribute("errorMessage", errorMessage);
-				String path = getServletContext().getContextPath() + "/ErrorPage";
-				response.sendRedirect(path);
+				response.getWriter().println("Errore interno al database. Riprova piu' tardi");
 				return;
 			}
 		}
@@ -131,20 +137,11 @@ public class GoToRifiutaVoto extends HttpServlet {
 
 		
 		if(errorMessage.getMessage().equals("")) {
-			String path = request.getContextPath() + "/EsitoEsame?id=" + id_appello;
-			response.sendRedirect(path);
+			response.setStatus(200);
 		}else {				
-			
-			//se ho trovato un errore l'utente viene mandato in una pagina in cui viene fatto vedere l'errore e 
-			//data la possibilità di tornare alla home. 
-			//in questo modo gestisco anche gli errori a livello di server. In ogni caso l'utente arriva in qeusta
-			//pagina solo se cerca di moficare in modo malevolo la request
-			
-			errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-			request.getSession().setAttribute("errorMessage", errorMessage);
-			String path = getServletContext().getContextPath() + "/ErrorPage";
-			response.sendRedirect(path);
-			return;
+			//in caso di errore mando la bad request e l'errore come messaggio 
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+			response.getWriter().println(errorMessage.getMessage());
 		}
 		
 	}

@@ -11,7 +11,7 @@
   </context-param>
   <context-param>
     <param-name>dbPassword</param-name>
-    <param-value>password</param-value> <!--  )UDEh^A?p=j@B8ev -->
+    <param-value>)UDEh^A?p=j@B8ev</param-value> <!--  )UDEh^A?p=j@B8ev -->
   </context-param>
   <context-param>
     <param-name>dbDriver</param-name>
@@ -39,7 +39,7 @@
     <url-pattern>/ModificaVoto</url-pattern> 
     <url-pattern>/Pubblicazione</url-pattern> 
     <url-pattern>/Verbalizzazione</url-pattern>
-    <url-pattern>/ListaAppelli</url-pattern>
+    <url-pattern>/ListaAppelliDocente</url-pattern>
 
  </filter-mapping> 
  <filter-mapping> 
@@ -47,6 +47,7 @@
     <url-pattern>/HomeStudente</url-pattern> 
     <url-pattern>/EsitoEsame</url-pattern>
     <url-pattern>/RifiutaVoto</url-pattern>
+    <url-pattern>/ListaAppelliStudente</url-pattern>
  </filter-mapping> 
  
   <welcome-file-list>

@@ -1,6 +1,7 @@
 package it.polimi.tiw.filters;
 
 import java.io.IOException;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -46,7 +47,7 @@ public class StudenteChecker implements Filter {
 
 		HttpSession s = req.getSession();
 		if (s.isNew() || s.getAttribute("studente") == null) {
-			res.sendRedirect(loginpath);
+			res.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
 		// pass the request along the filter chain

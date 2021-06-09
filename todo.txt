@@ -24,5 +24,9 @@ COMMENTI SULL'IMPLEMENTAZIONE:
   		-
   		
   		
-  
+  PAGINA MODALE 
+  	-non c'è il listener quando chiudo il modal e voglio riaprirlo 
+  	-devo implementare il tasto che inserisce veramente i voti
+  	
+  	
  

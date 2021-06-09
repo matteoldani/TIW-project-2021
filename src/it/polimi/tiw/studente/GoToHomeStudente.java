@@ -6,14 +6,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+
 import it.polimi.tiw.beans.Appello;
 import it.polimi.tiw.beans.Corso;
-import it.polimi.tiw.beans.IscrittiAppello;
 import it.polimi.tiw.beans.Message;
 import it.polimi.tiw.beans.Studente;
 import it.polimi.tiw.common.ConnectionHandler;
@@ -25,6 +27,7 @@ import it.polimi.tiw.dao.StudentiDAO;
  * Servlet implementation class GoToHomeStudente
  */
 @WebServlet("/HomeStudente")
+@MultipartConfig
 public class GoToHomeStudente extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null; //required connection to db
@@ -75,96 +78,23 @@ public class GoToHomeStudente extends HttpServlet {
 			e1.printStackTrace();
 			//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 			//in una pagine di errore generica (scleta migliore esteticamente) 
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+			errorMessage = new Message();
 			errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-			request.getSession().setAttribute("errorMessage", errorMessage);
-			String path = getServletContext().getContextPath() + "/ErrorPage";
-			response.sendRedirect(path);
+			response.getWriter().println("Errore interno al database. Riprova piu' tardi");
 			return;
 		}
-		/*
-		 * Controlli effettuati sul parametro id per evitare errori: 
-		 * 1) se null non devo far vedere nessun appello 
-		 * 2) se vuoto mostro errore 
-		 * 3) se non è un corso di quelli che il professore può vedere mostro errore 
-		 * 4) se non è un numero mostro errore
-		 */
-		if(id != null && !id.equals("")) {
-			try {
-				selectedCourse = Integer.parseInt(id);
-			}catch(NumberFormatException e) {
-				selectedCourse = null;
-				errorMessage.setMessage("Il corso selezionato non e' disponibile");
-			}
-			
-		}else{
-			selectedCourse = null;
-			if(id != null && id.equals("")) {
-				errorMessage.setMessage("Il corso selezionato non e' disponibile");
-			}
-		}
 		
-		if(selectedCourse != null) {
-			//i need to get the dates 
-			for(Corso corso : corsiStudente) {
-				if(corso.getId_corso() == selectedCourse) {
-					c = corso;
-				}
-			}
-			if(c != null) {
-				//vedre se si può prendere l'id in modo più comodo
-				try {
-					appelliCorso = corsiDao.getAppelliCorso(c.getId_corso());
-					//devo selezionare solo gli appelli a cuui lo studente è iscritto 
-					ArrayList<IscrittiAppello> ia;
-					boolean check = false;
-					for(Appello app : appelliCorso) {
-						check = false;
-						ia = appelliDao.getIscrittiAppello(app.getId_appello(), "", "");
-						for(IscrittiAppello iscrApp: ia) {
-							if(iscrApp.getStudente().getMatricola() == studente.getMatricola()) {
-								check = true;
-							}
-						}
-						if(!check) {
-							appelliCorso.remove(app);
-						}
-					}
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
-					//in una pagine di errore generica (scleta migliore esteticamente) 
-					errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-					request.getSession().setAttribute("errorMessage", errorMessage);
-					String path = getServletContext().getContextPath() + "/ErrorPage";
-					response.sendRedirect(path);
-					return;
-				}
-			}else {
-				errorMessage.setMessage("Il corso selezionato non e' disponibile");
-			}
-		}
-		/*
-		//path del template
-		String path = "WEB-INF/home.html";
 		
-		ServletContext servletContext = getServletContext();
-		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+		//devo creare i json dei corsi
+		//devo settare il messaggio di errrore se presente 
 		
-		//elenco corsi
-		ctx.setVariable("corsi", corsiStudente);
-		//elenco appelli se corso selezionato
-		ctx.setVariable("appelli", appelliCorso);
-		//corso selezionto per gli appelli
-		if(c != null) {
-			ctx.setVariable("corsoSelezionato", c.getId_corso());
-		}
+		String courseJson = new Gson().toJson(corsiStudente);
 		
-		//se c'è un errore lo stampo a inizio pagina
-		ctx.setVariable("errorMessage", errorMessage);
-
-		templateEngine.process(path, ctx, response.getWriter());
-		*/
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		response.getWriter().write(courseJson);
+		
 	}
 
 	

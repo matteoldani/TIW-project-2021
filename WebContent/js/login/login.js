@@ -21,7 +21,11 @@
 						switch(req.status){
 							case 200: 
 								sessionStorage.setItem('user', req.responseText);
-								window.location.href = "homeDocente.html";
+								if (document.getElementById('userType').value == "docente") {
+									window.location.href = "homeDocente.html";
+								}else{
+									window.location.href = "homeStudente.html";
+								}
 								break;
 							default:
 								document.getElementById("errorMessage").textContent = "Username e/o password errati";

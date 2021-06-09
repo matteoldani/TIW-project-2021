@@ -1,4 +1,4 @@
-package it.polimi.tiw.docente;
+package it.polimi.tiw.studente;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -15,23 +15,25 @@ import com.google.gson.Gson;
 
 import it.polimi.tiw.beans.Appello;
 import it.polimi.tiw.beans.Corso;
-import it.polimi.tiw.beans.Docente;
+import it.polimi.tiw.beans.IscrittiAppello;
 import it.polimi.tiw.beans.Message;
+import it.polimi.tiw.beans.Studente;
 import it.polimi.tiw.common.ConnectionHandler;
+import it.polimi.tiw.dao.AppelliDAO;
 import it.polimi.tiw.dao.CorsiDAO;
-import it.polimi.tiw.dao.DocentiDAO;
+import it.polimi.tiw.dao.StudentiDAO;
 
 /**
- * Servlet implementation class GoToListaAppelli
+ * Servlet implementation class GoToListaAppelliStudente
  */
-@WebServlet("/ListaAppelli")
-public class GoToListaAppelli extends HttpServlet {
+@WebServlet("/ListaAppelliStudente")
+public class GoToListaAppelliStudente extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null; //required connection to db
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public GoToListaAppelli() {
+    public GoToListaAppelliStudente() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -40,7 +42,6 @@ public class GoToListaAppelli extends HttpServlet {
     	
     	//Credo la connessione con il database
     	connection = ConnectionHandler.getConnection(getServletContext());
-
     }
 
 	/**
@@ -48,10 +49,11 @@ public class GoToListaAppelli extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		Docente docente = (Docente) request.getSession(false).getAttribute("docente");
-		DocentiDAO docentiDao;
+		Studente studente = (Studente) request.getSession(false).getAttribute("studente");
+		StudentiDAO studentiDao;
 		CorsiDAO corsiDao;
-		ArrayList<Corso> corsiDocente;
+		AppelliDAO appelliDao = null;
+		ArrayList<Corso> corsiStudente;
 		ArrayList<Appello> appelliCorso = null;
 		Corso c = null;
 		//if the request has an id i have to get also the date of the exams for that course 
@@ -59,43 +61,44 @@ public class GoToListaAppelli extends HttpServlet {
 		Integer selectedCourse;
 		Message errorMessage = null;
 		
+		errorMessage = new Message();
+		errorMessage.setMessage("");
 		try {
+			studentiDao = new StudentiDAO(connection);
 			corsiDao = new CorsiDAO(connection);
-			docentiDao = new DocentiDAO(connection);
-			corsiDocente = docentiDao.getCourseList(docente.getId_docente());
+			appelliDao = new AppelliDAO(connection);
+			corsiStudente = studentiDao.getCourseList(studente.getMatricola());
+			
 		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 			//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 			//in una pagine di errore generica (scleta migliore esteticamente) 
-			e1.printStackTrace();
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
 			errorMessage = new Message();
 			errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
 			response.getWriter().println("Errore interno al database. Riprova piu' tardi");
 			return;
-		}
-		
+		}	
 		
 		if(id != null && !id.equals("")) {
 			try {
 				selectedCourse = Integer.parseInt(id);
 			}catch(NumberFormatException e) {
 				selectedCourse = null;
-				errorMessage = new Message();
 				errorMessage.setMessage("Il corso selezionato non e' disponibile");
 			}
 			
 		}else{
 			selectedCourse = null;
 			if(id != null && id.equals("")) {
-				errorMessage = new Message();
 				errorMessage.setMessage("Il corso selezionato non e' disponibile");
 			}
 		}
 		
 		if(selectedCourse != null) {
-			System.out.println("letto l'id in mdo corretto");
 			//i need to get the dates 
-			for(Corso corso : corsiDocente) {
+			for(Corso corso : corsiStudente) {
 				if(corso.getId_corso() == selectedCourse) {
 					c = corso;
 				}
@@ -104,11 +107,26 @@ public class GoToListaAppelli extends HttpServlet {
 				//vedre se si può prendere l'id in modo più comodo
 				try {
 					appelliCorso = corsiDao.getAppelliCorso(c.getId_corso());
+					//devo selezionare solo gli appelli a cuui lo studente è iscritto 
+					ArrayList<IscrittiAppello> ia;
+					boolean check = false;
+					for(Appello app : appelliCorso) {
+						check = false;
+						ia = appelliDao.getIscrittiAppello(app.getId_appello(), "", "");
+						for(IscrittiAppello iscrApp: ia) {
+							if(iscrApp.getStudente().getMatricola() == studente.getMatricola()) {
+								check = true;
+							}
+						}
+						if(!check) {
+							appelliCorso.remove(app);
+						}
+					}
 				} catch (SQLException e) {
-
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 					//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 					//in una pagine di errore generica (scleta migliore esteticamente) 
-					e.printStackTrace();
 					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
 					errorMessage = new Message();
 					errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
@@ -116,21 +134,21 @@ public class GoToListaAppelli extends HttpServlet {
 					return;
 				}
 			}else {
-				errorMessage = new Message();
 				errorMessage.setMessage("Il corso selezionato non e' disponibile");
 			}
 			
-			if(errorMessage == null) {
+			if(errorMessage.getMessage().equals("")) {
 				String appelliJson = new Gson().toJson(appelliCorso);
 				response.setContentType("application/json");
 				response.setCharacterEncoding("UTF-8");
 				response.getWriter().write(appelliJson);
 			}else {
+				//bad request con messaggio di errore
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 				response.getWriter().println(errorMessage.getMessage());	
 			}
-			
 		}
+		
 	}
 
 	/**

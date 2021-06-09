@@ -14,7 +14,6 @@
 	      window.location.href = "index.html";
 	    } else {
 	      pageOrchestrator.start(); // initialize the components
-	      pageOrchestrator.refresh();
 	    } // display initial content
 	  }, false);
 
@@ -291,6 +290,8 @@
 		this.home;
 
 		this.pubblica;
+
+		this.multipleInsertion;
 		
 
 		this.activateVerbalizza = function(){
@@ -367,10 +368,24 @@
 			
 		}
 
-		this.update = function(_appello){
+		this.addModalListener = function(modal){
+		
+			window.onclick = function(event) {
+			  if (event.target == modal) {
+			    modal.style.display = "none";
+			  }
+			}
+		}
+
+
+		this.update = function(_id_appello, _corso, _dataAppello){
 			generalContainer.innerHTML = "";
 			generalContainer.innerHTML = listaIscrittiGenerator();
-			this.appello = _appello;
+
+			//chiamo sort ogni volta che ricarico questa pagina
+			makeElementSortable();
+
+			this.appello = _id_appello;
 			this.divContainer = document.getElementById("iscrittiAppelloContainer");
 			this.container = document.getElementById("iscrittiAppello");
 			this.body = document.getElementById("iscrittiAppelloBody");
@@ -380,17 +395,58 @@
 
 			//elementi dell'intestazione 
 			this.success = document.getElementById("successMessage");
-			this.corso = document.getElementById("curseName");
+			this.corso = document.getElementById("courseName");
 			this.data = document.getElementById("appelloDate");
 			this.verbalizza = document.getElementById("verbalizzaButton");
 			this.home = document.getElementById("homeButton");
 			this.pubblica = document.getElementById("pubblicaButton");
+
+			this.corso.textContent = _corso;
+			this.data.textContent = _dataAppello;
 
 			//register to home button an event to relaod the home page 
 			this.home.addEventListener("click", (event) => {
 				this.hide();
 				courseList.update();
 				courseList.show();
+			});
+
+			this.multipleInsertion = document.getElementById("multipleInsertion");
+			this.multipleInsertion.addEventListener("click", (event) =>{
+				console.log("click");
+
+				generalContainer.innerHTML = generalContainer.innerHTML + createModal();
+				//generalContainer.insertAdjacentElement("beforeend", createModal());
+				var modal = document.getElementById("modal");
+
+				this.addModalListener(modal);
+
+				modal.style.display = "block";
+
+				//devo prendere tutti gli elementi non inserito della tabella originale
+				var rows = document.getElementById("iscrittiAppello").rows;
+				var modalTableBody = document.getElementById("modal-table-body");
+				console.log(rows);
+
+				var i =0;
+				for(i=1; i<rows.length; i++){
+					if(rows[i].cells[6].textContent == "non inserito"){
+						console.log(rows[i].cells[6].textContent);
+						var row = rows[i].cloneNode(true);
+						row.cells[7].innerHTML = createVotiSelect();
+						modalTableBody.insertAdjacentElement("beforeend", row);
+						//modalTableBody.innerHTML = modalTableBody.innerHTML + rows[i];
+
+					}
+				}
+				/*
+				rows.forEach(function(row){
+					if(row.cells[6].textContent == "non inserito"){
+						modalTableBody.innerHTML = modalTableBody.innerHTML + row;
+					}
+				});
+				*/
+
 			});
 
 
@@ -521,7 +577,7 @@
 
 			errorMessage.hide();
 			var self = this;
-			var url = "/verbalizzazione_voti_js/ListaAppelli?id=" + this.course.getId();
+			var url = "/verbalizzazione_voti_js/ListaAppelliDocente?id=" + this.course.getId();
 			makeCall("GET", url, null, 
 				function(req){
 					if(req.readyState == XMLHttpRequest.DONE){
@@ -572,7 +628,7 @@
 					event.stopPropagation();
 					self.hide()
 					courseList.hide();
-					listaIscritti.update(appelloTemp.getId());
+					listaIscritti.update(appelloTemp.getId(), self.course.getName(), appello.data);
 					listaIscritti.show();
 				});
 
@@ -738,11 +794,6 @@
 	      	courseList.show();
 
 	    };
-
-
-		this.refresh = function(){
-
-		}
 	}
 
 })();

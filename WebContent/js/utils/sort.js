@@ -5,7 +5,7 @@
  * causes variables and functions not to end up in the global scope.
  */
 
-(function() {
+this.makeElementSortable = function() {
 
 	this.lastClickedColumn = document.querySelector('th.sortable');
 	this.asc = false;
@@ -65,6 +65,6 @@
         });
     });
   });
-})(); // evaluate the function after its definition
+}
 
 

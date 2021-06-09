@@ -2,6 +2,7 @@ package it.polimi.tiw.studente;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -9,6 +10,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 
 import it.polimi.tiw.beans.Appello;
 import it.polimi.tiw.beans.Corso;
@@ -107,10 +112,10 @@ public class GoToEsitoEsame extends HttpServlet {
 				e.printStackTrace();
 				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 				//in una pagine di errore generica (scleta migliore esteticamente) 
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+				errorMessage = new Message();
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.getSession().setAttribute("errorMessage", errorMessage);
-				String path = getServletContext().getContextPath() + "/ErrorPage";
-				response.sendRedirect(path);
+				response.getWriter().println("Errore interno al database. Riprova piu' tardi");
 				return;
 			}
 			
@@ -130,10 +135,10 @@ public class GoToEsitoEsame extends HttpServlet {
 				e1.printStackTrace();
 				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 				//in una pagine di errore generica (scleta migliore esteticamente) 
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+				errorMessage = new Message();
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.getSession().setAttribute("errorMessage", errorMessage);
-				String path = getServletContext().getContextPath() + "/ErrorPage";
-				response.sendRedirect(path);
+				response.getWriter().println("Errore interno al database. Riprova piu' tardi");
 				return;
 			}
 			String stato = iscritto.getStato();
@@ -183,61 +188,57 @@ public class GoToEsitoEsame extends HttpServlet {
 					
 				}
 			}
-			/*
-			//path del template
-			String path = "WEB-INF/esitoEsame.html";
-			
-			ServletContext servletContext = getServletContext();
-			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-			
-			//se il voto è stato pubblicato 
-			ctx.setVariable("votoPubblicato", votoPubblicato);
-			//se il voto è rifiutabile
-			ctx.setVariable("votoRifiutabile", votoRifiutabile);
-			//se il voto è stato rifiutato
-			ctx.setVariable("votoRifiutato", votoRifiutato);
-			//il voto
-			ctx.setVariable("voto", voto);
-			//id appello
-			ctx.setVariable("id_appello", id_appello);
-			//corso
-			ctx.setVariable("corso", c);
-			//data appello
-			
-			// errormessge
-			ctx.setVariable("errorMessage", errorMessage);
+			Date data;
 			try {
-				ctx.setVariable("data", appelliDao.getAppelloFromID(id_appello).getData());
+			    data = appelliDao.getAppelloFromID(id_appello).getData();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 				//in una pagine di errore generica (scleta migliore esteticamente) 
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+				errorMessage = new Message();
 				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				request.getSession().setAttribute("errorMessage", errorMessage);
-				path = getServletContext().getContextPath() + "/ErrorPage";
-				response.sendRedirect(path);
+				response.getWriter().println("Errore interno al database. Riprova piu' tardi");
 				return;
 			}
 			
+			if(errorMessage.getMessage().equals("")) {
+				//tutto a buon fine, mando il json con le informazioni
+				
+				Gson gson = new GsonBuilder().setPrettyPrinting().create();
+				JsonElement studenteJsonElement = gson.toJsonTree(studente);
+				studenteJsonElement.getAsJsonObject().addProperty("votoPubblicato", votoPubblicato);
+				studenteJsonElement.getAsJsonObject().addProperty("votoRifiutabile", votoRifiutabile);
+				studenteJsonElement.getAsJsonObject().addProperty("votoRifiutato", votoRifiutato);
+				studenteJsonElement.getAsJsonObject().addProperty("voto", voto);
+				studenteJsonElement.getAsJsonObject().addProperty("id_appello", id_appello);
+				studenteJsonElement.getAsJsonObject().addProperty("corso", c.getNome());
+				studenteJsonElement.getAsJsonObject().addProperty("data", data.toString());
+				
+				String json = gson.toJson(studenteJsonElement);
+				
+				response.setContentType("application/json");
+				response.setCharacterEncoding("UTF-8");
+				response.getWriter().write(json);
+				
+				System.out.println(json);
+
+			}else {
+				//bad request con messaggio di errore
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				response.getWriter().println(errorMessage.getMessage());
+			}
 			
-			templateEngine.process(path, ctx, response.getWriter());	
 			
 		}else {
-			//se trovo un errore devo stampare solo quello 
-			String path = "WEB-INF/esitoEsame.html";
-			
-			ServletContext servletContext = getServletContext();
-			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-			
-			// errormessge
-			ctx.setVariable("errorMessage", errorMessage);
-			templateEngine.process(path, ctx, response.getWriter());
-			
+			//bad request con messaggio di errore
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println(errorMessage.getMessage());
 		}
-		*/
+	
 		
-		}
+		
 	}
 
 	/**
