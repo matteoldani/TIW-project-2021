@@ -268,17 +268,19 @@ private Connection connection;
 	
 	public void rifiutaVoto(Integer id_appello, Integer matricola) throws SQLException {
 		
+		System.out.println("sono in rifiuta voti nel dao ");
+		
 		String query = "UPDATE iscritti_appello SET stato = 'rifiutato' WHERE matricola = ? AND id_appello = ? ";
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
 		
-
-
 		pstatement = connection.prepareStatement(query);
 		pstatement.setInt(1, matricola);
 		pstatement.setInt(2, id_appello);
-		System.out.println(pstatement);
+		System.out.println("rifiuta voto query: " + pstatement);
 		pstatement.executeUpdate();	
+		
+		
 
 	}
 

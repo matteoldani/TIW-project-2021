@@ -77,7 +77,7 @@ public class GoToRifiutaVoto extends HttpServlet {
 		//verifico che lo studente sia iscrtito a questo appello 
 		AppelliDAO appelliDao ;
 		IscrittiAppello ia = null;
-		if(errorMessage.equals("")) {
+		if(errorMessage.getMessage().equals("")) {
 			try {
 				appelliDao = new AppelliDAO(connection);
 				ia = appelliDao.getIscrittoAppello(id_appello, matricola);
