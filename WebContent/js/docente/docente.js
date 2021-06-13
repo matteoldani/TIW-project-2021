@@ -373,6 +373,7 @@
 			window.onclick = function(event) {
 			  if (event.target == modal) {
 			    modal.style.display = "none";
+			    console.log("click");
 			  }
 			}
 		}
@@ -413,9 +414,9 @@
 
 			this.multipleInsertion = document.getElementById("multipleInsertion");
 			this.multipleInsertion.addEventListener("click", (event) =>{
-				console.log("click");
+				console.log("click multipleInsertion");
 
-				generalContainer.innerHTML = generalContainer.innerHTML + createModal();
+				//generalContainer.innerHTML = generalContainer.innerHTML + createModal();
 				//generalContainer.insertAdjacentElement("beforeend", createModal());
 				var modal = document.getElementById("modal");
 
@@ -448,10 +449,6 @@
 				*/
 
 			});
-
-
-			
-
 		}
 
 		this.show = function(){

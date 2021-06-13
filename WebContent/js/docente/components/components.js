@@ -82,6 +82,46 @@ this.listaIscrittiGenerator = function(){
 					<tbody id="iscrittiAppelloBody">	
 					</tbody>
 				</table>
+
+				<!--modal -->
+				<div class="modal center" id="modal">
+					<div class="modal-content center" id="modal-content">
+					
+						<table class="modal-table center" id="modal-table">
+							<thead class="heading-buttons-modal">
+								<tr>
+								<th class="iscritti-td sortable">
+									Matricola				
+								</th>
+								<th class="iscritti-td sortable">
+									Cognome
+								</th>
+								<th class="iscritti-td sortable">
+									Nome
+								</th>
+								<th class="iscritti-td sortable">
+									E-Mail
+								</th>
+								<th class="iscritti-td sortable">
+									Corso di laurea
+								</th>
+								<th class="iscritti-td sortable">
+									Voto
+								</th>
+								<th class="iscritti-td sortable">
+									Stato valutazione
+								</th>
+								<th class="pubblica-th">						
+									<button type="button" class="green-background" id="pubblicaButton">Inserisci</button>	
+								</th>
+									
+								</tr>
+							</thead>
+							<tbody id="modal-table-body">
+							</tbody>
+						</table>
+					</div>
+				</div>
 			</div>`;
 }
 
