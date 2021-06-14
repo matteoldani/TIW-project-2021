@@ -1,14 +1,14 @@
 this.courseListGenerator = function(){
 	return `<div class="container center" id="courseListContainer">
 
-			
 
-			<h3 id="welcomeTitle"> 
+
+			<h3 id="welcomeTitle">
 				Benvenuto nella sua Home prof. <span id="docenteName"></span>
 				<br>Qui &eacute; possibile scegliere l'appello desiderato e vederne gli iscritti.
 			</h3>
-			
-		
+
+
 			<table class="center" id="courseList">
 				<thead>
 					<tr>
@@ -17,7 +17,7 @@ this.courseListGenerator = function(){
 				</thead>
 
 				<tbody id="courseListBody">
-				</tbody>	
+				</tbody>
 
 			</table>
 		</div>`;
@@ -26,7 +26,7 @@ this.courseListGenerator = function(){
 this.listaIscrittiGenerator = function(){
 	return `<!-- lista iscritti appello -->
 			<div class="container center justify-content-center" id="iscrittiAppelloContainer">
-			
+
 
 				<h3>
 					<span style="color: green;" id="successMessage"></span>
@@ -38,21 +38,21 @@ this.listaIscrittiGenerator = function(){
 				<h3>
 					Data: <span class="no-bold" id="appelloDate">DataAppello</span>
 				</h3>
-			
-				
-				
+
+
+
 				<button type="button" class="verbalizzaButton" id="verbalizzaButton" hidden> Verbalizza </button>
-				
+
 				<button type="button" class="errorButton" id="homeButton"> Home </button>
 
 				<button type="button" class="errorButton" id="multipleInsertion"> Inserisci Voti </button>
-		
-			
+
+
 				<table class="iscritti-table" id="iscrittiAppello">
 					<thead class="heading-buttons">
 						<tr>
 							<th class="iscritti-td sortable">
-								Matricola				
+								Matricola
 							</th>
 							<th class="iscritti-td sortable">
 								Cognome
@@ -72,26 +72,26 @@ this.listaIscrittiGenerator = function(){
 							<th class="iscritti-td sortable">
 								Stato valutazione
 							</th>
-							<th class="pubblica-th">						
-								<button type="button" class="" id="pubblicaButton">Pubblica</button>	
+							<th class="pubblica-th">
+								<button type="button" class="" id="pubblicaButton">Pubblica</button>
 							</th>
-							
+
 						</tr>
 					</thead>
 
-					<tbody id="iscrittiAppelloBody">	
+					<tbody id="iscrittiAppelloBody">
 					</tbody>
 				</table>
 
 				<!--modal -->
 				<div class="modal center" id="modal">
 					<div class="modal-content center" id="modal-content">
-					
+
 						<table class="modal-table center" id="modal-table">
 							<thead class="heading-buttons-modal">
 								<tr>
 								<th class="iscritti-td sortable">
-									Matricola				
+									Matricola
 								</th>
 								<th class="iscritti-td sortable">
 									Cognome
@@ -111,10 +111,10 @@ this.listaIscrittiGenerator = function(){
 								<th class="iscritti-td sortable">
 									Stato valutazione
 								</th>
-								<th class="pubblica-th">						
-									<button type="button" class="green-background" id="pubblicaButton">Inserisci</button>	
+								<th class="pubblica-th">
+									<button type="button" class="green-background" id="multiplePublicButton">Inserisci</button>
 								</th>
-									
+
 								</tr>
 							</thead>
 							<tbody id="modal-table-body">
@@ -134,8 +134,8 @@ this.modificaVotoGenerator = function(){
 					<span id="modificaTitle">
 					</span>
 				</h1>
-				
-				
+
+
 				<div  class="center esito" id="modificaVoto">
 
 					<h3> Dati studente </h3>
@@ -145,7 +145,7 @@ this.modificaVotoGenerator = function(){
 					<span class="student-info"> Nome: </span> <span id="datoNome"> </span><br>
 					<span class="student-info"> E-Mail: </span> <span id="datoEmail"> </span><br>
 					<span class="student-info"> Corso di Laurea: </span><span id="datoCL"></span> <br>
-					
+
 					<div id="datoVotoModificabile">
 						<form action="#" method="POST" id="formModifica"> <!-- richiesta da fare a modifica voto-->
 							<input type="text" id="id_appello_hidden" name="id_appello" hidden>
@@ -174,10 +174,10 @@ this.modificaVotoGenerator = function(){
 							<input type="button" value="MODIFICA" class="modificaEsito" id="modificaEsito">
 						</form>
 					</div>
-					
+
 					<div id="datoVotoVisualizzabile">
 						<span  class="student-info"> Voto: </span><span id="votoVisualizzabile"></span>
-						
+
 					</div>
 				</div>
 
@@ -191,8 +191,8 @@ this.verbalizzatiGenerator = function(){
 			<h1>
 				Verbale
 			</h1>
-		
-			
+
+
 			<div class="verbale">
 				<span class="student-info"> Verbale: </span><span id="id_verbale"></span> <br>
 				<span class="student-info"> Data: </span> <span id="data_verbale"></span> <br>
@@ -204,16 +204,16 @@ this.verbalizzatiGenerator = function(){
 			<h1>
 				Studenti Verbalizzati
 			</h1>
-			
 
-				
+
+
 			<table class="verbalizzati-table" id="container_verbale">
 				<thead style="padding: 20px;">
 					<th> Matricola </th>
 					<th> Voto </th>
 				</thead>
 				<tbody id="body_verbale">
-					
+
 				</tbody>
 			</table>
 			<button type="button" class="errorButton" id="homeButton"> Home</button>
@@ -221,16 +221,15 @@ this.verbalizzatiGenerator = function(){
 		</div>`;
 }
 
-
 this.createModal = function(){
 	return `<div class="modal center" id="modal">
 				<div class="modal-content center" id="modal-content">
-				
+
 					<table class="modal-table center" id="modal-table">
 						<thead class="heading-buttons-modal">
 							<tr>
 							<th class="iscritti-td sortable">
-								Matricola				
+								Matricola
 							</th>
 							<th class="iscritti-td sortable">
 								Cognome
@@ -250,10 +249,10 @@ this.createModal = function(){
 							<th class="iscritti-td sortable">
 								Stato valutazione
 							</th>
-							<th class="pubblica-th">						
-								<button type="button" class="green-background" id="pubblicaButton">Inserisci</button>	
+							<th class="pubblica-th">
+								<button type="button" class="green-background" id="pubblicaButton">Inserisci</button>
 							</th>
-								
+
 							</tr>
 						</thead>
 						<tbody id="modal-table-body">
@@ -264,8 +263,7 @@ this.createModal = function(){
 }
 
 this.createVotiSelect = function(){
-	return `<select name="voto" id="votoOption">
-			  <option value="-" > - </option>
+	return `<select name="voto" id="votoOption" class="listOfVoti">
 			  <option value="assente" >Assente</option>
 			  <option value="riprovato" >Riprovato</option>
 			  <option value="rimandato" >Rimandato</option>
@@ -285,6 +283,3 @@ this.createVotiSelect = function(){
 			  <option value="lode">30 e Lode</option>
 			</select>`;
 }
-
-
-

@@ -1,5 +1,6 @@
 package it.polimi.tiw.docente;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import it.polimi.tiw.beans.Appello;
 import it.polimi.tiw.beans.Corso;
@@ -22,6 +24,7 @@ import it.polimi.tiw.beans.Docente;
 import it.polimi.tiw.beans.IscrittiAppello;
 import it.polimi.tiw.beans.Message;
 import it.polimi.tiw.beans.Studente;
+import it.polimi.tiw.beans.StudenteFromJson;
 import it.polimi.tiw.common.ConnectionHandler;
 import it.polimi.tiw.dao.AppelliDAO;
 import it.polimi.tiw.dao.CorsiDAO;
@@ -194,8 +197,8 @@ public class GoToModificaVoto extends HttpServlet {
 		
 		Docente docente = (Docente) request.getSession().getAttribute("docente");
 		String id_appello_string = request.getParameter("id_appello");
-		String matricola_string = request.getParameter("matricola");
-		String voto = request.getParameter("voto");
+		//String matricola_string = request.getParameter("matricola");
+		//String voto = request.getParameter("voto");
 		Integer id_appello = null;
 		Integer matricola = null;
 		Integer votoNumerico = null;
@@ -203,50 +206,32 @@ public class GoToModificaVoto extends HttpServlet {
 		String commonError = "Impossible processare i dati inseriti. Matricola, id appello e voto inseriti potrebbero non essere validi";
 		errorMessage.setMessage(""); //se cambia vuol dire che c'è stato un errore e non devo modificare il database
 		
-		System.out.println(id_appello_string + "  " + matricola_string + "   " + voto);
-		//controllo che sia arriavto un id appello corretto
-		if(id_appello_string == null || id_appello_string.equals("")) {
-			errorMessage.setMessage(commonError);
-		}else {
-			try {
-				id_appello = Integer.parseInt(id_appello_string);
-			}catch(NumberFormatException e) {
-				id_appello = null;
-				errorMessage.setMessage(commonError);
-			}
-		}
+		//prendo il body come stringa
+		StringBuffer jb = new StringBuffer();
+	    String line = null;
+		try {
+		  BufferedReader reader = request.getReader();
+		  while ((line = reader.readLine()) != null)
+		    jb.append(line);
+		} catch (Exception e) { /*report an error*/ }
+	
+		//salvola stringa dentro un jsonObject oer poi prenderne i componenti
+		JsonObject convertedObject = new Gson().fromJson(jb.toString(), JsonObject.class);
 		
-		//controllo che la matricola sia corretta
-		if(matricola_string == null || matricola_string.equals("")) {
-			errorMessage.setMessage(commonError);
-		}else {
-			try {
-				matricola = Integer.parseInt(matricola_string);
-			}catch(NumberFormatException e) {
-				matricola = null;
-				errorMessage.setMessage(commonError);
-			}
-		}
+		//salvo l'appello
+		id_appello_string = convertedObject.get("id_appello").getAsString();
 		
-		//controllo che il voto sia valido
-		if(voto == null || voto.equals("")) {
-			errorMessage.setMessage(commonError);
-		}else {
-			if(!voto.equals("assente") && !voto.equals("rimandato") && !voto.equals("riprovato")  && !voto.equals("lode")) {
-				try {
-					votoNumerico = Integer.parseInt(voto);
-					if(votoNumerico < 18 || votoNumerico > 30) {
-						errorMessage.setMessage(commonError);
-					}
-						
-				}catch(NumberFormatException e) {
-					matricola = null;
-					errorMessage.setMessage(commonError);
-				}
-			}
-		}
+		//costriusco l'array di "studenti" presi dal json
+		JsonElement studentiObject = convertedObject.get("studenti");
+		StudenteFromJson[] arrayOfStudenti = new Gson().fromJson(studentiObject.toString(), StudenteFromJson[].class);
 		
-		IscrittiAppello ia = null;
+		/* DEBUGGING
+		System.out.println(arrayOfStudenti.length);
+		System.out.println(arrayOfStudenti[0].getMatricola());
+		System.out.println(id_appello_string);
+		*/
+		
+		
 		AppelliDAO appelliDao = null;
 		try {
 			appelliDao = new AppelliDAO(connection);
@@ -260,75 +245,133 @@ public class GoToModificaVoto extends HttpServlet {
 			response.getWriter().println("Errore interno al database. Riprova piu' tardi");
 			return;
 		}
-		//controllo che appello e matricola associati esistanoù
-		if(errorMessage.getMessage().equals("")) {
-			try {
-				ia = appelliDao.getIscrittoAppello(id_appello, matricola);
-			} catch (SQLException e) {
-				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
-				//in una pagine di errore generica (scleta migliore esteticamente) 
-				e.printStackTrace();
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
-				errorMessage = new Message();
-				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				response.getWriter().println("Errore interno al database. Riprova piu' tardi");
-			}
-			if(ia == null) {
-				errorMessage.setMessage("Lo studente scelto non era iscrtito a questo appello");
-			}
-		}
 		
-		
-		//controllo che lo stato nel database non sia "pubblicato"
-		if(errorMessage.getMessage().equals("")){
-			try {
-				ia = appelliDao.getIscrittoAppello(id_appello, matricola);
-			} catch (SQLException e) {
-				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
-				//in una pagine di errore generica (scleta migliore esteticamente) 
-				e.printStackTrace();
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
-				errorMessage = new Message();
-				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				response.getWriter().println("Errore interno al database. Riprova piu' tardi");
-				return;
-			}
-			
-			if(ia.getStato().equals("pubblicato") || ia.getStato().equals("rifiutato") || ia.getStato().equals("verbalizzato")) {
-				errorMessage.setMessage("Non e' possibile modificare un voto gia pubblicato, rifiutato o verbalizzato");
-			}
-		}
-		
-		
-		
-		//se tutto è valido il messaggio d'errore non è stato modificato
-		if(errorMessage.getMessage().equals("")) {
-			boolean ris;
-			try {
-				ris = appelliDao.updateVoto(matricola, id_appello, voto);
-			} catch (SQLException e) {
-				e.printStackTrace();
-				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
-				//in una pagine di errore generica (scleta migliore esteticamente) 
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
-				errorMessage = new Message();
-				errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
-				response.getWriter().println("Errore interno al database. Riprova piu' tardi");
-				return;
-			}
-			
-			response.setStatus(200);
-			
+		//controllo che sia arriavto un id appello corretto
+		if(id_appello_string == null || id_appello_string.equals("")) {
+			errorMessage.setMessage(commonError);
 		}else {
-			
-			//anche se non è un errore lato server in questo caso è dovuto al tentativo di fare una post maligna e quindi
-			//vale la pena madare l'utente malevolo nella pagine comunque di errore stampando l'effettivo errore 
+			try {
+				id_appello = Integer.parseInt(id_appello_string);
+			}catch(NumberFormatException e) {
+				id_appello = null;
+				errorMessage.setMessage(commonError);
+			}
+		}
 		
+		
+		
+		for(int i=0; i<arrayOfStudenti.length; i++) {
+			
+			//controllo che tutte le matricole e i voti siano corretti
+			if(arrayOfStudenti[i].getMatricola() == null) {
+				errorMessage.setMessage(commonError);
+			}
+			
+			
+			if(arrayOfStudenti[i].getVoto() == null || arrayOfStudenti[i].getVoto().equals("")) {
+				errorMessage.setMessage(commonError);
+			}else {
+				if(!arrayOfStudenti[i].getVoto().equals("assente") && !arrayOfStudenti[i].getVoto().equals("rimandato") && 
+						!arrayOfStudenti[i].getVoto().equals("riprovato")  && !arrayOfStudenti[i].getVoto().equals("lode")) {
+					try {
+						System.out.println(arrayOfStudenti[i].getVoto());
+						votoNumerico = Integer.parseInt(arrayOfStudenti[i].getVoto());
+						if(votoNumerico < 18 || votoNumerico > 30) {
+							errorMessage.setMessage(commonError);
+						}
+							
+					}catch(NumberFormatException e) {
+						e.printStackTrace();
+						matricola = null;
+						errorMessage.setMessage(commonError);
+					}
+				}
+			}
+			
+		
+			
+			IscrittiAppello ia = null;
+			
+			//controllo che appello e matricola associati esistano
+			if(errorMessage.getMessage().equals("")) {
+				try {
+					ia = appelliDao.getIscrittoAppello(id_appello, arrayOfStudenti[i].getMatricola());
+				} catch (SQLException e) {
+					//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+					//in una pagine di errore generica (scleta migliore esteticamente) 
+					e.printStackTrace();
+					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+					errorMessage = new Message();
+					errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+					response.getWriter().println("Errore interno al database. Riprova piu' tardi");
+				}
+				if(ia == null) {
+					errorMessage.setMessage("Lo studente scelto non era iscrtito a questo appello");
+				}
+			}
+			
+			
+			//controllo che lo stato nel database non sia "pubblicato"
+			if(errorMessage.getMessage().equals("")){
+				try {
+					ia = appelliDao.getIscrittoAppello(id_appello, arrayOfStudenti[i].getMatricola());
+				} catch (SQLException e) {
+					//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+					//in una pagine di errore generica (scleta migliore esteticamente) 
+					e.printStackTrace();
+					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+					errorMessage = new Message();
+					errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+					response.getWriter().println("Errore interno al database. Riprova piu' tardi");
+					return;
+				}
+				
+				if(ia.getStato().equals("pubblicato") || ia.getStato().equals("rifiutato") || ia.getStato().equals("verbalizzato")) {
+					errorMessage.setMessage("Non e' possibile modificare un voto gia pubblicato, rifiutato o verbalizzato");
+				}
+			}
+			
+			
+			
+			//se tutto è valido il messaggio d'errore non è stato modificato
+			if(errorMessage.getMessage().equals("")) {
+				boolean ris;
+				try {
+					ris = appelliDao.updateVoto(arrayOfStudenti[i].getMatricola(), id_appello, arrayOfStudenti[i].getVoto());
+				} catch (SQLException e) {
+					e.printStackTrace();
+					//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
+					//in una pagine di errore generica (scleta migliore esteticamente) 
+					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+					errorMessage = new Message();
+					errorMessage.setMessage("E' stato riscontrato un problema con il database, riprova piu' tardi");
+					response.getWriter().println("Errore interno al database. Riprova piu' tardi");
+					return;
+				}
+				
+			}else {
+				
+				//anche se non è un errore lato server in questo caso è dovuto al tentativo di fare una post maligna e quindi
+				//vale la pena madare l'utente malevolo nella pagine comunque di errore stampando l'effettivo errore 
+			
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
+				response.getWriter().println(errorMessage.getMessage());
+				return;
+				
+			}
+
+		}
+		
+		//solo alla fine di tutti gli aggiornamenti mando la risposta, se non ho trovato nessun errore
+		
+		if(errorMessage.getMessage().equals("")) {
+			response.setStatus(200);
+		}else {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);	
 			response.getWriter().println(errorMessage.getMessage());
-			return;
-			
 		}
+			
+		
 		
 	}
 	

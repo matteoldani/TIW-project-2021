@@ -59,7 +59,7 @@
 				courseList.show();
 			});
 
-			//se schiaccio il bottone per toare alla pagina degli iscitti 
+			//se schiaccio il bottone per toare alla pagina degli iscitti
 			this.iscrtittiAppello.addEventListener("click", (event) => {
 				this.hide();
 				listaIscritti.update(this.id_appello);
@@ -73,7 +73,7 @@
 			var self = this;
 			var url = "/verbalizzazione_voti_js/Verbalizzazione?id=" + this.id_appello;
 
-			makeCall("GET", url, null, 
+			makeCall("GET", url, null,
 				function(req){
 					if(req.readyState == XMLHttpRequest.DONE){
 						var responseMessage = req.responseText;
@@ -141,7 +141,7 @@
 
 		this.eventRegistered = false;
 
-		
+
 
 		this.update = function(_id_appello, _matricola){
 
@@ -164,7 +164,7 @@
 			this.id_appello = _id_appello;
 			this.matricola = _matricola;
 
-			
+
 			document.getElementById("modificaEsito").addEventListener("click", (event) => {
 				//imposto parametri del form
 				document.getElementById("matricola_hidden").value = this.matricola;
@@ -172,30 +172,45 @@
 
 				//prendo il form e faccio la call
 				var form = document.getElementById("formModifica");
-				console.log(form);
-				if(form.checkValidity()){
-					makeCall("POST", "/verbalizzazione_voti_js/ModificaVoto", form, 
-						function(req){
-							if(req.readyState == XMLHttpRequest.DONE){
-								var responseMessage = req.responseText;
-								if (req.status == 200) {
-									var e = document.createEvent("HTMLEvents");
-									e.initEvent("click", false, true);
-									document.getElementById("backToIscritti").dispatchEvent(e);
-									console.log("evento andatoa buon fine e voto cambiato");
+				var matricolaHidden = document.getElementById("matricola_hidden").value;
+				var voto = document.getElementById("voto").value;
 
-								}else{
-									errorMessage.setError(responseMessage);
-									errorMessage.show();
-								}
+				//creo il json da mandare come post
+				var json = "{ \"studenti\":[{\"matricola\":\""+matricolaHidden+
+										"\",\"voto\":\"" + voto +"\"}],\"id_appello\":\""+
+									this.id_appello + "\"}";
+
+				console.log(json);
+				if(form.checkValidity()){
+
+					var req = new XMLHttpRequest();
+					var self = this;
+
+					req.onreadystatechange = function(){
+						if(req.readyState == XMLHttpRequest.DONE){
+							var responseMessage = req.responseText;
+							if (req.status == 200) {
+								var e = document.createEvent("HTMLEvents");
+								e.initEvent("click", false, true);
+								document.getElementById("backToIscritti").dispatchEvent(e);
+								console.log("evento andatoa buon fine e voto cambiato");
+
+							}else{
+								errorMessage.setError(responseMessage);
+								errorMessage.show();
 							}
 						}
-					);
+					}
+
+					req.open("POST", "/verbalizzazione_voti_js/ModificaVoto");
+					req.setRequestHeader("Content-Type", "application/json");
+					req.send(json);
+
 				}
 			});
 
 
-			//se schiaccio il bottone per toare alla pagina degli iscitti 
+			//se schiaccio il bottone per toare alla pagina degli iscitti
 			document.getElementById("backToIscritti").addEventListener("click", (event) => {
 				this.hide();
 				listaIscritti.update(this.id_appello);
@@ -210,7 +225,7 @@
 			var self = this;
 			var url = "/verbalizzazione_voti_js/ModificaVoto?id_appello="+
 						this.id_appello +"&&matricola=" + this.matricola;
-			makeCall("GET", url, null, 
+			makeCall("GET", url, null,
 				function(req){
 					if(req.readyState == XMLHttpRequest.DONE){
 
@@ -250,8 +265,8 @@
 			if(modifica){
 				this.datoVotoVisualizzabile.setAttribute("hidden", "true");
 				this.datoVotoModificabile.removeAttribute("hidden");
-				
-				//put the voto in the selct tag	
+
+				//put the voto in the selct tag
 				var opts = this.voto.options;
 				for (var opt, j = 0; opt = opts[j]; j++) {
 				  if (opt.value == modificaJson.voto) {
@@ -259,13 +274,13 @@
 				    break;
 				  }
 				}
-				
+
 
 			}else{
 				this.datoVotoVisualizzabile.removeAttribute("hidden");
 				this.datoVotoModificabile.setAttribute("hidden", "true");
 				this.votoVisualizzabile.textContent = modificaJson.voto;
-			}			
+			}
 
 		}
 
@@ -273,9 +288,9 @@
 		  	generalContainer.innerHTML = "";
 		}
 	}
-	
+
 	function ListaIscritti(){
-		
+
 		this.divContainer;
 		this.container;
 		this.body;
@@ -283,7 +298,7 @@
 
 		this.iscrtitti;
 
-		//elementi dell'intestazione 
+		//elementi dell'intestazione
 		this.corso;
 		this.data;
 		this.verbalizza;
@@ -292,7 +307,7 @@
 		this.pubblica;
 
 		this.multipleInsertion;
-		
+
 
 		this.activateVerbalizza = function(){
 			this.verbalizza.removeAttribute("hidden");
@@ -302,7 +317,6 @@
 				verbalizzaVoto.show();
 			});
 		}
-
 
 		this.checkVerbalizza = function(){
 			var controllo = false;
@@ -322,18 +336,18 @@
 			if(controllo == true){
 				this.pubblica.classList.add("green-background");
 				this.pubblica.addEventListener("click", (event) =>{
-				
-					//creo un ffinto form da mandare come paramentro della richeista di post 
+
+					//creo un ffinto form da mandare come paramentro della richeista di post
 					var form = document.createElement("form");
-					//creo l'input type da mandare 
+					//creo l'input type da mandare
 					var input = document.createElement("input");
-					//immposto name e value 
+					//immposto name e value
 					input.setAttribute("value", this.appello);
 					input.setAttribute("name", "id");
 					form.appendChild(input);
 
 					var self = this;
-					makeCall("POST", "/verbalizzazione_voti_js/Pubblicazione", form, 
+					makeCall("POST", "/verbalizzazione_voti_js/Pubblicazione", form,
 						function(req){
 							if(req.readyState == XMLHttpRequest.DONE){
 								var responseMessage = req.responseText;
@@ -365,11 +379,11 @@
 
 			console.log(controllo);
 			return controllo;
-			
+
 		}
 
 		this.addModalListener = function(modal){
-		
+
 			window.onclick = function(event) {
 			  if (event.target == modal) {
 			    modal.style.display = "none";
@@ -390,11 +404,11 @@
 			this.divContainer = document.getElementById("iscrittiAppelloContainer");
 			this.container = document.getElementById("iscrittiAppello");
 			this.body = document.getElementById("iscrittiAppelloBody");
-			
+
 
 			this.iscrtitti = null;
 
-			//elementi dell'intestazione 
+			//elementi dell'intestazione
 			this.success = document.getElementById("successMessage");
 			this.corso = document.getElementById("courseName");
 			this.data = document.getElementById("appelloDate");
@@ -405,7 +419,7 @@
 			this.corso.textContent = _corso;
 			this.data.textContent = _dataAppello;
 
-			//register to home button an event to relaod the home page 
+			//register to home button an event to relaod the home page
 			this.home.addEventListener("click", (event) => {
 				this.hide();
 				courseList.update();
@@ -426,9 +440,13 @@
 
 				//devo prendere tutti gli elementi non inserito della tabella originale
 				var rows = document.getElementById("iscrittiAppello").rows;
+				var insertedRows = [];
 				var modalTableBody = document.getElementById("modal-table-body");
-				console.log(rows);
 
+				//elimino le righe precedenti
+				modalTableBody.innerHTML = "";
+
+				//inserisco le righe che non hanno ancora il voto inserito
 				var i =0;
 				for(i=1; i<rows.length; i++){
 					if(rows[i].cells[6].textContent == "non inserito"){
@@ -436,28 +454,78 @@
 						var row = rows[i].cloneNode(true);
 						row.cells[7].innerHTML = createVotiSelect();
 						modalTableBody.insertAdjacentElement("beforeend", row);
-						//modalTableBody.innerHTML = modalTableBody.innerHTML + rows[i];
 
+						insertedRows.push(row);
 					}
 				}
-				/*
-				rows.forEach(function(row){
-					if(row.cells[6].textContent == "non inserito"){
-						modalTableBody.innerHTML = modalTableBody.innerHTML + row;
+
+				//aggiungo il listener con la sua funzione per gestire l'inserimento
+				var multipleInsertionButton = document.getElementById("multiplePublicButton");
+				multipleInsertionButton.addEventListener("click", (event) => {
+					//devo prendere tutti i valori messe nelle righe e creare un json con
+					//matricola, id_appello, voto
+
+					var allVoti = document.getElementsByClassName("listOfVoti");
+					console.log(allVoti);
+
+					var matricole = [];
+					var id_appello;
+					var voti = [];
+					var i=0;
+					var hashMatricoleVoti = new Object();
+
+					//devo creare il json
+					var json = "{ \"studenti\":[";
+					for(i=0; i<allVoti.length-1; i++){
+						json = json + "{\"matricola\":\"" + insertedRows[i].cells[0].textContent +
+												"\", \"voto\":\""+ allVoti[i].value + "\"},";
+
+						// hashMatricoleVoti[insertedRows[i].cells[0].textContent] = allVoti[i].value;
+						// matricole.push(insertedRows[i].cells[0].textContent);
+
+
 					}
+					json = json + "{\"matricola\":\"" + insertedRows[i].cells[0].textContent +
+											"\", \"voto\":\""+ allVoti[i].value + "\"}], \"id_appello\": \"" + this.appello+
+											"\"}";
+
+					console.log(hashMatricoleVoti);
+					console.log(json);
+
+					//devo fare la richeista per madnare il json alla servelet
+
+					var req = new XMLHttpRequest();
+					var self = this;
+					req.onreadystatechange = function(){
+						if(req.readyState == XMLHttpRequest.DONE){
+							if(req.status == 200){
+
+								self.update(self.appello, self.corso.textContent, self.data.textContent);
+								self.show();
+							}else{
+								errorMessage.setError(req.responseText);
+								errorMessage.show();
+							}
+							console.log("richiesta mandata e risposta ricevuta");
+						}
+					}
+
+					req.open("POST", "/verbalizzazione_voti_js/ModificaVoto");
+					req.setRequestHeader("Content-Type", "application/json");
+					req.send(json);
+
 				});
-				*/
 
 			});
 		}
 
 		this.show = function(){
-			
+
 			errorMessage.hide();
 
 			var self = this;
 			var url = "/verbalizzazione_voti_js/IscrittiAppello?id=" + this.appello;
-			makeCall("GET", url, null, 
+			makeCall("GET", url, null,
 				function(req){
 					if(req.readyState == XMLHttpRequest.DONE){
 						var responseMessage = req.responseText;
@@ -466,7 +534,7 @@
 
 							if(responseMessage == null){
 								//non ci sono iscrtitti al corso
-								
+
 								return;
 							}
 
@@ -488,7 +556,7 @@
 				}
 			);
 
-			//lo faccio qua perchè devo prima avere gli iscritti 
+			//lo faccio qua perchè devo prima avere gli iscritti
 
 		}
 
@@ -538,7 +606,7 @@
 				}else{
 					tdModifica.textContent = "Modifica";
 				}
-				
+
 				tdModifica.addEventListener("click", (event) => {
 					console.log("click di modifica del voto");
 					self.hide();
@@ -554,12 +622,12 @@
 		}
 
 		this.hide = function(){
-			//this.divContainer.setAttribute("hidden", "true");	
+			//this.divContainer.setAttribute("hidden", "true");
 			generalContainer.innerHTML="";
 		}
 	}
 
-	function AppelliList(){ 
+	function AppelliList(){
 		//container e body andranno creati quando viene lanciato l'evento e sanno parte di course List
 		this.course;
 		this.container;
@@ -575,20 +643,20 @@
 			errorMessage.hide();
 			var self = this;
 			var url = "/verbalizzazione_voti_js/ListaAppelliDocente?id=" + this.course.getId();
-			makeCall("GET", url, null, 
+			makeCall("GET", url, null,
 				function(req){
 					if(req.readyState == XMLHttpRequest.DONE){
 						var responseMessage = req.responseText;
 						if(req.status == 200){
 							//CONVERTO IL JSON
 							var appelliJson = JSON.parse(responseMessage);
-							
+
 							//controllo se ci sono corsi
 							if(appelliJson == null){
 								errorMessage.setError("Non hai nessuno appello per questo corso");
 								errorMessage.show();
 								return;
-							} 
+							}
 
 							self.writeAppelli(appelliJson);
 						}else{
@@ -600,7 +668,7 @@
 							errorMessage.show();
 						}
 					}
-				} 
+				}
 			);
 		}
 
@@ -632,7 +700,7 @@
 			});
 
 			this.container.appendChild(ul);
-			
+
 		}
 
 		this.hide = function(){
@@ -650,12 +718,12 @@
 		this.reset = function(){
 			errorMessage.hide();
 			var elements = document.querySelectorAll('td[class="list-item"');
-			
+
 			elements.forEach( el => {
 				//rimuovo tutti gli elementi a parte il primo
 				el.innerHTML = el.firstChild.textContent;
 			});
-					
+
 		}
 
 		this.update = function(){
@@ -664,28 +732,28 @@
 			this.divContainer = document.getElementById("courseListContainer"),
 			this.container = document.getElementById("courseList"),
 			this.body =	document.getElementById("courseListBody")
-			
+
 		}
 
 		this.show = function(){
-			
-			//imposto nome del professore 
+
+			//imposto nome del professore
 			document.getElementById("docenteName").textContent = sessionStorage.getItem('user');
 			errorMessage.hide();
 			var self = this;
-			makeCall("GET", "/verbalizzazione_voti_js/HomeDocente", null, 
+			makeCall("GET", "/verbalizzazione_voti_js/HomeDocente", null,
 				function(req){
 					if(req.readyState == XMLHttpRequest.DONE){
 						var responseMessage = req.responseText;
 						if(req.status == 200){
 							//CONVERTO IL JSON
 							var courseJson = JSON.parse(responseMessage);
-							
+
 							//controllo se ci sono corsi
 							if(courseJson == null){
 								self.errorMessage.textContent = "Non hai nessuno corso";
 								return;
-							} 
+							}
 
 							self.writeCourses(courseJson);
 						}else{
@@ -702,7 +770,7 @@
 		}
 
 		this.writeCourses = function(courseJson){
-			
+
 			this.container.innerHTML = "";
 			this.courses = [];
 			var self = this;
@@ -763,15 +831,14 @@
 		}
 	}
 
-
 	function PageOrchestrator(){
 
-		//creo la variabile che contiene l'errore 
-		
+		//creo la variabile che contiene l'errore
+
 		//
 
 		this.start = function(){
-			
+
 			errorMessage = new ErrorMessage();
 			courseList = new CourseList();
 			appelliList = new AppelliList();
