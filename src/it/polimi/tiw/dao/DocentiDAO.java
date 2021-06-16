@@ -26,7 +26,9 @@ public class DocentiDAO {
 		Docente docente = null;
 		ResultSet result = null;
 		PreparedStatement pstatement = null;
-		String tempUser, tempPass;
+		String tempUser, tempPass, salt;
+		
+		byte[] hashByte, saltByte;
 		
 			
 		pstatement = connection.prepareStatement(query);
@@ -37,6 +39,7 @@ public class DocentiDAO {
 		while(result.next()) {
 			tempUser = result.getString("username");
 			tempPass = result.getString("password");
+			
 			if(username.equals(tempUser) && password.equals(tempPass)) {
 				//create the beans related to a docente 
 				docente = new Docente(result.getInt("id_docente"), result.getString("nome"), result.getString("cognome"), tempUser);

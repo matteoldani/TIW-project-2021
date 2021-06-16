@@ -1,3 +1,4 @@
+//lista di corsi nella pagina iniziale con predisposizione per gli appelli
 this.courseListGenerator = function(){
 	return `<div class="container center" id="courseListContainer">
 
@@ -23,6 +24,7 @@ this.courseListGenerator = function(){
 		</div>`;
 }
 
+//form per la visualizzazione dell'esito dell'esame con bottone per rifiutarlo
 this.createEsitoEsame = function(){
 	return `<div class="container center justify-content-center">
 			

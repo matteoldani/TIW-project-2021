@@ -1,3 +1,4 @@
+//lista di corsi nella pagina iniziale con predisposizione per gli appelli
 this.courseListGenerator = function(){
 	return `<div class="container center" id="courseListContainer">
 
@@ -23,6 +24,7 @@ this.courseListGenerator = function(){
 		</div>`;
 }
 
+//lista deggli iscritti a un appello con anche la pagina modale
 this.listaIscrittiGenerator = function(){
 	return `<!-- lista iscritti appello -->
 			<div class="container center justify-content-center" id="iscrittiAppelloContainer">
@@ -125,6 +127,7 @@ this.listaIscrittiGenerator = function(){
 			</div>`;
 }
 
+//form con le info per la modifica del voto
 this.modificaVotoGenerator = function(){
 	return `<!-- sezioine modifica/visualizza voto -->
 			<div class="container center justify-content-center" id="modificaEsitoContainer">
@@ -185,6 +188,7 @@ this.modificaVotoGenerator = function(){
 			</div>`;
 }
 
+//form per la visualizzazione dle verbale
 this.verbalizzatiGenerator = function(){
 	return `<div class="container center justify-content-center">
 
@@ -221,6 +225,7 @@ this.verbalizzatiGenerator = function(){
 		</div>`;
 }
 
+//tabella per la creazione del contenuto della pagina modale
 this.createModal = function(){
 	return `<div class="modal center" id="modal">
 				<div class="modal-content center" id="modal-content">
@@ -262,6 +267,7 @@ this.createModal = function(){
 			</div>`;
 }
 
+//select per ogni riga della tabella del modale 
 this.createVotiSelect = function(){
 	return `<select name="voto" id="votoOption" class="listOfVoti">
 			  <option value="assente" >Assente</option>

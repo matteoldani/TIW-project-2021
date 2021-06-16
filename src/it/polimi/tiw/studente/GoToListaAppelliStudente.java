@@ -107,9 +107,25 @@ public class GoToListaAppelliStudente extends HttpServlet {
 				//vedre se si può prendere l'id in modo più comodo
 				try {
 					appelliCorso = corsiDao.getAppelliCorso(c.getId_corso());
+					System.out.println(appelliCorso);
 					//devo selezionare solo gli appelli a cuui lo studente è iscritto 
 					ArrayList<IscrittiAppello> ia;
 					boolean check = false;
+					for(int i =0; i<appelliCorso.size(); i++) {
+						check = false;
+						ia = appelliDao.getIscrittiAppello(appelliCorso.get(i).getId_appello(), "", "");
+						
+						for(IscrittiAppello iscrApp: ia) {
+							if(iscrApp.getStudente().getMatricola() == studente.getMatricola()) {
+								check = true;
+							}
+						}
+						if(!check) {
+							appelliCorso.remove(i);
+							i--;
+						}
+					}
+					/*
 					for(Appello app : appelliCorso) {
 						check = false;
 						ia = appelliDao.getIscrittiAppello(app.getId_appello(), "", "");
@@ -122,6 +138,7 @@ public class GoToListaAppelliStudente extends HttpServlet {
 							appelliCorso.remove(app);
 						}
 					}
+					*/
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -3,10 +3,10 @@
 */
 
 (function() {
-	console.log("IIFE inziata");
+	
 	
 	document.getElementById("loginDocente").addEventListener('click', (event) => { // (param) => function{}
-		console.log("Event happend");
+		
 		makeCall("GET", 'HomeDocente', null, 
 			function(req) {
 				if(req.readyState == XMLHttpRequest.DONE){
@@ -32,7 +32,7 @@
 
 
 	document.getElementById("loginStudente").addEventListener('click', (event) => { // (param) => function{}
-		console.log("Event happend");
+		
 		makeCall("GET", 'HomeStudente', null, 
 			function(req) {
 				if(req.readyState == XMLHttpRequest.DONE){
