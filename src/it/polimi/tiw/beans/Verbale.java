@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Verbale {
 	
 	private int id_verbale;
-	private LocalDate data;
+	private  LocalDate data;
 	private LocalTime ora;
 	private int id_appello;
 	private ArrayList<IscrittiAppello> iscrittiVerbalizzati;

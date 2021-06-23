@@ -58,15 +58,13 @@ public class GoToHomeDocente extends HttpServlet {
 		ArrayList<Corso> corsiDocente;
 		ArrayList<Appello> appelliCorso = null;
 		Corso c = null;
-		//if the request has an id i have to get also the date of the exams for that course 
-		String id = request.getParameter("id");
-		Integer selectedCourse;
+		Integer corsoSelezionato;
 		Message errorMessage = null;
 		
 		try {
 			corsiDao = new CorsiDAO(connection);
 			docentiDao = new DocentiDAO(connection);
-			corsiDocente = docentiDao.getCourseList(docente.getId_docente());
+			corsiDocente = docentiDao.getListaCorsi(docente.getId_docente());
 		} catch (SQLException e1) {
 			//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 			//in una pagine di errore generica (scleta migliore esteticamente) 

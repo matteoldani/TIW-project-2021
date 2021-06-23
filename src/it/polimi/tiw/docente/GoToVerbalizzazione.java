@@ -3,6 +3,7 @@ package it.polimi.tiw.docente;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import javax.servlet.ServletException;
@@ -95,7 +96,7 @@ public class GoToVerbalizzazione extends HttpServlet {
 				docentiDao = new DocentiDAO(connection);
 				corsiDao = new CorsiDAO(connection);
 				appello = appelliDao.getAppelloFromID(id_appello);
-				corsiDocente = docentiDao.getCourseList(docente.getId_docente());
+				corsiDocente = docentiDao.getListaCorsi(docente.getId_docente());
 				
 				boolean controllo = false;
 				if(appello == null) {
@@ -117,7 +118,7 @@ public class GoToVerbalizzazione extends HttpServlet {
 					boolean verbalizzabili = false;
 					ArrayList<IscrittiAppello> iscrittiAppello;
 					
-					iscrittiAppello = appelliDao.getIscrittiAppello(id_appello, "", "");
+					iscrittiAppello = appelliDao.getIscrittiAppello(id_appello);
 					
 					//controllo che tra quelli iscritti a questo appello almeno uno abbia come stato pubblicato o rifiutato
 					for(IscrittiAppello ia: iscrittiAppello) {
@@ -146,7 +147,11 @@ public class GoToVerbalizzazione extends HttpServlet {
 			}	
 		}
 		if(errorMessage.getMessage().equals("")) {
-			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			GsonBuilder gsonBuilder = new GsonBuilder();
+			
+			Gson gson = gsonBuilder.setPrettyPrinting().create();
+			
+			System.out.println(verbale.getData().toString());
 			JsonElement verbaleJsonElement = gson.toJsonTree(verbale);
 			verbaleJsonElement.getAsJsonObject().addProperty("corso", corso.getNome());
 			verbaleJsonElement.getAsJsonObject().addProperty("data_appello", appello.getData().toString());

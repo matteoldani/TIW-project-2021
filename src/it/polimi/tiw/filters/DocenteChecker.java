@@ -38,7 +38,6 @@ public class DocenteChecker implements Filter {
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		// TODO Auto-generated method stub
-		System.out.print("Docente Login checker filter executing ...\n");
 
 		
 		HttpServletRequest req = (HttpServletRequest) request;
@@ -47,7 +46,6 @@ public class DocenteChecker implements Filter {
 
 		HttpSession s = req.getSession();
 		if (s.isNew() || s.getAttribute("docente") == null) {
-			//res.sendRedirect(loginpath);
 			res.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}

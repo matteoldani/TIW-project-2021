@@ -1,9 +1,9 @@
 ( function() {
 
-	
+
 	/*
 	* L'oggetto page orchestrator viene composto da una funzione che ritorna un oggetto con varie funzioni
-	* in questo modo è possibile creare dei getter che mi permettano di accedere agli attributi della pagina 
+	* in questo modo è possibile creare dei getter che mi permettano di accedere agli attributi della pagina
 	* anche dagli altri componenti della stessa (getter) ed è possibile manterenere una funzione di start
 	*/
 

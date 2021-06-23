@@ -120,7 +120,7 @@ public class GoToModificaVoto extends HttpServlet {
 							//il corso è del docente, devo solo controllare che la matricola sia iscritta all'appello e al corso
 							ArrayList<IscrittiAppello> listaIscritti = new ArrayList<>();
 							
-							listaIscritti = appelliDao.getIscrittiAppello(id_appello, "", "");
+							listaIscritti = appelliDao.getIscrittiAppello(id_appello);
 							
 							boolean controllo = false;
 							for(IscrittiAppello iscritti : listaIscritti) {
@@ -196,7 +196,7 @@ public class GoToModificaVoto extends HttpServlet {
 		//post per aggiornare il voto e lo stato dello studente
 		
 		Docente docente = (Docente) request.getSession().getAttribute("docente");
-		String id_appello_string = request.getParameter("id_appello");
+		String id_appello_string;
 		//String matricola_string = request.getParameter("matricola");
 		//String voto = request.getParameter("voto");
 		Integer id_appello = null;
@@ -224,12 +224,6 @@ public class GoToModificaVoto extends HttpServlet {
 		//costriusco l'array di "studenti" presi dal json
 		JsonElement studentiObject = convertedObject.get("studenti");
 		StudenteFromJson[] arrayOfStudenti = new Gson().fromJson(studentiObject.toString(), StudenteFromJson[].class);
-		
-		/* DEBUGGING
-		System.out.println(arrayOfStudenti.length);
-		System.out.println(arrayOfStudenti[0].getMatricola());
-		System.out.println(id_appello_string);
-		*/
 		
 		
 		AppelliDAO appelliDao = null;

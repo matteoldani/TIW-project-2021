@@ -38,7 +38,6 @@ public class StudenteChecker implements Filter {
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		// TODO Auto-generated method stub
-		System.out.print("Studente Login checker filter executing ...\n");
 
 		
 		HttpServletRequest req = (HttpServletRequest) request;

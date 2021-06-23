@@ -8,7 +8,7 @@
 		this.appelli;
 
 		this.update = function(_course, _container){
-			//non vado a reinizializzare il contenuto del container genetale perchè questa sezione fa parte di 
+			//non vado a reinizializzare il contenuto del container genetale perchè questa sezione fa parte di
 			//un unico componente html
 			this.course = _course;
 			this.container = _container;

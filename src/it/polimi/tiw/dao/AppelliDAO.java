@@ -26,7 +26,7 @@ private Connection connection;
 	}
 	
 	//return the list of exams scheduled for a course
-	public ArrayList<IscrittiAppello> getIscrittiAppello(int id_appello, String tag, String order) throws SQLException{
+	public ArrayList<IscrittiAppello> getIscrittiAppello(int id_appello) throws SQLException{
 		
 		Appello app = null;
 		ArrayList<IscrittiAppello> list = new ArrayList<>();
@@ -39,67 +39,10 @@ private Connection connection;
 		//eseguo query per prendere l'appello giusto
 		app = getAppelloFromID(id_appello);
 		
-		
-		//eseguo query che costruisce la lista di iscritti all'appello
-		
-		switch(tag) {
-		case "matricola" : 
-			if(order.equals("ASC")) {
-				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.matricola ASC";
-			}else {
-				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.matricola DESC";
-			}
-			break;
-		case "cognome" : 
-			if(order.equals("ASC")) {
-				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.cognome ASC";
-			}else {
-				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.cognome DESC";
-			}
-			break;
-		case "nome" : 
-			if(order.equals("ASC")) {
-				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.nome ASC";
-			}else {
-				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.nome DESC";
-			}
-			break;
-		case "email" : 
-			if(order.equals("ASC")) {
-				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.email ASC";
-			}else {
-				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.email DESC";
-			}
-			break;
-		case "corso_laurea" : 
-			if(order.equals("ASC")) {
-				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.corso_laurea ASC";
-			}else {
-				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY studenti.corso_laurea DESC";
-			}
-			break;
-		case "voto" : 
-			if(order.equals("ASC")) {
-				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY iscritti_appello.voto ASC";
-			}else {
-				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY iscritti_appello.voto DESC";
-			}
-			break;
-		case "stato" : 
-			if(order.equals("ASC")) {
-				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY iscritti_appello.stato ASC";
-			}else {
-				query = "SELECT * FROM iscritti_appello JOIN studenti ON iscritti_appello.matricola = studenti.matricola WHERE iscritti_appello.id_appello = ? ORDER BY iscritti_appello.stato DESC";
-			}
-			break;
-			
-		
-		}
 		pstatement = connection.prepareStatement(query);
 		pstatement.setString(1, String.valueOf(id_appello));
 		
 		result = pstatement.executeQuery();
-		System.out.println(result);
 		
 		Studente studente;
 		IscrittiAppello iscrittiAppello;
@@ -244,7 +187,6 @@ private Connection connection;
 		}
 		pstatement.setInt(2, matricola);
 		pstatement.setInt(3, id_appello);
-		System.out.println(pstatement);
 		pstatement.executeUpdate();
 		return true;
 		
@@ -260,7 +202,6 @@ private Connection connection;
 
 		pstatement = connection.prepareStatement(query);
 		pstatement.setInt(1, id_appello);
-		System.out.println(pstatement);
 		pstatement.executeUpdate();
 		return true;
 
@@ -277,7 +218,6 @@ private Connection connection;
 		pstatement = connection.prepareStatement(query);
 		pstatement.setInt(1, matricola);
 		pstatement.setInt(2, id_appello);
-		System.out.println(pstatement);
 		pstatement.executeUpdate();	
 
 	}
@@ -300,7 +240,6 @@ private Connection connection;
 		try {
 			pstatement = connection.prepareStatement(query);	
 			pstatement.setInt(1, id_appello);
-			System.out.println(pstatement);
 			pstatement.executeUpdate();
 		}catch(SQLException e) {
 			e.printStackTrace();
@@ -308,7 +247,7 @@ private Connection connection;
 		
 		//prendo solo i pubblicati e rifiutati
 		//lo faccio priima di cambiare lo stato in verbalizzato per non dover prenere anche quelli che potenzialemente sono gia stati vervalizzati in verbali precedenti
-		ArrayList<IscrittiAppello> iscrittiAppello = getIscrittiAppello(id_appello, "", "");
+		ArrayList<IscrittiAppello> iscrittiAppello = getIscrittiAppello(id_appello);
 		for(int i=0; i<iscrittiAppello.size(); i++) {
 			if(!iscrittiAppello.get(i).getStato().equals("pubblicato") && !iscrittiAppello.get(i).getStato().equals("rifiutato")) {
 				iscrittiAppello.remove(iscrittiAppello.get(i));
@@ -325,7 +264,6 @@ private Connection connection;
 		try {
 			pstatement = connection.prepareStatement(query);	
 			pstatement.setInt(1, id_appello);
-			System.out.println(pstatement);
 			pstatement.executeUpdate();
 		}catch(SQLException e) {
 			e.printStackTrace();
@@ -361,7 +299,6 @@ private Connection connection;
 			pstatement.setDate(2, java.sql.Date.valueOf(data));
 			pstatement.setTime(3, java.sql.Time.valueOf(ora));
 			pstatement.setInt(4, id_appello);
-			System.out.println(pstatement);
 			pstatement.executeUpdate();
 		}catch(SQLException e) {
 			e.printStackTrace();
@@ -374,7 +311,6 @@ private Connection connection;
 				pstatement = connection.prepareStatement(query);	
 				pstatement.setInt(1, maxIdVerbale);
 				pstatement.setInt(2, ia.getStudente().getMatricola());
-				System.out.println(pstatement);
 				pstatement.executeUpdate();
 			}catch(SQLException e) {
 				e.printStackTrace();

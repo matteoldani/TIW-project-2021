@@ -67,7 +67,7 @@ public class GoToListaAppelliStudente extends HttpServlet {
 			studentiDao = new StudentiDAO(connection);
 			corsiDao = new CorsiDAO(connection);
 			appelliDao = new AppelliDAO(connection);
-			corsiStudente = studentiDao.getCourseList(studente.getMatricola());
+			corsiStudente = studentiDao.getListaCorsi(studente.getMatricola());
 			
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
@@ -113,7 +113,7 @@ public class GoToListaAppelliStudente extends HttpServlet {
 					boolean check = false;
 					for(int i =0; i<appelliCorso.size(); i++) {
 						check = false;
-						ia = appelliDao.getIscrittiAppello(appelliCorso.get(i).getId_appello(), "", "");
+						ia = appelliDao.getIscrittiAppello(appelliCorso.get(i).getId_appello());
 						
 						for(IscrittiAppello iscrApp: ia) {
 							if(iscrApp.getStudente().getMatricola() == studente.getMatricola()) {
@@ -125,20 +125,7 @@ public class GoToListaAppelliStudente extends HttpServlet {
 							i--;
 						}
 					}
-					/*
-					for(Appello app : appelliCorso) {
-						check = false;
-						ia = appelliDao.getIscrittiAppello(app.getId_appello(), "", "");
-						for(IscrittiAppello iscrApp: ia) {
-							if(iscrApp.getStudente().getMatricola() == studente.getMatricola()) {
-								check = true;
-							}
-						}
-						if(!check) {
-							appelliCorso.remove(app);
-						}
-					}
-					*/
+					
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

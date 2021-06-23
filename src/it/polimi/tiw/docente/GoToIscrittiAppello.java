@@ -64,8 +64,7 @@ public class GoToIscrittiAppello extends HttpServlet {
 		CorsiDAO corsiDao;
 		String nomeCorso = null;
 		Date dataAppello = null;
-		String orderAttribute = null;
-		String order;
+		
 		boolean verbalizzabili = false;
 		
 		errorMessage.setMessage("");
@@ -86,9 +85,6 @@ public class GoToIscrittiAppello extends HttpServlet {
 			return;
 		}
 		
-		orderAttribute = "matricola";
-		order = "ASC";
-
 		//sono arrivato a questa pagina senza avere un id
 		if(id==null || id.equals("")) {
 			errorMessage.setMessage("Non e' stato selezioanto nessun appello");
@@ -112,7 +108,7 @@ public class GoToIscrittiAppello extends HttpServlet {
 				//problema a monte con il database che non è possibile risolere automaticamente. È quindi irrilevante quale delle istruzioni causi l'arrivo nella pagina di 
 				//errore
 				appello = appelliDao.getAppelloFromID(id_appello);
-				corsiDocente = docentiDao.getCourseList(docente.getId_docente());
+				corsiDocente = docentiDao.getListaCorsi(docente.getId_docente());
 				
 				boolean controllo = false;
 				if(appello == null) {
@@ -131,7 +127,7 @@ public class GoToIscrittiAppello extends HttpServlet {
 				
 				if(controllo) {
 					
-					iscrittoAppello = appelliDao.getIscrittiAppello(id_appello, orderAttribute, order);
+					iscrittoAppello = appelliDao.getIscrittiAppello(id_appello);
 					
 					//controllo che tra quelli iscritti a questo appello almeno uno abbia come stato pubblicato o rifiutato
 					for(IscrittiAppello ia: iscrittoAppello) {
@@ -178,39 +174,7 @@ public class GoToIscrittiAppello extends HttpServlet {
 			response.setCharacterEncoding("UTF-8");
 			response.getWriter().write(iscrittiAppelloJson);
 		}
-		/*
-		
-		//path del template
-		String path = "WEB-INF/iscrittiAppello.html";
-		
-		ServletContext servletContext = getServletContext();
-		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		
-		//elenco iscritti
-		ctx.setVariable("iscritti", iscrittoAppello);
-		//nome del corso
-		ctx.setVariable("nomeCorso", nomeCorso);
-		//id appello (per l'ordinamento) 
-		ctx.setVariable("id_appello", id_appello);
-		//data appello
-		if(dataAppello != null) {
-			ctx.setVariable("dataAppello", dataAppello.toString());
-		}
-		//se c'è un errore lo stampo a inizio pagina
-		ctx.setVariable("errorMessage", errorMessage);
-		//se c'è un successo lo stampo a inizio pagina
-		ctx.setVariable("successMessage", successMessage);
-		//elemento per cui ho ordinato 
-		ctx.setVariable("orderAttribute", orderAttribute);
-		//come devo ordianre 
-		ctx.setVariable("order", order);
-		//verbalizzabili
-		ctx.setVariable("verbalizzabili", verbalizzabili);
-		
-		
-		
-		templateEngine.process(path, ctx, response.getWriter());	
-		*/	
+	
 	}
 
 	/**
