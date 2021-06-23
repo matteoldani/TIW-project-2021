@@ -95,7 +95,7 @@ public class GoToVerbalizzazione extends HttpServlet {
 				appelliDao = new AppelliDAO(connection);
 				docentiDao = new DocentiDAO(connection);
 				appello = appelliDao.getAppelloFromID(id_appello);
-				corsiDocente = docentiDao.getCourseList(docente.getId_docente());
+				corsiDocente = docentiDao.getListaCorsi(docente.getId_docente());
 				
 				boolean controllo = false;
 				if(appello == null) {

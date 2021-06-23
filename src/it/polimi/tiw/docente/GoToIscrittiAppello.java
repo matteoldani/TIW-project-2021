@@ -149,7 +149,7 @@ public class GoToIscrittiAppello extends HttpServlet {
 				//problema a monte con il database che non è possibile risolere automaticamente. È quindi irrilevante quale delle istruzioni causi l'arrivo nella pagina di 
 				//errore
 				appello = appelliDao.getAppelloFromID(id_appello);
-				corsiDocente = docentiDao.getCourseList(docente.getId_docente());
+				corsiDocente = docentiDao.getListaCorsi(docente.getId_docente());
 				
 				boolean controllo = false;
 				if(appello == null) {

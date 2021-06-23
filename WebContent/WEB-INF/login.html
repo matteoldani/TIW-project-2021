@@ -5,9 +5,10 @@
 		<title> Universit&agrave; di Magenta</title>
 		<link rel="stylesheet" href="css/bootstrap-grid.css">
 		<link rel="stylesheet" href="css/style.css">
+		<link rel="icon" href="img/logo.png">
 
 	</head>
-	
+
 	<body>
 
 		<div class="center">
@@ -25,20 +26,20 @@
 						<span >Login</span>
 						<span th:text="${userType.type}">Unknown</span>
 					</h1>
-					
+
 					<form th:action="@{${urlPath.path}}" method="POST">
 						<div class="row">
 							<div class="col-5">
-								<img th:src="${userType.type == studente} ? 'img/student-login-magenta.png' : 'img/teacher-login-magenta.png'" src="img/teacher-login.png" class="img-login">
+								<img th:src="${userType.type == 'studente'} ? 'img/student-login-magenta.png' : 'img/teacher-login-magenta.png'" src="img/teacher-login.png" class="img-login">
 							</div>
-						
+
 							<div class="col-7">
-							
+
 								<h3> Username </h3>
 								<input type="text" name="username" placeholder="Username ..."><br>
 								<h3> Password </h3>
 								<input type="password" name="password" placeholder="Password ..."><br>
-								
+
 							</div>
 						</div>
 						<br><br>
@@ -47,11 +48,11 @@
 					<h3 class="center">
 						<span style="color: red;" th:text="${errorMessage.message}"> Messagio di errore </span>
 					</h3>
-					
+
 				</div>
 			</div>
-			
-		</div>		
+
+		</div>
 	</body>
 
 </html>

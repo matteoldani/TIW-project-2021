@@ -109,7 +109,7 @@ public class GoToPubblicazione extends HttpServlet {
 			ArrayList<Corso> corsiDocente = null;
 			try {
 				appello = appelliDao.getAppelloFromID(id_appello);
-				corsiDocente = docentiDao.getCourseList(docente.getId_docente());
+				corsiDocente = docentiDao.getListaCorsi(docente.getId_docente());
 			} catch (SQLException e) {
 				//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 				//in una pagine di errore generica (scleta migliore esteticamente) 

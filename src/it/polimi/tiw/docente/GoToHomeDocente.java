@@ -71,7 +71,7 @@ public class GoToHomeDocente extends HttpServlet {
 		try {
 			corsiDao = new CorsiDAO(connection);
 			docentiDao = new DocentiDAO(connection);
-			corsiDocente = docentiDao.getCourseList(docente.getId_docente());
+			corsiDocente = docentiDao.getListaCorsi(docente.getId_docente());
 		} catch (SQLException e1) {
 			//se trovo un eccezione lato server causata dal databse non posso fare altro che madnare l'utente
 			//in una pagine di errore generica (scleta migliore esteticamente) 

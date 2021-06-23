@@ -113,7 +113,7 @@ public class LoginDocente extends HttpServlet {
 		password = request.getParameter("password");
 		try {
 			docenteDAO = new DocentiDAO(this.connection);
-			docente = docenteDAO.checkCredential(username, password);
+			docente = docenteDAO.checkCredentials(username, password);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

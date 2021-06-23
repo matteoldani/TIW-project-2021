@@ -75,7 +75,7 @@ public class GoToHomeStudente extends HttpServlet {
 			studentiDao = new StudentiDAO(connection);
 			corsiDao = new CorsiDAO(connection);
 			appelliDao = new AppelliDAO(connection);
-			corsiStudente = studentiDao.getCourseList(studente.getMatricola());
+			corsiStudente = studentiDao.getListaCorsi(studente.getMatricola());
 			
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block

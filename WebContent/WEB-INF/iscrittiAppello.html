@@ -4,10 +4,12 @@
 		<meta charset="UTF-8">
 		<title> Universit&agrave; di Magenta</title>
 		<link href="css/bootstrap-grid.css" rel="stylesheet">
+		<link rel="icon" href="img/logo.png">
+
 	    <!-- Custom styles for this page -->
 	    <link rel="stylesheet" href="css/style.css">
 	</head>
-	
+
 	<body>
 
 		<navbar>
@@ -19,7 +21,7 @@
 		</navbar>
 
 		<div class="container center justify-content-center">
-		
+
 			<h3 th:if="${errorMessage != null}">
 				<span style="color: red;" th:text="${errorMessage.message}"> Error Message </span>
 			</h3>
@@ -33,16 +35,16 @@
 			<h3>
 				Data: <span class="no-bold" th:text="${dataAppello}">DataAppello</span>
 			</h3>
-		
-			
-			<a th:href="@{/Verbalizzazione(id=${id_appello})}" th:if="${verbalizzabili}" href="index.html"> 
+
+
+			<a th:href="@{/Verbalizzazione(id=${id_appello})}" th:if="${verbalizzabili}" href="index.html">
 				<button type="button" class="verbalizzaButton"> Verbalizza </button>
 			</a>
 			<a href="/verbalizzazione_voti/HomeDocente"> <button type="button" class="errorButton"> Home </button></a>
-			
-		
-		
-		
+
+
+
+
 			<table class="iscritti-table">
 				<thead class="heading-buttons">
 					<tr>
@@ -51,15 +53,15 @@
 								<input type="hidden" name="id" th:value="${id_appello}">
 								<input type="hidden" name="tag" value="matricola">
 								<input type="hidden" name="order" th:value="${orderAttribute == 'matricola'} ? (${order == 'DESC'} ? 'ASC' : 'DESC') ">
-								<input type="submit" value="Matricola">		
-							</form>				
+								<input type="submit" value="Matricola">
+							</form>
 						</th>
 						<th>
 							<form action="/verbalizzazione_voti/IscrittiAppello" method="GET">
 								<input type="hidden" name="id" th:value="${id_appello}">
 								<input type="hidden" name="tag" value="cognome">
 								<input type="hidden" name="order" th:value="${orderAttribute == 'cognome'} ? (${order == 'DESC'} ? 'ASC' : 'DESC') ">
-								<input type="submit" value="Cognome">		
+								<input type="submit" value="Cognome">
 							</form>
 						</th>
 						<th>
@@ -67,7 +69,7 @@
 								<input type="hidden" name="id" th:value="${id_appello}">
 								<input type="hidden" name="tag" value="nome">
 								<input type="hidden" name="order" th:value="${orderAttribute == 'nome'} ? (${order == 'DESC'} ? 'ASC' : 'DESC')">
-								<input type="submit" value="Nome">		
+								<input type="submit" value="Nome">
 							</form>
 						</th>
 						<th>
@@ -75,7 +77,7 @@
 								<input type="hidden" name="id" th:value="${id_appello}">
 								<input type="hidden" name="tag" value="email">
 								<input type="hidden" name="order" th:value="${orderAttribute == 'email'} ? (${order == 'DESC'} ? 'ASC' : 'DESC')">
-								<input type="submit" value="E-Mail">		
+								<input type="submit" value="E-Mail">
 							</form>
 						</th>
 						<th>
@@ -83,7 +85,7 @@
 								<input type="hidden" name="id" th:value="${id_appello}">
 								<input type="hidden" name="tag" value="corso_laurea">
 								<input type="hidden" name="order" th:value="${orderAttribute == 'corso_laurea'} ? (${order == 'DESC'} ? 'ASC' : 'DESC')">
-								<input type="submit" value="Corso di Laurea">		
+								<input type="submit" value="Corso di Laurea">
 							</form>
 						</th>
 						<th>
@@ -91,7 +93,7 @@
 								<input type="hidden" name="id" th:value="${id_appello}">
 								<input type="hidden" name="tag" value="voto">
 								<input type="hidden" name="order" th:value="${orderAttribute == 'voto'} ? (${order == 'DESC'} ? 'ASC' : 'DESC') ">
-								<input type="submit" value="Voto">		
+								<input type="submit" value="Voto">
 							</form>
 						</th>
 						<th>
@@ -99,154 +101,154 @@
 								<input type="hidden" name="id" th:value="${id_appello}">
 								<input type="hidden" name="tag" value="stato">
 								<input type="hidden" name="order" th:value="${orderAttribute == 'stato'} ? (${order == 'DESC'} ? 'ASC' : 'DESC') ">
-								<input type="submit" value="Stato Valutazione">		
+								<input type="submit" value="Stato Valutazione">
 							</form>
 						</th>
 						<th>
 							<form action="/verbalizzazione_voti/Pubblicazione" method="POST">
 								<input type="hidden" name="id" th:value="${id_appello}">
-								<input type="submit" value="Pubblica" class="green-background">		
+								<input type="submit" value="Pubblica" class="green-background">
 							</form>
 						</th>
-						
+
 					</tr>
 				</thead>
 				<tbody th:remove="all-but-first">
 					<tr th:each="iscritti : ${iscritti}" class="iscritti-items">
-						<td th:text="${iscritti.studente.matricola}"> 
+						<td th:text="${iscritti.studente.matricola}">
 							910756
 						</td>
-						<td th:text="${iscritti.studente.cognome}"> 
+						<td th:text="${iscritti.studente.cognome}">
 							Oldani
 						</td>
-						<td th:text="${iscritti.studente.nome}"> 
+						<td th:text="${iscritti.studente.nome}">
 							Matteo
 						</td>
-						<td th:text="${iscritti.studente.email}"> 
+						<td th:text="${iscritti.studente.email}">
 							matteo.oldani@mail.polimi.it
 						</td>
-						<td th:text="${iscritti.studente.corso_laurea}"> 
+						<td th:text="${iscritti.studente.corso_laurea}">
 							Ingegneria Informatica
 						</td>
-						<td th:text="${iscritti.voto}"> 
+						<td th:text="${iscritti.voto}">
 							x
 						</td>
-						<td th:text="${iscritti.stato}"> 
+						<td th:text="${iscritti.stato}">
 							y
 						</td>
-						<td> 
+						<td>
 							<a th:href="@{/ModificaVoto(id_appello=${id_appello}, matricola=${iscritti.studente.matricola})}" th:text="${iscritti.stato == 'pubblicato' || iscritti.stato == 'rifiutato' || iscritti.stato == 'verbalizzato'} ? Visualizza : Modifica" href="index.html" class="modificaButton"> Modifica</a>
 						</td>
-					</tr>	
+					</tr>
 					<tr class="iscritti-items">
-						<td > 
+						<td >
 							910756
 						</td>
-						<td > 
+						<td >
 							Oldani
 						</td>
-						<td > 
+						<td >
 							Matteo
 						</td>
-						<td > 
+						<td >
 							matteo.oldani@mail.polimi.it
 						</td>
-						<td > 
+						<td >
 							Ingegneria Informatica
 						</td>
-						<td > 
+						<td >
 							x
 						</td>
-						<td> 
+						<td>
 							y
 						</td>
-						<td> 
+						<td>
 							<a class="modificaButton"> Modifica</a>
 						</td>
-					</tr>	
+					</tr>
 					<tr class="iscritti-items">
-						<td > 
+						<td >
 							910756
 						</td>
-						<td > 
+						<td >
 							Oldani
 						</td>
-						<td > 
+						<td >
 							Matteo
 						</td>
-						<td > 
+						<td >
 							matteo.oldani@mail.polimi.it
 						</td>
-						<td > 
+						<td >
 							Ingegneria Informatica
 						</td>
-						<td > 
+						<td >
 							x
 						</td>
-						<td> 
+						<td>
 							y
 						</td>
-						<td> 
+						<td>
 							<a class="modificaButton" > Modifica</a>
 						</td>
-					</tr>	
+					</tr>
 					<tr class="iscritti-items">
-						<td > 
+						<td >
 							910756
 						</td>
-						<td > 
+						<td >
 							Oldani
 						</td>
-						<td > 
+						<td >
 							Matteo
 						</td>
-						<td > 
+						<td >
 							matteo.oldani@mail.polimi.it
 						</td>
-						<td > 
+						<td >
 							Ingegneria Informatica
 						</td>
-						<td > 
+						<td >
 							x
 						</td>
-						<td> 
+						<td>
 							y
 						</td>
-						<td> 
+						<td>
 							<a class="modificaButton"> Modifica</a>
 						</td>
-					</tr>	
+					</tr>
 					<tr class="iscritti-items">
-						<td > 
+						<td >
 							910756
 						</td>
-						<td > 
+						<td >
 							Oldani
 						</td>
-						<td > 
+						<td >
 							Matteo
 						</td>
-						<td > 
+						<td >
 							matteo.oldani@mail.polimi.it
 						</td>
-						<td > 
+						<td >
 							Ingegneria Informatica
 						</td>
-						<td > 
+						<td >
 							x
 						</td>
-						<td> 
+						<td>
 							y
 						</td>
-						<td> 
+						<td>
 							<a class="modificaButton"> Modifica</a>
 						</td>
-					</tr>	
-					</tr>		
+					</tr>
+					</tr>
 				</tbody>
 			</table>
 		</div>
-				
+
 	</body>
 
 </html>

@@ -113,35 +113,19 @@ public class GoToModificaVoto extends HttpServlet {
 						errorMessage.setMessage("appello selezionato non associato a nessun corso");
 					}else {
 						if(corso.getId_docente() == docente.getId_docente()) {
-													
-							//il corso è del docente, devo solo controllare che la matricola sia iscritta all'appello e al corso
-							ArrayList<IscrittiAppello> listaIscritti = new ArrayList<>();
+											
 							
-							listaIscritti = appelliDao.getIscrittiAppello(id_appello, "", "");
 							
-							boolean controllo = false;
-							for(IscrittiAppello iscritti : listaIscritti) {
-								if(iscritti.getStudente().getMatricola() == matricola) {
-									controllo =  true;
-									studente = iscritti.getStudente();
-									voto = iscritti.getVoto();
-									break;
-								}
-							}
-							
-							if(!controllo) {
-								//dovrei controllare che sia iscrtito al corso ma per ora non è fatto siccome il database è consistente
-								// e non modificabile da questo punto di vista 
+							IscrittiAppello iscritto = appelliDao.getIscrittoAppello(id_appello, matricola);
+							if(iscritto != null) {
+								studente = iscritto.getStudente();
+								voto = iscritto.getVoto();
+								stato = iscritto.getStato();
 								
-								//ho bisogno dello studente, dell'id appello e dell'error message 
-								errorMessage.setMessage("matricola non presente in questo appello");
 							}else {
-								IscrittiAppello ia;
-								
-								stato = appelliDao.getIscrittoAppello(id_appello, matricola).getStato();
-
+								errorMessage.setMessage("matricola non presente in questo appello");
 							}
-		
+
 						}else {
 							errorMessage.setMessage("Appello selezionato non esistente");
 						}

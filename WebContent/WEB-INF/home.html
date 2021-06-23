@@ -4,10 +4,13 @@
 		<meta charset="UTF-8">
 		<title> Universit&agrave; di Magenta</title>
 		<link href="css/bootstrap-grid.css" rel="stylesheet">
+
+		<link rel="icon" href="img/logo.png">
+
 	    <!-- Custom styles for this page -->
 	    <link rel="stylesheet" href="css/style.css">
 	</head>
-	
+
 	<body>
 
 		<navbar>
@@ -24,14 +27,14 @@
 				<span class="errorMessage" th:text="${errorMessage.message}"> Message </span>
 			</h3>
 
-			<h3 th:if="${session.docente != null}"> 
-				Benvenuto nella sua Home prof. <span th:text="${session.docente.cognome}"> Crivelli</span>. 
+			<h3 th:if="${session.docente != null}">
+				Benvenuto nella sua Home prof. <span th:text="${session.docente.cognome}"> Crivelli</span>.
 				<br>Qui &eacute; possibile scegliere l'appello desiderato e vederne gli iscritti.
 			</h3>
-			<h3 th:if="${session.studente != null}"> Benvenuto/a <span th:text="${session.studente.cognome}"> Musumeci</span>. 
-				<br>Nella sua Home pu&ograve; scegliere tra gli appelli a cui &eacute; iscritta e visualizzarne l'esito 
+			<h3 th:if="${session.studente != null}"> Benvenuto/a <span th:text="${session.studente.cognome}"> Musumeci</span>.
+				<br>Nella sua Home pu&ograve; scegliere tra gli appelli a cui &eacute; iscritta e visualizzarne l'esito
 			</h3>
-		
+
 			<table class="center">
 				<thead>
 					<tr>
@@ -42,14 +45,14 @@
 				<tbody th:remove="all-but-first" th:if="${session.docente != null}">
 
 					<tr th:each="corsi : ${corsi}"  >
-						<td class="list-item"> 
+						<td class="list-item">
 							<a th:href="@{/HomeDocente(id=${corsi.id_corso})}" th:text="${corsi.nome}" href="/index.html" style="width: 100%; display: block;">Nome del corso</a>
 							<ul th:if="${corsoSelezionato != null && corsi.id_corso == corsoSelezionato}" th:each ="appelli : ${appelli}" th:remove="all-but-first">
 								<li> <a th:href="@{/IscrittiAppello(id=${appelli.id_appello})}" th:text="${appelli.data}"> Data1</a> </li>
 								<li> <a> Data2</a> </li>
 								<li> <a> Data3</a> </li>
 								<li> <a> Data4</a> </li>
-							</ul> 
+							</ul>
 						</td>
 					</tr>
 					<tr>
@@ -64,21 +67,21 @@
 				</tbody>
 				<tbody th:remove="all-but-first" th:if="${session.studente != null}">
 					<tr th:each="corsi : ${corsi}" >
-						<td class="list-item"> 
+						<td class="list-item">
 							<a th:href="@{/HomeStudente(id=${corsi.id_corso})}" th:text="${corsi.nome}">Nome del corso</a>
 							<ul th:if="${corsoSelezionato != null && corsi.id_corso == corsoSelezionato}" th:each ="appelli : ${appelli}" th:remove="all-but-first">
 								<li> <a th:href="@{/EsitoEsame(id=${appelli.id_appello})}" th:text="${appelli.data}"> Data1</a> </li>
 								<li> <a> Data2</a> </li>
 								<li> <a> Data3</a> </li>
 								<li> <a> Data4</a> </li>
-							</ul> 
+							</ul>
 						</td>
-					</tr>	
+					</tr>
 				</tbody>
-					
+
 			</table>
-		</div>	
-				
+		</div>
+
 	</body>
 
 </html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+verba<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 	<head>
 		<meta charset="UTF-8">
@@ -6,8 +6,10 @@
 		<link href="css/bootstrap-grid.css" rel="stylesheet">
 	    <!-- Custom styles for this page -->
 	    <link rel="stylesheet" href="css/style.css">
+			<link rel="icon" href="img/logo.png">
+
 	</head>
-	
+
 	<body>
 		<navbar>
 			<ul class="navbar">
@@ -27,8 +29,8 @@
 			<h1>
 				Verbale
 			</h1>
-		
-			
+
+
 			<div th:if="${verbale != null}" class="verbale">
 				<span class="student-info"> Verbale: </span><span th:text="${verbale.id_verbale}">id_verbale</span> <br>
 				<span class="student-info"> Data: </span> <span th:text="${verbale.data}">data</span> <br>
@@ -40,9 +42,9 @@
 			<h1>
 				Studenti Verbalizzati
 			</h1>
-			
 
-				
+
+
 			<table class="verbalizzati-table" th:if="${verbale != null}">
 				<thead style="padding: 20px;">
 					<th> Matricola </th>
@@ -50,74 +52,74 @@
 				</thead>
 				<tbody th:remove="all-but-first">
 					<tr th:each="iscritti : ${verbale.iscrittiVerbalizzati}" >
-						<td th:text="${iscritti.studente.matricola}"> 
+						<td th:text="${iscritti.studente.matricola}">
 							910756
 						</td>
-						<td th:text="${iscritti.voto}"> 
+						<td th:text="${iscritti.voto}">
 							30
 						</td>
 					</tr>
 					<tr>
-						<td> 
+						<td>
 							910756
 						</td>
-						<td> 
+						<td>
 							30
 						</td>
 					</tr>
 					<tr>
-						<td> 
+						<td>
 							910756
 						</td>
-						<td> 
+						<td>
 							30
 						</td>
 					</tr>
 					<tr>
-						<td> 
+						<td>
 							910756
 						</td>
-						<td> 
+						<td>
 							30
 						</td>
 					</tr>
 					<tr>
-						<td> 
+						<td>
 							910756
 						</td>
-						<td> 
+						<td>
 							30
 						</td>
 					</tr>
 					<tr>
-						<td> 
+						<td>
 							910756
 						</td>
-						<td> 
+						<td>
 							30
 						</td>
 					</tr>
 					<tr>
-						<td> 
+						<td>
 							910756
 						</td>
-						<td> 
+						<td>
 							30
 						</td>
 					</tr>
 					<tr>
-						<td> 
+						<td>
 							910756
 						</td>
-						<td> 
+						<td>
 							30
 						</td>
 					</tr>
 					<tr>
-						<td> 
+						<td>
 							910756
 						</td>
-						<td> 
+						<td>
 							30
 						</td>
 					</tr>
@@ -127,7 +129,7 @@
 			<a th:if="${verbale == null}" th:href="@{/HomeDocente}" href="index.html" > <button type="button" class="errorButton"> Home</button></a>
 			<a th:if="${verbale != null}" th:href="@{/IscrittiAppello(id=${verbale.id_appello})}" href="index.html" > <button type="button" class="errorButton"> Iscritti Appello </button></a>
 		</div>
-		
+
 	</body>
 
 </html>

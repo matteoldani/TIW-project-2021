@@ -6,8 +6,10 @@
 		<link href="css/bootstrap-grid.css" rel="stylesheet">
 	    <!-- Custom styles for this page -->
 	    <link rel="stylesheet" href="css/style.css">
+			<link rel="icon" href="img/logo.png">
+
 	</head>
-	
+
 	<body>
 
 		<navbar>
@@ -27,11 +29,11 @@
 
 			<h1>
 				<span th:text="${stato != 'pubblicato' && stato != 'rifiutato' && stato != 'verbalizzato'} ? 'Modifica esito' : 'Visualizza esito'">
-					Modifica esito 
+					Modifica esito
 				</span>
 			</h1>
-			
-			
+
+
 			<div  class="center esito" th:if="${studente != null}">
 				<h3> Dati studente </h3>
 				<span class="student-info"> Matrciola: </span> <span th:text="${studente.matricola}"> 910756 </span><br>
@@ -39,7 +41,7 @@
 				<span class="student-info"> Nome: </span> <span th:text="${studente.nome}"> Matteo</span><br>
 				<span class="student-info"> E-Mail: </span> <span th:text="${studente.email}"> matteo.oldani@mail.polimi.it</span><br>
 				<span class="student-info"> Corso di Laurea: </span><span th:text="${studente.corso_laurea}"> Ingegneria Informatica</span> <br>
-				
+
 				<div th:if="${stato != 'pubblicato' && stato != 'rifiutato' && stato != 'verbalizzato'}">
 					<form action="/verbalizzazione_voti/ModificaVoto" method="POST">
 						<input type="text" th:value="${id_appello}" name="id_appello" hidden>
@@ -68,17 +70,17 @@
 						<input type="submit" value="MODIFICA" class="modificaEsito">
 					</form>
 				</div>
-				
+
 				<div th:if="${stato == 'pubblicato' || stato == 'rifiutato' || stato == 'verbalizzato'}">
 					<span  class="student-info"> Voto: </span><span th:text="${voto}"> voto</span>
-					
+
 				</div>
 			</div>
 
 			<a th:href="@{/IscrittiAppello(id=${id_appello})}" href="index.html" > <button type="button" class="errorButton"> Iscritti Appello </button></a>
 
 		</div>
-	
+
 	</body>
 
 </html>
