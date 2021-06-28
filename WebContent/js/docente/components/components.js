@@ -155,6 +155,7 @@ this.modificaVotoGenerator = function(){
 							<input type="text" id="matricola_hidden" name="matricola" hidden>
 							<label  class="student-info">Voto: </label>
 							<select name="voto" id="voto">
+							  
 							  <option value="assente" >Assente</option>
 							  <option value="riprovato" >Riprovato</option>
 							  <option value="rimandato" >Rimandato</option>
@@ -270,6 +271,7 @@ this.createModal = function(){
 //select per ogni riga della tabella del modale 
 this.createVotiSelect = function(){
 	return `<select name="voto" id="votoOption" class="listOfVoti">
+			  <option value="-" >-</option>
 			  <option value="assente" >Assente</option>
 			  <option value="riprovato" >Riprovato</option>
 			  <option value="rimandato" >Rimandato</option>

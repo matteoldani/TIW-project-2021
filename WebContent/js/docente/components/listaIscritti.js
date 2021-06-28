@@ -190,38 +190,59 @@
 					var id_appello;
 					var voti = [];
 					var i=0;
-
+					
+					
 					//devo creare il json
+					var counter = 0;
 					var json = "{ \"studenti\":[";
 					for(i=0; i<allVoti.length-1; i++){
-						json = json + "{\"matricola\":\"" + insertedRows[i].cells[0].textContent +
+						if(!(allVoti[i].value == "-")){
+							json = json + "{\"matricola\":\"" + insertedRows[i].cells[0].textContent +
 												"\", \"voto\":\""+ allVoti[i].value + "\"},";
+							counter = counter +1;
+						}
+						
 					}
-					json = json + "{\"matricola\":\"" + insertedRows[i].cells[0].textContent +
+					if(!(allVoti[i].value == "-")){
+						json = json + "{\"matricola\":\"" + insertedRows[i].cells[0].textContent +
 											"\", \"voto\":\""+ allVoti[i].value + "\"}], \"id_appello\": \"" + this.appello+
 											"\"}";
-
-
-					//devo fare la richeista per madnare il json alla servelet
-
-					var req = new XMLHttpRequest();
-					var self = this;
-					req.onreadystatechange = function(){
-						if(req.readyState == XMLHttpRequest.DONE){
-							if(req.status == 200){
-
-								self.update(self.appello, self.corso.textContent, self.data.textContent);
-								self.show();
-							}else{
-								self.pageOrchestrator.getErrorMessage().setError(req.responseText);
-								self.pageOrchestrator.getErrorMessage().show();
-							}
+						counter = counter +1;
+					}else{
+						if(counter>0){
+							json = json.substring(0, json.length -1);
+							json = json + "], \"id_appello\": \"" + this.appello+
+											"\"}";
 						}
 					}
+					
+					if(counter > 0){
+						//devo fare la richeista per madnare il json alla servelet
 
-					req.open("POST", "/verbalizzazione_voti_js/ModificaVoto");
-					req.setRequestHeader("Content-Type", "application/json");
-					req.send(json);
+						var req = new XMLHttpRequest();
+						var self = this;
+						req.onreadystatechange = function(){
+							if(req.readyState == XMLHttpRequest.DONE){
+								if(req.status == 200){
+	
+									self.update(self.appello, self.corso.textContent, self.data.textContent);
+									self.show();
+								}else{
+									self.pageOrchestrator.getErrorMessage().setError(req.responseText);
+									self.pageOrchestrator.getErrorMessage().show();
+								}
+							}
+						}
+	
+						req.open("POST", "/verbalizzazione_voti_js/ModificaVoto");
+						req.setRequestHeader("Content-Type", "application/json");
+						req.send(json);
+					}else{
+						this.update(this.appello, this.corso.textContent, this.data.textContent);
+						this.show();
+					}
+	
+				
 
 				});
 
