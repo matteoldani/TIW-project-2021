@@ -54,17 +54,49 @@ this.makeElementSortable = function() {
   function createComparer(idx, asc) {
     console.log(asc)
     return function(a, b) {
-      // get values to compare at column idx
-      // if order is ascending, compare 1st row to 2nd , otherwise 2nd to 1st
-      var v1 = getCellValue(asc ? a : b, idx),
-        v2 = getCellValue(asc ? b : a, idx);
-      // If non numeric value
-      if (v1 === '' || v2 === '' || isNaN(v1) || isNaN(v2)) {
-        return v1.toString().localeCompare(v2); // lexical comparison
-      }
-      // If numeric value
-      return v1 - v2; // v1 greater than v2 --> true
-    };
+	    // get values to compare at column idx
+	    // if order is ascending, compare 1st row to 2nd , otherwise 2nd to 1st
+	    var v1 = getCellValue(asc ? a : b, idx),
+	      v2 = getCellValue(asc ? b : a, idx);
+		
+	    let map = new Map();
+		
+		//adding items 
+		map.set("-", -15);
+		map.set("Assente", -10);
+		map.set("Rimandato", -5);
+		map.set("Riprovato", 0);
+		map.set("30 e Lode", 33);
+		
+		// If non numeric value
+		  if (v1 === '' || v2 === '' || isNaN(v1) || isNaN(v2)) {
+			
+			if(!(map.has(v1) || map.has(v2))){
+				 return v1.toString().localeCompare(v2); // lexical comparison
+			}
+		   
+		  }
+		
+	    // If non numeric value
+	    if (v2 === '' || isNaN(v2)) {
+			
+		  	v2 = map.get(v2);
+			console.log(v2);
+	    }
+
+ 		if (v1 === '' || isNaN(v1)) {
+			
+		
+	      v1 = map.get(v1);
+
+           console.log(v1);
+
+	    }
+
+
+	    // If numeric value
+	    return v1 - v2; // v1 greater than v2 --> true
+	};
   }
 
   // For all table headers f class sortable

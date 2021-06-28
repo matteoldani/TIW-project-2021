@@ -17,6 +17,11 @@
 					switch(req.status){
 						case 200: 
 							window.location.href = "homeDocente.html";
+							if(sessionStorage.getItem("user")!= null){
+								window.location.href = "homeDocente.html";
+							}else{
+								window.location.href = "loginDocente.html";
+							}
 							break;
 						case 403: 
 							window.location.href = "loginDocente.html";
@@ -42,7 +47,12 @@
 					//to 403 if i need to log in so i will be redirected to the correct loginPage
 					switch(req.status){
 						case 200: 
-							window.location.href = "homeStudente.html";
+							if(sessionStorage.getItem("user")!= null){
+								window.location.href = "homeStudente.html";
+							}else{
+								window.location.href = "loginStudente.html";
+							}
+							
 							break;
 						case 403: 
 							window.location.href = "loginStudente.html";
