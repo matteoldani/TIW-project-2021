@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title> Universit&agrave; di Magenta</title>
+		<link href="css/bootstrap-grid.css" rel="stylesheet">
+	    <!-- Custom styles for this page -->
+	    <link rel="stylesheet" href="css/style.css">
+			<link rel="icon" href="img/logo.png">
+
+	</head>
+
+	<body>
+
+		<navbar>
+			<ul class="navbar">
+				<li class="navbar"><img src="img/logo-white.png" class="navbar"></li>
+				<li class="navbar"> <span class="navbar">Universit&agrave; di Magenta</span></li>
+				<li class="navbar-right"><a href="/verbalizzazione_voti/Logout" class="navbar">Logout</a></li>
+			</ul>
+		</navbar>
+
+		<div class="container center justify-content-center">
+
+			<h3 class="justify-content-center">
+				<span class="errorMessage" th:text="${errorMessage.message}"> Message </span>
+			</h3>
+
+
+			<h1>
+				<span th:text="${stato != 'pubblicato' && stato != 'rifiutato' && stato != 'verbalizzato'} ? 'Modifica esito' : 'Visualizza esito'">
+					Modifica esito
+				</span>
+			</h1>
+
+
+			<div  class="center esito" th:if="${studente != null}">
+				<h3> Dati studente </h3>
+				<span class="student-info"> Matrciola: </span> <span th:text="${studente.matricola}"> 910756 </span><br>
+				<span class="student-info"> Cognome: </span> <span th:text="${studente.cognome}"> Oldani</span> <br>
+				<span class="student-info"> Nome: </span> <span th:text="${studente.nome}"> Matteo</span><br>
+				<span class="student-info"> E-Mail: </span> <span th:text="${studente.email}"> matteo.oldani@mail.polimi.it</span><br>
+				<span class="student-info"> Corso di Laurea: </span><span th:text="${studente.corso_laurea}"> Ingegneria Informatica</span> <br>
+
+				<div th:if="${stato != 'pubblicato' && stato != 'rifiutato' && stato != 'verbalizzato'}">
+					<form action="/verbalizzazione_voti/ModificaVoto" method="POST">
+						<input type="text" th:value="${id_appello}" name="id_appello" hidden>
+						<input type="text" th:value="${studente.matricola}" name="matricola" hidden>
+						<label  class="student-info">Voto: </label>
+						<select name="voto" id="voto">
+						  <option value="assente" th:selected="${voto} == 'assente'">Assente</option>
+						  <option value="riprovato" th:selected="${voto} == 'assente'">Riprovato</option>
+						  <option value="rimandato" th:selected="${voto} == 'assente'">Rimandato</option>
+						  <option value="18" th:selected="${voto} == '18'">18</option>
+						  <option value="19" th:selected="${voto} == '19'">19</option>
+						  <option value="20" th:selected="${voto} == '20'">20</option>
+						  <option value="21" th:selected="${voto} == '21'">21</option>
+						  <option value="22" th:selected="${voto} == '22'">22</option>
+						  <option value="23" th:selected="${voto} == '23'">23</option>
+						  <option value="24" th:selected="${voto} == '24'">24</option>
+						  <option value="25" th:selected="${voto} == '25'">25</option>
+						  <option value="26" th:selected="${voto} == '26'">26</option>
+						  <option value="27" th:selected="${voto} == '27'">27</option>
+						  <option value="28" th:selected="${voto} == '28'">28</option>
+						  <option value="29" th:selected="${voto} == '29'">29</option>
+						  <option value="30" th:selected="${voto} == '30'">30</option>
+						  <option value="lode" th:selected="${voto} == '30 e Lode'">30 e Lode</option>
+						</select>
+						<br>
+						<input type="submit" value="MODIFICA" class="modificaEsito">
+					</form>
+				</div>
+
+				<div th:if="${stato == 'pubblicato' || stato == 'rifiutato' || stato == 'verbalizzato'}">
+					<span  class="student-info"> Voto: </span><span th:text="${voto}"> voto</span>
+
+				</div>
+			</div>
+
+			<a th:href="@{/IscrittiAppello(id=${id_appello})}" href="index.html" > <button type="button" class="errorButton"> Iscritti Appello </button></a>
+
+		</div>
+
+	</body>
+
+</html>
