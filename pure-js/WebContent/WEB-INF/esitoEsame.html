@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title> Universit&agrave; di Magenta</title>
+		<link href="css/bootstrap-grid.css" rel="stylesheet">
+	    <!-- Custom styles for this page -->
+	    <link rel="stylesheet" href="css/style.css">
+	</head>
+	
+	<body>
+
+		<navbar>
+			<ul class="navbar">
+				<li class="navbar"><img src="img/logo-white.png" class="navbar"></li>
+				<li class="navbar"> <span class="navbar">Universit&agrave; di Magenta</span></li>
+				<li class="navbar-right"><a href="/verbalizzazione_voti/Logout" class="navbar">Logout</a></li>
+			</ul>
+		</navbar>
+
+		<div class="container center justify-content-center">
+			<h3 class="justify-content-center">
+				<span class="errorMessage" th:text="${errorMessage.message}"> Message </span>
+			</h3>
+
+			<h1> Esito Esame </h1>
+
+			<div th:if="${!votoPubblicato}">
+				<h3> Il docente non ha ancora pubblicato il voto </h3>
+				
+			</div>
+
+
+		
+			<div class="center esito" th:if="${votoPubblicato}">
+				<h3>
+					Corso: <span class="no-bold" th:text="${corso.nome}"> NomeCorso </span>
+				</h3>
+				<h3>
+					Data: <span class="no-bold" th:text="${data}">DataAppello</span>
+				</h3>
+				
+				<div th:if="${votoPubblicato}">
+					<h3> Dati studente </h3>
+					<span class="student-info"> Matrciola: </span> <span th:text="${session.studente.matricola}"> 910756</span><br>
+					<span class="student-info"> Cognome: </span> <span th:text="${session.studente.cognome}"> Oldani</span> <br>
+					<span class="student-info"> Nome: </span> <span th:text="${session.studente.nome}"> Matteo</span><br>
+					<span class="student-info"> E-Mail: </span> <span th:text="${session.studente.email}"> matteo.oldai@mail.polimi.it</span><br>
+					<span class="student-info"> Corso di Laurea: </span><span th:text="${session.studente.corso_laurea}"> Ingegneria Informatica</span> <br>
+					<span class="student-info"> Voto: <span th:text="${voto}"> 30</span></span><br>
+					<a th:if="${votoRifiutabile}" th:href="@{/RifiutaVoto(id=${id_appello})}"> 
+						<button type="button" class="rifiutaButton"> Rifiuta </button>
+					</a>
+					<br>
+					<span th:if="${votoRifiutato}" class="votoRifiutato"> Il voto e' gia stato rifiuatato</span> 
+				
+				</div>
+			</div>
+
+			<a href="/verbalizzazione_voti_js/HomeStudente"> <button type="button" class="errorButton"> Home </button></a>
+		</div>
+						
+	</body>
+
+</html>

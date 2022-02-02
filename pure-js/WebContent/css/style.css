@@ -1,0 +1,518 @@
+html {
+ font-size: 16px;
+}
+
+body {
+   
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.5;
+	color: #212529;
+	text-align: left;
+	border: 0;
+	margin: 0;
+}
+
+ul{
+	list-style: none;
+	padding: 0;
+}
+
+ul.navbar{
+	list-style-type: none;
+    margin: 0;
+    padding-top: 10px;
+    padding-left: 20px;
+    overflow: hidden;
+    background-color: #FF00FF;
+}
+
+li.navbar{
+	float: left;
+}
+
+li.navbar-right{
+	float: right;
+}
+
+a.navbar {
+	display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+a.navbara:hover{
+    background-color: #111;
+}
+
+span.navbar{
+	display: block;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 30px;
+    padding-left: 15px;
+}
+
+img.navbar{
+	width: 70px;
+	height: 50px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.container {
+  max-width: 960px;
+}
+
+
+.logo{
+	margin-top: 100px;
+	width: 100px;
+	height: 100px;
+}
+
+.title{
+	font-size: 3.5rem;
+	font-weight: 300;
+	margin: 0;
+}
+
+.subtitle{
+	font-size: 1.25rem;
+	color: #666666;
+}
+
+.card{
+	margin: 50px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+    background-color: #f8f8f8;
+    padding: 20px;
+    
+
+
+}
+
+.thumbnail{
+	width: 50px;
+	height: 50px;
+}
+
+.login{
+	background-color: #FF00FF;
+	border-color: #FF00FF;
+	color: white;
+	width: 100%;
+	height: 40px;
+	border-radius: 3px;
+	border-style: solid;
+	font-size: 1.15rem;
+
+}
+
+button.login:hover{
+	background-color: #A300A3;
+	border-color: #A300A3;
+}
+
+.errorButton{
+	background-color: #FF00FF;
+	border-color: #FF00FF;
+	color: white;
+	width: 100%;
+	height: 40px;
+	border-radius: 3px;
+	border-style: solid;
+	font-size: 1.15rem;
+	max-width: 150px;
+
+}
+
+button.errorButton:hover{
+	background-color: #A300A3;
+	border-color: #A300A3;
+}
+
+.rifiutaButton{
+	background-color: red;
+	border-color: red;
+	color: white;
+	width: 100%;
+	height: 40px;
+	border-radius: 3px;
+	border-style: solid;
+	font-size: 1.15rem;
+	max-width: 150px;
+	margin-top: 10px;
+
+}
+
+button.rifiutaButton:hover{
+	background-color: #ba0035;
+	border-color: #ba0035;
+}
+
+.verbalizzaButton{
+	background-color: green;
+	border-color: green;
+	color: white;
+	width: 100%;
+	height: 40px;
+	border-radius: 3px;
+	border-style: solid;
+	font-size: 1.15rem;
+	max-width: 150px;
+	margin-top: 10px;
+}
+
+button.verbalizzaButton:hover{
+	background-color: #276322;
+	border-color: #276322;
+}
+
+.img-login{
+	height: 200px;
+	width: 200px;
+	padding-top: 10px;
+}
+
+.login-input{
+	background-color: #FF00FF;
+	border-color: #FF00FF;
+	color: white;
+	width: 35%;
+	height: 40px;
+	border-radius: 3px;
+	border-style: solid;
+	font-size: 1.15rem;
+}
+
+.center{
+	text-align: center;
+}
+
+table.center{
+	margin-left:auto;
+	margin-right:auto;
+	text-align: center;
+	border-spacing: 15px;
+}
+
+.justify-content-center{
+	justify-content: center;
+}
+
+.errorMessage{
+	color: red;
+}
+
+.list-item{
+	border: solid;
+	border-width: 2px;
+	border-radius: 6px;
+	min-width: 400px;
+	border-color: #f2edf2;
+	padding: 7px;
+	font-size: 20px;
+	background-color: #f2edf2;
+}
+
+.table-title{
+	font-size: 40px;
+	color: #ff00ff;
+
+}
+
+.no-bold{
+	font-weight: normal;
+}
+
+.student-info{
+	font-weight: bold;
+}
+
+td.list-item a:link {
+  text-decoration: none;
+  color: black;
+}
+
+td.list-item a:visited {
+  text-decoration: none;
+  color: black;
+}
+
+td.list-item a:hover {
+  text-decoration: underline;
+  color: black;
+}
+
+.esito{
+	border-radius: 6px;
+	background-color: #f2edf2;
+	max-width: 500px;
+	margin-right: auto;
+	margin-left: auto;
+	margin-bottom: 20px;
+	padding-bottom: 15px;
+}
+
+.verbale{
+	border-radius: 6px;
+	background-color: #f2edf2;
+	max-width: 500px;
+	margin-right: auto;
+	margin-left: auto;
+	margin-bottom: 20px;
+	padding-bottom: 15px;
+	padding-top: 15px;
+}
+
+.votoRifiutato{
+	color: red;
+}
+
+.iscritti-table{
+	margin-top: 20px;
+	border-radius: 6px;
+	background-color: #f2edf2;
+	border-collapse: collapse;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.heading-buttons{
+	background-color: #ff00ff;
+	padding: 10px; 
+	border: 0px; 
+	border-color: #ff00ff;
+	margin: 0px;
+	width: 100%;
+	height: 45px;
+}
+
+thead.heading-buttons tr th input{
+	color: white;
+	background-color: #ff00ff;
+	padding: 10px; 
+	border: 0px; 
+	border-color: #A300A3;
+	margin: 0px;
+	width: 100%;
+}
+
+thead.heading-buttons tr:hover th:hover input:hover{
+	background-color: #A300A3;
+	padding: 10px; 
+	border: 0px; 
+	border-color: #A300A3;
+	margin: 0px;
+	width: 100%;
+}
+
+.green-background{
+	background-color: green !important;
+}
+
+button.green-background:hover{
+	background-color: #276322 !important;
+}
+
+.grey-background{
+	background-color: grey !important;
+}
+
+
+
+
+.modificaButton{
+	text-decoration: none;
+    color: #ff00ff;
+}
+
+tr.iscritti-items td{
+	padding: 5px 20px 5px 20px;
+}
+
+.modificaEsito{
+	color: white;
+	background-color: #ff00ff;
+	padding: 10px;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	border-radius: 4px;
+	border-color: #ff00ff;
+	border-style: none;
+}
+
+input.modificaEsito:hover{
+	color: white;
+	background-color: #A300A3;
+	padding: 10px;
+	margin-top: 20px;
+	border-radius: 4px;
+	border-color: #A300A3;
+}
+
+.verbalizzati-table{
+	margin-top: 20px;
+	border-radius: 6px;
+	background-color: #f2edf2;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 10px;
+	margin-bottom: 30px;
+	border-spacing: 10px;
+
+}
+
+.iscritti-td{
+	color: white;
+	padding-left:10px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	padding-right: 10px;
+}
+
+.pubblica-th{
+	padding:0px;
+}
+
+#pubblicaButton{
+	border-style: none;
+	color: white;
+	width: 100%;
+	height: 45px;
+}
+
+#multiplePublicButton{
+	border-style: none;
+	color: white;
+	width: 100%;
+	height: 45px;
+}
+
+th.iscritti-td:hover{
+	background-color: #A300A3;
+}
+
+
+/*taken from boostrap*/
+.container {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+@media (min-width: 768px) {
+  .container {
+    width: 750px;
+  }
+}
+@media (min-width: 992px) {
+  .container {
+    width: 970px;
+  }
+}
+@media (min-width: 1200px) {
+  .container {
+    width: 1170px;
+  }
+}
+/* end of boostrap code */
+
+
+/*taken from w3school*/
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+/* end of taken from w3school*/
+
+#modal-table{
+	border-spacing: 0;
+}
+
+.heading-buttons-modal{
+	border-spacing: 0;
+	background-color: #ff00ff;
+	padding: 10px; 
+	border: 0px; 
+	border-color: #ff00ff;
+	margin: 0px;
+	width: 100%;
+	height: 45px;
+
+}
+
+
+thead.heading-buttons-modal tr th input{
+	color: white;
+	background-color: #ff00ff;
+	padding: 10px; 
+	border: 0px; 
+	border-color: #A300A3;
+	margin: 0px;
+	width: 100%;
+}
+
+thead.heading-buttons-modal tr:hover th:hover input:hover{
+	background-color: #A300A3;
+	padding: 10px; 
+	border: 0px; 
+	border-color: #A300A3;
+	margin: 0px;
+	width: 100%;
+}
+
+.list-item span:hover{
+	text-decoration: underline;
+	cursor:pointer;
+}
+
+.modifica-underline td:hover{
+	text-decoration: underline;
+	cursor: pointer;
+}
